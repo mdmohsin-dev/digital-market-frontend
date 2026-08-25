@@ -1,0 +1,304 @@
+"use client";
+
+import { useRef, useState } from "react";
+import {
+    ChevronDown, Heart, Menu, Repeat, Search, ShoppingCart, Tag, User, X,
+} from "lucide-react";
+
+import brandLogo from "@/assets/Images/brandLogo3.png";
+import Image from "next/image";
+
+const navItems = [
+    "Home",
+    "Popular Categories",
+    "Product section",
+    "Newsletter",
+    "Contact Us",
+];
+
+const categoryItems = [
+    { label: "Electronics", href: "#" },
+    { label: "Fashion", href: "#" },
+    { label: "Home & Living", href: "#" },
+    { label: "Beauty & Health", href: "#" },
+    { label: "Sports & Outdoors", href: "#" },
+    { label: "Toys & Kids", href: "#" },
+    { label: "Groceries", href: "#" },
+    { label: "Automotive", href: "#" },
+];
+
+function IconWithCount({
+    children,
+    count,
+    label,
+}: {
+    children: React.ReactNode;
+    count: number;
+    label: string;
+}) {
+    return (
+        <button
+            type="button"
+            aria-label={label}
+            className="relative shrink-0 text-foreground transition-colors hover:text-brand"
+        >
+            {children}
+            <span className="absolute -right-2 -top-2 flex h-4 w-4 items-center justify-center rounded-full bg-badge text-[10px] font-semibold text-badge-foreground">
+                {count}
+            </span>
+        </button>
+    );
+}
+
+function SearchBar({ className = "" }: { className?: string }) {
+    return (
+        <form
+            className={`flex h-11 items-center rounded-md border border-border bg-background focus-within:border-brand ${className}`}
+            role="search"
+        >
+            <Search size={18} className="ml-3 shrink-0 text-muted-foreground" />
+            <input
+                type="search"
+                placeholder="Search for products..."
+                aria-label="Search for products"
+                className="h-full min-w-0 flex-1 bg-transparent px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
+            />
+            <button
+                type="submit"
+                className="m-1 inline-flex h-9 shrink-0 items-center rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
+            >
+                Search
+            </button>
+        </form>
+    );
+}
+
+export default function PublicNavbar() {
+    const [open, setOpen] = useState(false);
+    const [catOpen, setCatOpen] = useState(false);
+
+    // Timeout ref so we can debounce the close – this is what stops the
+    // dropdown from disappearing the instant the cursor leaves the button
+    // while it's travelling down toward the menu.
+    const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+    const openCategories = () => {
+        if (closeTimeoutRef.current) {
+            clearTimeout(closeTimeoutRef.current);
+            closeTimeoutRef.current = null;
+        }
+        setCatOpen(true);
+    };
+
+    const scheduleCloseCategories = () => {
+        if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
+        closeTimeoutRef.current = setTimeout(() => {
+            setCatOpen(false);
+        }, 150);
+    };
+
+    return (
+        <header className="w-full my-10 bg-background">
+            {/* Top bar */}
+            <div className="mx-auto grid max-w-7xl grid-cols-[auto_minmax(0,1fr)] items-center gap-4 px-4 py-3 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-24 lg:py-4">
+                {/* Logo */}
+                <a href="/" className="flex shrink-0 items-center gap-2">
+                   <Image width={160} height={160} alt="kalni" src={brandLogo}/>
+                </a>
+
+                {/* Search (desktop) */}
+                <SearchBar className="hidden lg:flex" />
+
+                {/* Actions */}
+                <div className="flex min-w-0 items-center justify-end gap-4 sm:gap-6">
+                    <a
+                        href="/login"
+                        className="hidden shrink-0 items-center gap-2 sm:flex"
+                    >
+                        <User size={22} className="text-muted-foreground" />
+                    </a>
+
+                    <div className="hidden shrink-0 items-center gap-6 sm:flex">
+                        <IconWithCount count={0} label="Wishlist">
+                            <Heart size={22} />
+                        </IconWithCount>
+                        
+                    </div>
+
+                    <div className="flex shrink-0 items-center gap-2">
+                        <IconWithCount count={0} label="Cart">
+                            <ShoppingCart size={22} />
+                        </IconWithCount>
+                        <span className="hidden leading-tight md:block">
+                            <span className="block text-xs text-muted-foreground">
+                                Your Cart
+                            </span>
+                            <span className="block text-sm font-semibold text-foreground">
+                                $0.00
+                            </span>
+                        </span>
+                    </div>
+
+                    <button
+                        type="button"
+                        onClick={() => setOpen((v) => !v)}
+                        aria-label="Toggle menu"
+                        aria-expanded={open}
+                        className="shrink-0 text-foreground lg:hidden"
+                    >
+                        {open ? <X size={24} /> : <Menu size={24} />}
+                    </button>
+                </div>
+            </div>
+
+            {/* Search (mobile) */}
+            <div className="mx-auto max-w-7xl px-4 pb-3 lg:hidden">
+                <SearchBar className="w-full" />
+            </div>
+
+            {/* Bottom nav (desktop) */}
+            <div className="hidden border-t border-border lg:block">
+                <nav className="mx-auto flex max-w-7xl items-center gap-16 px-4 py-3">
+                    <ul className="flex w-full items-center justify-between">
+                        {/* All Categories dropdown */}
+                        <li
+                            className="relative"
+                            onMouseEnter={openCategories}
+                            onMouseLeave={scheduleCloseCategories}
+                        >
+                            <button
+                                type="button"
+                                onClick={() => setCatOpen((v) => !v)}
+                                aria-expanded={catOpen}
+                                className="flex items-center gap-1 whitespace-nowrap text-sm font-semibold text-foreground transition-colors hover:text-brand"
+                            >
+                                All Categories
+                                <ChevronDown
+                                    size={14}
+                                    className={`shrink-0 transition-transform ${catOpen ? "rotate-180" : ""}`}
+                                />
+                            </button>
+
+                            {catOpen && (
+                                <div
+                                    onMouseEnter={openCategories}
+                                    onMouseLeave={scheduleCloseCategories}
+                                    // No gap between button and panel: pt-2 (padding) instead of
+                                    // mt-2 (margin) keeps the hoverable area continuous so the
+                                    // cursor never leaves the li's hit area while moving down.
+                                    className="absolute left-0 top-full z-50 w-56 pt-2"
+                                >
+                                    <div className="rounded-lg border border-border bg-background p-2 shadow-lg">
+                                        <ul className="space-y-1">
+                                            {categoryItems.map((cat) => (
+                                                <li key={cat.label}>
+                                                    <a
+                                                        href={cat.href}
+                                                        className="block rounded-md px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted hover:text-brand"
+                                                    >
+                                                        {cat.label}
+                                                    </a>
+                                                </li>
+                                            ))}
+                                        </ul>
+                                    </div>
+                                </div>
+                            )}
+                        </li>
+
+                        {navItems.map((label) => (
+                            <li key={label}>
+                                <a
+                                    href="#"
+                                    className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-foreground transition-colors hover:text-brand"
+                                >
+                                    {label}
+                                </a>
+                            </li>
+                        ))}
+                    </ul>
+
+                    <div className="ml-auto flex shrink-0 items-center gap-2 whitespace-nowrap text-sm font-semibold text-foreground">
+                        <Tag size={16} className="text-badge" />
+                        $20 Off Your First Order
+                    </div>
+                </nav>
+            </div>
+
+            {/* Mobile menu */}
+            {open && (
+                <div className="border-t border-border lg:hidden">
+                    <nav className="mx-auto max-w-7xl px-4 py-3">
+                        <div className="mb-2 flex items-center justify-between">
+                            <span className="text-sm font-semibold text-foreground">
+                                Menu
+                            </span>
+                            <button
+                                type="button"
+                                onClick={() => setOpen(false)}
+                                aria-label="Close menu"
+                                className="text-muted-foreground"
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <ul className="divide-y divide-border border-y border-border">
+                            {/* Mobile All Categories accordion */}
+                            <li>
+                                <button
+                                    type="button"
+                                    onClick={() => setCatOpen((v) => !v)}
+                                    aria-expanded={catOpen}
+                                    className="flex w-full items-center justify-between py-3 text-sm font-semibold text-foreground"
+                                >
+                                    All Categories
+                                    <ChevronDown
+                                        size={16}
+                                        className={`shrink-0 text-muted-foreground transition-transform ${catOpen ? "rotate-180" : ""}`}
+                                    />
+                                </button>
+                                {catOpen && (
+                                    <ul className="pb-2 pl-3">
+                                        {categoryItems.map((cat) => (
+                                            <li key={cat.label}>
+                                                <a
+                                                    href={cat.href}
+                                                    className="block py-2 text-sm text-muted-foreground transition-colors hover:text-brand"
+                                                >
+                                                    {cat.label}
+                                                </a>
+                                            </li>
+                                        ))}
+                                    </ul>
+                                )}
+                            </li>
+
+                            {navItems.map((label) => (
+                                <li key={label}>
+                                    <a
+                                        href="#"
+                                        className="flex items-center justify-between py-3 text-sm font-medium text-foreground"
+                                    >
+                                        {label}
+                                    </a>
+                                </li>
+                            ))}
+                        </ul>
+                        <a
+                            href="/login"
+                            className="mt-3 flex items-center gap-2 text-sm font-medium text-foreground sm:hidden"
+                        >
+                            <User size={18} className="text-muted-foreground" /> Login /
+                            Account
+                        </a>
+                        <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-foreground">
+                            <Tag size={16} className="text-badge" />
+                            $20 Off Your First Order
+                        </div>
+                    </nav>
+                </div>
+            )}
+        </header>
+    );
+}
