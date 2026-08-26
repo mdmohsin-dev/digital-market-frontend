@@ -2,7 +2,7 @@
 
 import { useRef, useState } from "react";
 import {
-    ChevronDown, Heart, Menu, Repeat, Search, ShoppingCart, Tag, User, X,
+    ChevronDown, Heart, Menu, Search, ShoppingCart, Tag, User, X,
 } from "lucide-react";
 
 import brandLogo from "@/assets/Images/brandLogo3.png";
@@ -98,7 +98,11 @@ export default function PublicNavbar() {
     };
 
     return (
-        <header className="w-full my-10 bg-background">
+        // relative + isolate => this header gets its own stacking context,
+        // so the dropdown's z-index is always compared against its own
+        // siblings only, never fighting with unrelated z-index values
+        // elsewhere on the page.
+        <header className="relative  isolate z-30 w-full mt-8 bg-background">
             {/* Top bar */}
             <div className="mx-auto grid max-w-7xl grid-cols-[auto_minmax(0,1fr)] items-center gap-4 px-4 py-3 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-24 lg:py-4">
                 {/* Logo */}
@@ -157,12 +161,13 @@ export default function PublicNavbar() {
             </div>
 
             {/* Bottom nav (desktop) */}
-            <div className="hidden border-t border-border lg:block">
+            <div className="sticky top-10">
+                <div className="relative  z-20 hidden border-t border-border lg:block">
                 <nav className="mx-auto flex max-w-7xl items-center gap-16 px-4 py-3">
                     <ul className="flex w-full items-center justify-between">
                         {/* All Categories dropdown */}
                         <li
-                            className="relative"
+                            className="relative z-20"
                             onMouseEnter={openCategories}
                             onMouseLeave={scheduleCloseCategories}
                         >
@@ -186,9 +191,11 @@ export default function PublicNavbar() {
                                     // No gap between button and panel: pt-2 (padding) instead of
                                     // mt-2 (margin) keeps the hoverable area continuous so the
                                     // cursor never leaves the li's hit area while moving down.
-                                    className="absolute left-0 top-full z-50 w-56 pt-2"
+                                    // z-[100] (well above the other nav li's z-index) guarantees
+                                    // this panel paints on top of "Home / Popular Categories / ..."
+                                    className="absolute left-0 top-full bg-white z-[100] w-56 pt-2"
                                 >
-                                    <div className="rounded-lg border border-border bg-background p-2 shadow-lg">
+                                    <div className="rounded-lg bg-background p-2 shadow-lg ring-1 ring-border">
                                         <ul className="space-y-1">
                                             {categoryItems.map((cat) => (
                                                 <li key={cat.label}>
@@ -207,7 +214,7 @@ export default function PublicNavbar() {
                         </li>
 
                         {navItems.map((label) => (
-                            <li key={label}>
+                            <li key={label} className="relative z-0">
                                 <a
                                     href="#"
                                     className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-foreground transition-colors hover:text-brand"
@@ -224,10 +231,11 @@ export default function PublicNavbar() {
                     </div>
                 </nav>
             </div>
+            </div>
 
             {/* Mobile menu */}
             {open && (
-                <div className="border-t border-border lg:hidden">
+                <div className="relative z-20 border-t border-border lg:hidden">
                     <nav className="mx-auto max-w-7xl px-4 py-3">
                         <div className="mb-2 flex items-center justify-between">
                             <span className="text-sm font-semibold text-foreground">
