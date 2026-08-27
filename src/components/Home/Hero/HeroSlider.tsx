@@ -99,11 +99,11 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
               <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-black/15 to-transparent" />
 
               {/* Content */}
-              <div className="relative z-10 flex h-full flex-col items-start justify-end gap-3 px-6 pb-16 sm:justify-center sm:gap-4 sm:px-12 sm:pb-0 md:px-20">
+              <div className="max-w-7xl mx-auto relative z-10 flex h-full flex-col sm:items-start justify-start gap-3 pb-16 sm:justify-center sm:gap-4 sm:pb-0">
                 <h1 className="max-w-xl text-3xl font-bold leading-tight text-white sm:text-4xl md:text-5xl">
                   {slide.heading}
                 </h1>
-                <p className="max-w-md text-sm text-white/90 sm:text-base md:text-lg">
+                <p className="max-w-2xl text-sm text-white/90 sm:text-base md:text-lg">
                   {slide.description}
                 </p>
                 <Link
