@@ -5,7 +5,7 @@ import {
     ChevronDown, Heart, Menu, Search, ShoppingCart, Tag, User, X,
 } from "lucide-react";
 
-import brandLogo from "@/assets/Images/brandLogo3.png";
+import brandLogo from "@/assets/Images/brandLogo.png";
 import Image from "next/image";
 
 const navItems = [
@@ -104,7 +104,7 @@ export default function PublicNavbar() {
         // elsewhere on the page.
         <header className="relative  isolate z-30 w-full mt-8 bg-background">
             {/* Top bar */}
-            <div className="mx-auto grid max-w-7xl border border-red-600 grid-cols-[auto_minmax(0,1fr)] items-center gap-4 px-4 py-3 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-24 lg:py-4">
+            <div className="mx-auto grid max-w-7xl grid-cols-[auto_minmax(0,1fr)] items-center gap-4 px-4 py-3 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-24 lg:py-4">
                 {/* Logo */}
                 <a href="/" className="flex shrink-0 items-center gap-2">
                    <Image width={160} height={160} alt="kalni" src={brandLogo}/>
@@ -251,7 +251,7 @@ export default function PublicNavbar() {
                             </button>
                         </div>
 
-                        <ul className="divide-y divide-border border-y border-border">
+                        <ul className="">
                             {/* Mobile All Categories accordion */}
                             <li>
                                 <button
