@@ -11,11 +11,12 @@ export default async function CampaignSection() {
   if (visibleCampaigns.length === 0) return null;
 
   return (
-    <section className="py-12">
+    <section className="bg-black py-12">
       <div className="mx-auto max-w-7xl px-4">
         <h2 className="mb-6 text-2xl font-bold text-white">Current Campaigns</h2>
 
-        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3">
+        {/* Mobile: 1 col. Tablet & desktop: 2 side-by-side. */}
+        <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">
           {visibleCampaigns.map((campaign) => (
             <CampaignCard key={campaign.id} campaign={campaign} />
           ))}
