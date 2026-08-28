@@ -49,7 +49,7 @@ export default function ProductCard({ product }: ProductCardProps) {
       className="group flex flex-col overflow-hidden rounded-2xl bg-neutral-900 ring-1 ring-neutral-800 transition-all duration-300 hover:ring-[#9D1749]/60"
     >
       {/* Image area */}
-      <div className="relative aspect-[4/5] w-full overflow-hidden">
+      <div className="relative aspect-4/5 w-full overflow-hidden">
         <Image
           src={product.images[0]}
           alt={product.name}
