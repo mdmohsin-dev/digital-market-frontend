@@ -1,10 +1,10 @@
 "use client";
 
 import {
-    ChevronDown, Heart, Menu, Search, ShoppingCart, Tag, User, X,
+    Heart, Menu, Search, ShoppingCart, Tag, User, X,
 } from "lucide-react";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useState } from "react";
 
 import brandLogo from "@/assets/Images/brandLogo.png";
 import Image from "next/image";
@@ -12,20 +12,8 @@ import Image from "next/image";
 const navItems = [
     { label: "Home", href: "/" },
     { label: "All Products", href: "/shop" },
-    { label: "Product section", href: "/products" },
     { label: "Newsletter", href: "/newsletter" },
     { label: "Contact Us", href: "/contact" },
-];
-
-const categoryItems = [
-    { label: "Electronics", href: "/categories/electronics" },
-    { label: "Fashion", href: "/categories/fashion" },
-    { label: "Home & Living", href: "/categories/home-living" },
-    { label: "Beauty & Health", href: "/categories/beauty-health" },
-    { label: "Sports & Outdoors", href: "/categories/sports-outdoors" },
-    { label: "Toys & Kids", href: "/categories/toys-kids" },
-    { label: "Groceries", href: "/categories/groceries" },
-    { label: "Automotive", href: "/categories/automotive" },
 ];
 
 function IconWithCount({
@@ -76,39 +64,18 @@ function SearchBar({ className = "" }: { className?: string }) {
 
 export default function PublicNavbar() {
     const [open, setOpen] = useState(false);
-    const [catOpen, setCatOpen] = useState(false);
-
-    // Timeout ref so we can debounce the close – this is what stops the
-    // dropdown from disappearing the instant the cursor leaves the button
-    // while it's travelling down toward the menu.
-    const closeTimeoutRef = useRef<ReturnType<typeof setTimeout> | null>(null);
-
-    const openCategories = () => {
-        if (closeTimeoutRef.current) {
-            clearTimeout(closeTimeoutRef.current);
-            closeTimeoutRef.current = null;
-        }
-        setCatOpen(true);
-    };
-
-    const scheduleCloseCategories = () => {
-        if (closeTimeoutRef.current) clearTimeout(closeTimeoutRef.current);
-        closeTimeoutRef.current = setTimeout(() => {
-            setCatOpen(false);
-        }, 150);
-    };
 
     return (
         // relative + isolate => this header gets its own stacking context,
-        // so the dropdown's z-index is always compared against its own
-        // siblings only, never fighting with unrelated z-index values
+        // so any future dropdown's z-index is always compared against its
+        // own siblings only, never fighting with unrelated z-index values
         // elsewhere on the page.
         <header className="relative  isolate z-30 w-full mt-8 bg-white">
             {/* Top bar */}
             <div className="mx-auto grid max-w-350 grid-cols-[auto_minmax(0,1fr)] items-center gap-4 px-4 py-3 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-24 lg:py-4">
                 {/* Logo */}
                 <Link href="/" className="flex shrink-0 items-center gap-2">
-                   <Image width={160} height={160} alt="kalni" src={brandLogo}/>
+                    <Image width={160} height={160} alt="kalni" src={brandLogo} />
                 </Link>
 
                 {/* Search (desktop) */}
@@ -127,7 +94,7 @@ export default function PublicNavbar() {
                         <IconWithCount count={0} label="Wishlist">
                             <Heart size={22} />
                         </IconWithCount>
-                        
+
                     </div>
 
                     <div className="flex shrink-0 items-center gap-2">
@@ -164,74 +131,26 @@ export default function PublicNavbar() {
             {/* Bottom nav (desktop) */}
             <div className="sticky top-10">
                 <div className="relative  z-20 hidden border-t border-gray-300 lg:block">
-                <nav className="mx-auto flex max-w-350 items-center gap-16 px-4 py-3">
-                    <ul className="flex w-full items-center justify-between">
-                        {/* All Categories dropdown */}
-                        <li
-                            className="relative z-20"
-                            onMouseEnter={openCategories}
-                            onMouseLeave={scheduleCloseCategories}
-                        >
-                            <button
-                                type="button"
-                                onClick={() => setCatOpen((v) => !v)}
-                                aria-expanded={catOpen}
-                                className="flex items-center gap-1 whitespace-nowrap text-sm font-semibold text-foreground transition-colors hover:text-brand"
-                            >
-                                All Categories
-                                <ChevronDown
-                                    size={14}
-                                    className={`shrink-0 transition-transform ${catOpen ? "rotate-180" : ""}`}
-                                />
-                            </button>
+                    <nav className="mx-auto flex max-w-350 items-center gap-16 px-4 py-3">
+                        <ul className="flex w-full items-center justify-between">
+                            {navItems.map((item) => (
+                                <li key={item.label} className="relative z-0">
+                                    <Link
+                                        href={item.href}
+                                        className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-foreground transition-colors hover:text-brand"
+                                    >
+                                        {item.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
 
-                            {catOpen && (
-                                <div
-                                    onMouseEnter={openCategories}
-                                    onMouseLeave={scheduleCloseCategories}
-                                    // No gap between button and panel: pt-2 (padding) instead of
-                                    // mt-2 (margin) keeps the hoverable area continuous so the
-                                    // cursor never leaves the li's hit area while moving down.
-                                    // z-[100] (well above the other nav li's z-index) guarantees
-                                    // this panel paints on top of "Home / Popular Categories / ..."
-                                    className="absolute left-0 top-full bg-white z-[100] w-56 pt-2"
-                                >
-                                    <div className="rounded-lg bg-background p-2 shadow-lg ring-1 ring-border">
-                                        <ul className="space-y-1">
-                                            {categoryItems.map((cat) => (
-                                                <li key={cat.label}>
-                                                    <Link
-                                                        href={cat.href}
-                                                        className="block rounded-md px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted hover:text-brand"
-                                                    >
-                                                        {cat.label}
-                                                    </Link>
-                                                </li>
-                                            ))}
-                                        </ul>
-                                    </div>
-                                </div>
-                            )}
-                        </li>
-
-                        {navItems.map((item) => (
-                            <li key={item.label} className="relative z-0">
-                                <Link
-                                    href={item.href}
-                                    className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-foreground transition-colors hover:text-brand"
-                                >
-                                    {item.label}
-                                </Link>
-                            </li>
-                        ))}
-                    </ul>
-
-                    <div className="ml-auto flex shrink-0 items-center gap-2 whitespace-nowrap text-sm font-semibold text-foreground">
-                        <Tag size={16} className="text-badge" />
-                        $20 Off Your First Order
-                    </div>
-                </nav>
-            </div>
+                        <div className="ml-auto flex shrink-0 items-center gap-2 whitespace-nowrap text-sm font-semibold text-foreground">
+                            <Tag size={16} className="text-badge" />
+                            $20 Off Your First Order
+                        </div>
+                    </nav>
+                </div>
             </div>
 
             {/* Mobile menu */}
@@ -253,36 +172,6 @@ export default function PublicNavbar() {
                         </div>
 
                         <ul className="">
-                            {/* Mobile All Categories accordion */}
-                            <li>
-                                <button
-                                    type="button"
-                                    onClick={() => setCatOpen((v) => !v)}
-                                    aria-expanded={catOpen}
-                                    className="flex w-full items-center justify-between py-3 text-sm font-semibold text-foreground"
-                                >
-                                    All Categories
-                                    <ChevronDown
-                                        size={16}
-                                        className={`shrink-0 text-muted-foreground transition-transform ${catOpen ? "rotate-180" : ""}`}
-                                    />
-                                </button>
-                                {catOpen && (
-                                    <ul className="pb-2 pl-3">
-                                        {categoryItems.map((cat) => (
-                                            <li key={cat.label}>
-                                                <Link
-                                                    href={cat.href}
-                                                    className="block py-2 text-sm text-muted-foreground transition-colors hover:text-brand"
-                                                >
-                                                    {cat.label}
-                                                </Link>
-                                            </li>
-                                        ))}
-                                    </ul>
-                                )}
-                            </li>
-
                             {navItems.map((item) => (
                                 <li key={item.label}>
                                     <Link

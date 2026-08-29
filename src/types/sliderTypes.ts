@@ -8,4 +8,5 @@ export type HeroSlide = {
   mobileImage: string | StaticImageData
   ctaText: string
   ctaLink: string
+  bgImage:string | StaticImageData
 }

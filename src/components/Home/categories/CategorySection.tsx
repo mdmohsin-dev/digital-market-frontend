@@ -2,7 +2,7 @@ import { categories } from "@/Data/categories";
 import CategoryCard from "./CategoryCard";
 
 export default function CategorySection() {
-  if (categories.length === 0) {c
+  if (categories.length === 0) {
     return null;
   }
 

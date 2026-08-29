@@ -11,9 +11,9 @@ export default function ProductCard({ product }: ProductCardProps) {
     const { images, name, rating, reviewCount } = product;
 
     return (
-        <div className="bg-gray-100 rounded-lg p-4 flex flex-col justify-between">
+        <div className="bg-gray-100 rounded-lg p-4 flex flex-col justify-between h-110 border border-gray-300">
             <div className="flex justify-center mb-5">
-                <Image width={180} height={200} src={images[0]} alt={name} />
+                <Image className="w-48 min-h-48 h-full max-h-56" width={200} height={200} src={images[0]} alt={name} />
             </div>
             <div className="flex flex-col gap-3">
                 <h3 className="text-xl">{name}</h3>
