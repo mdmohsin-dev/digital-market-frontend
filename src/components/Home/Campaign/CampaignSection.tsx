@@ -1,5 +1,5 @@
-import { getCampaigns } from "@/services/campaign.service";
 import { filterVisibleCampaigns } from "@/lib/campaign-filters";
+import { getCampaigns } from "@/services/campaign.service";
 import CampaignCard from "./CampaignCard";
 
 // Server Component: fetches via the service layer (mock today, real API later)
@@ -11,9 +11,12 @@ export default async function CampaignSection() {
   if (visibleCampaigns.length === 0) return null;
 
   return (
-    <section className="">
-      <div className="mx-auto max-w-7xl px-4">
-        <h2 className="mb-6 text-2xl font-bold text-white">Current Campaigns</h2>
+    <section className="mt-32">
+      <div className="mx-auto max-w-350">
+        <div className="max-w-3xl mx-auto text-center mb-10">
+          <h2 className="mb-4 text-2xl lg:text-4xl font-bold text-black">Don’t Miss Out</h2>
+          <p>Discover our latest collections, seasonal highlights, and exclusive offers, thoughtfully curated to bring you fresh styles and exciting finds. Explore each campaign and find something made for you.</p>
+        </div>
 
         {/* Mobile: 1 col. Tablet & desktop: 2 side-by-side. */}
         <div className="grid grid-cols-1 gap-6 sm:grid-cols-2">

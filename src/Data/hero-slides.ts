@@ -1,6 +1,6 @@
 import { HeroSlide } from "@/types/sliderTypes";
 
-import slider1 from "@/assets/Images/slider5.png"
+import slider1 from "@/assets/Images/slider/slider1.png"
 import slider2 from "@/assets/Images/slider1.png"
 import slider3 from "@/assets/Images/slider3.png"
 

@@ -1,10 +1,10 @@
 "use client";
 
-import Link from "next/link";
-import { useRef, useState } from "react";
 import {
     ChevronDown, Heart, Menu, Search, ShoppingCart, Tag, User, X,
 } from "lucide-react";
+import Link from "next/link";
+import { useRef, useState } from "react";
 
 import brandLogo from "@/assets/Images/brandLogo.png";
 import Image from "next/image";
@@ -103,9 +103,9 @@ export default function PublicNavbar() {
         // so the dropdown's z-index is always compared against its own
         // siblings only, never fighting with unrelated z-index values
         // elsewhere on the page.
-        <header className="relative  isolate z-30 w-full mt-8 bg-background">
+        <header className="relative  isolate z-30 w-full mt-8 bg-white">
             {/* Top bar */}
-            <div className="mx-auto grid max-w-7xl grid-cols-[auto_minmax(0,1fr)] items-center gap-4 px-4 py-3 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-24 lg:py-4">
+            <div className="mx-auto grid max-w-350 grid-cols-[auto_minmax(0,1fr)] items-center gap-4 px-4 py-3 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-24 lg:py-4">
                 {/* Logo */}
                 <Link href="/" className="flex shrink-0 items-center gap-2">
                    <Image width={160} height={160} alt="kalni" src={brandLogo}/>
@@ -157,14 +157,14 @@ export default function PublicNavbar() {
             </div>
 
             {/* Search (mobile) */}
-            <div className="mx-auto max-w-7xl px-4 pb-3 lg:hidden">
+            <div className="mx-auto max-w-350 px-4 pb-3 lg:hidden">
                 <SearchBar className="w-full" />
             </div>
 
             {/* Bottom nav (desktop) */}
             <div className="sticky top-10">
                 <div className="relative  z-20 hidden border-t border-gray-300 lg:block">
-                <nav className="mx-auto flex max-w-7xl items-center gap-16 px-4 py-3">
+                <nav className="mx-auto flex max-w-350 items-center gap-16 px-4 py-3">
                     <ul className="flex w-full items-center justify-between">
                         {/* All Categories dropdown */}
                         <li
@@ -237,7 +237,7 @@ export default function PublicNavbar() {
             {/* Mobile menu */}
             {open && (
                 <div className="relative z-20 border-t border-border lg:hidden">
-                    <nav className="mx-auto max-w-7xl px-4 py-3">
+                    <nav className="mx-auto max-w-350 px-4 py-3">
                         <div className="mb-2 flex items-center justify-between">
                             <span className="text-sm font-semibold text-foreground">
                                 Menu
