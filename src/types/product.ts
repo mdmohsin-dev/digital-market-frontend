@@ -1,31 +1,66 @@
-// src/types/product.ts
+import { StaticImageData } from "next/image";
 
-export type ProductBadge = "NEW" | "SALE" | "HOT";
+export interface ProductReview {
+  id: string;
+  userName: string;
+  rating: number;
+  comment: string;
+  date: string;
+}
 
-export type ProductStatus = "in_stock" | "low_stock" | "out_of_stock";
+export interface ProductVariation {
+  id: string;
+  size?: string;
+  color?: string;
+  price: number;
+  salePrice?: number;
+  stock: number;
+  image: string;
+}
 
-/**
- * Mirrors the product structure expected from the future
- * Express + Prisma + PostgreSQL API. Swapping mock data for a real
- * fetch later should not require changes to this shape.
- */
 export interface Product {
   id: string;
   name: string;
   slug: string;
-  sku: string;
-  shortDescription?: string;
+
+  // Images
+  images: (string|StaticImageData)[];
+
+  // Category
+  category: string;
+  subcategory: string;
+
+  // Pricing
   regularPrice: number;
   salePrice?: number;
-  images: string[];
-  category: string;
-  brand?: string;
-  tags?: string[];
-  stockQuantity: number;
-  status: ProductStatus;
+  discount?: number;
+
+  // Rating & Reviews
   rating: number;
   reviewCount: number;
-  featured: boolean;
-  colors?: string[];
-  badge?: ProductBadge;
+  reviews: ProductReview[];
+
+  // Stock
+  stock: number;
+
+  // Variations
+  variations?: ProductVariation[];
+
+  // Product Information
+  description: string;
+
+  specifications: {
+    [key: string]: string;
+  };
+
+  // Delivery & Return
+  deliveryInformation: string;
+  returnPolicy: string;
+
+  // Related Products
+  relatedProductIds: string[];
+
+  // Homepage / Product flags
+  featured?: boolean;
+  newArrival?: boolean;
 }

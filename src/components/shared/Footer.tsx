@@ -65,9 +65,9 @@ export default function Footer() {
             <Link
               href="/"
               className="inline-block text-2xl font-semibold tracking-tight text-foreground"
-              aria-label="Marchand home"
+              aria-label="Kalni home"
             >
-              MARCHAND
+              Kalni
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
               Discover modern fashion, timeless essentials, and everyday styles
@@ -121,7 +121,7 @@ export default function Footer() {
             <ul className="space-y-3">
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
                 <Mail className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-                <span>support@marchand.com</span>
+                <span>support@kalni.com</span>
               </li>
               <li className="flex items-start gap-3 text-sm text-muted-foreground">
                 <Phone className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
@@ -158,7 +158,7 @@ export default function Footer() {
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-7xl flex-col items-center justify-between gap-4 px-4 py-6 sm:flex-row sm:px-6 lg:px-8">
           <p className="text-xs text-muted-foreground">
-            &copy; 2026 Marchand. All rights reserved.
+            &copy; 2026 Kalni. All rights reserved.
           </p>
           <div className="flex flex-wrap items-center justify-center gap-6">
             <Link

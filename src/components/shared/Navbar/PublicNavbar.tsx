@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useRef, useState } from "react";
 import {
     ChevronDown, Heart, Menu, Search, ShoppingCart, Tag, User, X,
@@ -9,22 +10,22 @@ import brandLogo from "@/assets/Images/brandLogo.png";
 import Image from "next/image";
 
 const navItems = [
-    "Home",
-    "Popular Categories",
-    "Product section",
-    "Newsletter",
-    "Contact Us",
+    { label: "Home", href: "/" },
+    { label: "All Products", href: "/shop" },
+    { label: "Product section", href: "/products" },
+    { label: "Newsletter", href: "/newsletter" },
+    { label: "Contact Us", href: "/contact" },
 ];
 
 const categoryItems = [
-    { label: "Electronics", href: "#" },
-    { label: "Fashion", href: "#" },
-    { label: "Home & Living", href: "#" },
-    { label: "Beauty & Health", href: "#" },
-    { label: "Sports & Outdoors", href: "#" },
-    { label: "Toys & Kids", href: "#" },
-    { label: "Groceries", href: "#" },
-    { label: "Automotive", href: "#" },
+    { label: "Electronics", href: "/categories/electronics" },
+    { label: "Fashion", href: "/categories/fashion" },
+    { label: "Home & Living", href: "/categories/home-living" },
+    { label: "Beauty & Health", href: "/categories/beauty-health" },
+    { label: "Sports & Outdoors", href: "/categories/sports-outdoors" },
+    { label: "Toys & Kids", href: "/categories/toys-kids" },
+    { label: "Groceries", href: "/categories/groceries" },
+    { label: "Automotive", href: "/categories/automotive" },
 ];
 
 function IconWithCount({
@@ -53,7 +54,7 @@ function IconWithCount({
 function SearchBar({ className = "" }: { className?: string }) {
     return (
         <form
-            className={`flex h-11 items-center rounded-md border border-border bg-background focus-within:border-brand ${className}`}
+            className={`flex h-11 items-center rounded-md border border-gray-300 bg-background focus-within:border-brand ${className}`}
             role="search"
         >
             <Search size={18} className="ml-3 shrink-0 text-muted-foreground" />
@@ -106,21 +107,21 @@ export default function PublicNavbar() {
             {/* Top bar */}
             <div className="mx-auto grid max-w-7xl grid-cols-[auto_minmax(0,1fr)] items-center gap-4 px-4 py-3 lg:grid-cols-[auto_minmax(0,1fr)_auto] lg:gap-24 lg:py-4">
                 {/* Logo */}
-                <a href="/" className="flex shrink-0 items-center gap-2">
+                <Link href="/" className="flex shrink-0 items-center gap-2">
                    <Image width={160} height={160} alt="kalni" src={brandLogo}/>
-                </a>
+                </Link>
 
                 {/* Search (desktop) */}
                 <SearchBar className="hidden lg:flex" />
 
                 {/* Actions */}
                 <div className="flex min-w-0 items-center justify-end gap-4 sm:gap-6">
-                    <a
+                    <Link
                         href="/login"
                         className="hidden shrink-0 items-center gap-2 sm:flex"
                     >
                         <User size={22} className="text-muted-foreground" />
-                    </a>
+                    </Link>
 
                     <div className="hidden shrink-0 items-center gap-6 sm:flex">
                         <IconWithCount count={0} label="Wishlist">
@@ -162,7 +163,7 @@ export default function PublicNavbar() {
 
             {/* Bottom nav (desktop) */}
             <div className="sticky top-10">
-                <div className="relative  z-20 hidden border-t border-border lg:block">
+                <div className="relative  z-20 hidden border-t border-gray-300 lg:block">
                 <nav className="mx-auto flex max-w-7xl items-center gap-16 px-4 py-3">
                     <ul className="flex w-full items-center justify-between">
                         {/* All Categories dropdown */}
@@ -199,12 +200,12 @@ export default function PublicNavbar() {
                                         <ul className="space-y-1">
                                             {categoryItems.map((cat) => (
                                                 <li key={cat.label}>
-                                                    <a
+                                                    <Link
                                                         href={cat.href}
                                                         className="block rounded-md px-3 py-2 text-sm text-foreground transition-colors hover:bg-muted hover:text-brand"
                                                     >
                                                         {cat.label}
-                                                    </a>
+                                                    </Link>
                                                 </li>
                                             ))}
                                         </ul>
@@ -213,14 +214,14 @@ export default function PublicNavbar() {
                             )}
                         </li>
 
-                        {navItems.map((label) => (
-                            <li key={label} className="relative z-0">
-                                <a
-                                    href="#"
+                        {navItems.map((item) => (
+                            <li key={item.label} className="relative z-0">
+                                <Link
+                                    href={item.href}
                                     className="flex items-center gap-1 whitespace-nowrap text-sm font-medium text-foreground transition-colors hover:text-brand"
                                 >
-                                    {label}
-                                </a>
+                                    {item.label}
+                                </Link>
                             </li>
                         ))}
                     </ul>
@@ -270,36 +271,38 @@ export default function PublicNavbar() {
                                     <ul className="pb-2 pl-3">
                                         {categoryItems.map((cat) => (
                                             <li key={cat.label}>
-                                                <a
+                                                <Link
                                                     href={cat.href}
                                                     className="block py-2 text-sm text-muted-foreground transition-colors hover:text-brand"
                                                 >
                                                     {cat.label}
-                                                </a>
+                                                </Link>
                                             </li>
                                         ))}
                                     </ul>
                                 )}
                             </li>
 
-                            {navItems.map((label) => (
-                                <li key={label}>
-                                    <a
-                                        href="#"
+                            {navItems.map((item) => (
+                                <li key={item.label}>
+                                    <Link
+                                        href={item.href}
+                                        onClick={() => setOpen(false)}
                                         className="flex items-center justify-between py-3 text-sm font-medium text-foreground"
                                     >
-                                        {label}
-                                    </a>
+                                        {item.label}
+                                    </Link>
                                 </li>
                             ))}
                         </ul>
-                        <a
+                        <Link
                             href="/login"
+                            onClick={() => setOpen(false)}
                             className="mt-3 flex items-center gap-2 text-sm font-medium text-foreground sm:hidden"
                         >
                             <User size={18} className="text-muted-foreground" /> Login /
                             Account
-                        </a>
+                        </Link>
                         <div className="mt-3 flex items-center gap-2 text-sm font-semibold text-foreground">
                             <Tag size={16} className="text-badge" />
                             $20 Off Your First Order

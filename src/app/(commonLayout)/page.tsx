@@ -2,7 +2,6 @@ import CampaignSection from "@/components/Home/Campaign/CampaignSection";
 import CategorySection from "@/components/Home/categories/CategorySection";
 import Hero from "@/components/Home/Hero/Hero";
 import NewsletterSection from "@/components/Home/NewsLetterSection";
-import FeaturedProducts from "@/components/Home/products/FeaturedProducts";
 
 export default function Home() {
   return (
@@ -10,7 +9,6 @@ export default function Home() {
     <Hero/>
     <CategorySection/>
     <CampaignSection/>
-    <FeaturedProducts/>
     <NewsletterSection/>
     </>
   );
