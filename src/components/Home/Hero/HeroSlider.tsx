@@ -127,11 +127,11 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                 {/* Left: Text */}
                 <div className="flex w-full flex-col items-start justify-center gap-4 pb-72 sm:max-w-xl sm:pb-80 lg:w-1/2 lg:max-w-2xl lg:pb-0">
 
-                  <h1 className="max-w-xl text-3xl font-bold leading-tight text-gray-900 sm:text-4xl md:text-5xl lg:text-6xl">
+                  <h1 className="max-w-xl text-3xl font-bold leading-tight text-black sm:text-4xl md:text-5xl lg:text-6xl">
                     {slide.heading}
                   </h1>
 
-                  <p className="max-w-xl text-sm leading-relaxed text-gray-600 sm:text-base md:text-lg">
+                  <p className="max-w-xl text-sm leading-relaxed text-gray-800 md:text-lg">
                     {slide.description}
                   </p>
 

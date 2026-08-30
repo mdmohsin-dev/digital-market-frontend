@@ -1,11 +1,11 @@
-// src/components/Footer.tsx
-
 import {
     Mail,
     MapPin,
     Phone,
 } from "lucide-react";
 import Link from "next/link";
+import { BsInstagram } from "react-icons/bs";
+import { FaFacebook, FaWhatsapp } from "react-icons/fa6";
 
 const quickLinks = [
   { label: "Home", href: "/" },
@@ -28,17 +28,17 @@ const socialLinks = [
   {
     label: "Facebook",
     href: "https://facebook.com",
-    icon: 'Facebook',
+    icon: FaFacebook,
   },
   {
     label: "Instagram",
     href: "https://instagram.com",
-    icon: 'Instagram',
+    icon: BsInstagram,
   },
   {
     label: "WhatsApp",
     href: "https://wa.me/0000000000",
-    icon: 'WhatsAppIcon',
+    icon: FaWhatsapp,
   },
 ];
 

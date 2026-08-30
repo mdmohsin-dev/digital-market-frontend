@@ -1,7 +1,11 @@
 "use client";
 
-import { useMemo } from "react";
-import { usePathname, useRouter, useSearchParams } from "next/navigation";
+import { Suspense, useMemo } from "react";
+import {
+  usePathname,
+  useRouter,
+  useSearchParams,
+} from "next/navigation";
 
 import ProductCard from "@/components/Product/ProductCard";
 import { products } from "@/Data/products";
@@ -9,14 +13,21 @@ import { categories } from "@/Data/categories";
 import { ShopFilter } from "@/components/Filter/ShopFilterSection";
 
 export default function ShopPage() {
+  return (
+    <Suspense fallback={<div>Loading...</div>}>
+      <ShopContent />
+    </Suspense>
+  );
+}
+
+function ShopContent() {
   const router = useRouter();
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  /*
+  /**
    * URL is the single source of truth.
    */
-
   const selectedCategories = useMemo(() => {
     const value = searchParams.get("category");
 
@@ -29,14 +40,14 @@ export default function ShopPage() {
     return value ? value.split(",").filter(Boolean) : [];
   }, [searchParams]);
 
-  /*
+  /**
    * Update only the URL.
    * No useEffect.
    * No state -> URL loop.
    */
   const updateUrl = (
     categoryIds: string[],
-    subcategoryIds: string[]
+    subcategoryIds: string[],
   ) => {
     const params = new URLSearchParams(searchParams.toString());
 
@@ -47,10 +58,7 @@ export default function ShopPage() {
     }
 
     if (subcategoryIds.length > 0) {
-      params.set(
-        "subcategory",
-        subcategoryIds.join(",")
-      );
+      params.set("subcategory", subcategoryIds.join(","));
     } else {
       params.delete("subcategory");
     }
@@ -61,57 +69,51 @@ export default function ShopPage() {
       query ? `${pathname}?${query}` : pathname,
       {
         scroll: false,
-      }
+      },
     );
   };
 
-  /*
+  /**
    * Category change
    */
   const handleCategoryChange = (categoryIds: string[]) => {
-    updateUrl(
-      categoryIds,
-      selectedSubcategories
-    );
+    updateUrl(categoryIds, selectedSubcategories);
   };
 
-  /*
+  /**
    * Subcategory change
    */
   const handleSubcategoryChange = (
-    subcategoryIds: string[]
+    subcategoryIds: string[],
   ) => {
-    updateUrl(
-      selectedCategories,
-      subcategoryIds
-    );
+    updateUrl(selectedCategories, subcategoryIds);
   };
 
-  /*
+  /**
    * Product filtering
    */
   const filteredProducts = useMemo(() => {
-  return products.filter((product) => {
-    const categoryMatch =
-      selectedCategories.length > 0 &&
-      selectedCategories.includes(product.category);
+    return products.filter((product) => {
+      const categoryMatch =
+        selectedCategories.length > 0 &&
+        selectedCategories.includes(product.category);
 
-    const subcategoryMatch =
-      selectedSubcategories.length > 0 &&
-      selectedSubcategories.includes(product.subcategory);
+      const subcategoryMatch =
+        selectedSubcategories.length > 0 &&
+        selectedSubcategories.includes(product.subcategory);
 
-    // No filter selected
-    if (
-      selectedCategories.length === 0 &&
-      selectedSubcategories.length === 0
-    ) {
-      return true;
-    }
+      // No filter selected
+      if (
+        selectedCategories.length === 0 &&
+        selectedSubcategories.length === 0
+      ) {
+        return true;
+      }
 
-    // Any selected filter matches
-    return categoryMatch || subcategoryMatch;
-  });
-}, [selectedCategories, selectedSubcategories]);
+      // Any selected filter matches
+      return categoryMatch || subcategoryMatch;
+    });
+  }, [selectedCategories, selectedSubcategories]);
 
   return (
     <div className="mx-auto flex max-w-350 gap-8">
