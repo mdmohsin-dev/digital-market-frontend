@@ -20,6 +20,7 @@ import "swiper/css";
 import "swiper/css/effect-fade";
 import "swiper/css/navigation";
 import "swiper/css/pagination";
+import { IoIosArrowBack, IoIosArrowForward } from "react-icons/io";
 
 type HeroSliderProps = {
   slides: HeroSlide[];
@@ -181,46 +182,18 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
       <button
         type="button"
         aria-label="Previous slide"
-        className="hero-swiper-prev absolute left-3 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-gray-300 bg-white/80 p-2.5 text-gray-800 opacity-0 shadow-sm backdrop-blur-sm transition-all hover:bg-white group-hover:opacity-100 focus-visible:opacity-100 sm:left-5 sm:block"
+        className="hero-swiper-prev absolute left-3 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-primary bg-primary text-white hover:text-primary p-2.5 opacity-0 shadow-sm backdrop-blur-sm transition-all hover:bg-transparent group-hover:opacity-100 focus-visible:opacity-100 sm:left-5 sm:block"
       >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path
-            d="M15 18l-6-6 6-6"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        
+        <IoIosArrowBack size={25}/>
       </button>
 
       {/* Next Button */}
       <button
         type="button"
         aria-label="Next slide"
-        className="hero-swiper-next absolute right-3 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-gray-300 bg-white/80 p-2.5 text-gray-800 opacity-0 shadow-sm backdrop-blur-sm transition-all hover:bg-white group-hover:opacity-100 focus-visible:opacity-100 sm:right-5 sm:block"
-      >
-        <svg
-          width="20"
-          height="20"
-          viewBox="0 0 24 24"
-          fill="none"
-          aria-hidden="true"
-        >
-          <path
-            d="M9 18l6-6-6-6"
-            stroke="currentColor"
-            strokeWidth="2"
-            strokeLinecap="round"
-            strokeLinejoin="round"
-          />
-        </svg>
+        className="hero-swiper-next absolute right-3 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-primary bg-primary hover:bg-transparent hover:text-primary p-2.5 text-white opacity-0 shadow-sm backdrop-blur-sm transition-all group-hover:opacity-100 focus-visible:opacity-100 sm:right-5 sm:block">
+        <IoIosArrowForward size={25}/>
       </button>
 
       {/* Pagination */}

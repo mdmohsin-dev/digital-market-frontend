@@ -9,7 +9,7 @@ export default function NewsletterSection() {
   return (
     <section
       aria-label="Newsletter"
-      className=" bg-[#f9f7f4]"
+      className=" bg-[#f9f7f4] max-w-350 mx-auto px-6 rounded-xl"
       style={{
         backgroundImage: `url(${newsletterbg.src})`,
         backgroundSize: "cover",
@@ -17,7 +17,7 @@ export default function NewsletterSection() {
         backgroundRepeat: "no-repeat",
       }}
     >
-      <div className="relative overflow-hidden max-w-350 mx-auto mt-32">
+      <div className="relative overflow-hidden mt-32">
         {/* Newsletter Image */}
         <Image
           src={newsLetterImage.src}
