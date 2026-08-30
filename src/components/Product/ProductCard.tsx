@@ -2,6 +2,7 @@ import { Product } from "@/types/product";
 import Image from "next/image";
 import Link from "next/link";
 import { Star } from "lucide-react";
+import { FaCartPlus } from "react-icons/fa6";
 
 interface ProductCardProps {
     product: Product;
@@ -96,9 +97,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     <button
                         type="button"
                         onClick={handleAddToCart}
-                        className="w-full rounded-md bg-primary p-2 text-white transition-opacity hover:opacity-90"
-                    >
-                        Add to cart
+                        className="w-full flex items-center justify-center gap-2 rounded-md bg-primary p-2 text-white transition-opacity hover:opacity-90"> <FaCartPlus size={24}/> Add to cart
                     </button>
                 </div>
             </div>

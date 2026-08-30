@@ -3,6 +3,7 @@
 import { useState } from "react";
 import Image from "next/image";
 import { Maximize2 } from "lucide-react";
+
 import type { Product } from "@/types/product";
 
 interface ProductImageGalleryProps {
@@ -34,17 +35,20 @@ export default function ProductImageGallery({
                     <button
                         key={`${image}-${index}`}
                         type="button"
-                        onClick={() => setSelectedImage(index)}
-                        className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition ${
-                            selectedImage === index
+                        onClick={() =>
+                            setSelectedImage(index)
+                        }
+                        className={`relative h-20 w-20 shrink-0 overflow-hidden rounded-lg border-2 transition ${selectedImage === index
                                 ? "border-black"
                                 : "border-gray-200 hover:border-gray-400"
-                        }`}
-                        aria-label={`View product image ${index + 1}`}
+                            }`}
+                        aria-label={`View product image ${index + 1
+                            }`}
                     >
                         <Image
                             src={image}
-                            alt={`${product.name} ${index + 1}`}
+                            alt={`${product.name} ${index + 1
+                                }`}
                             fill
                             className="object-contain"
                             sizes="80px"
@@ -64,7 +68,7 @@ export default function ProductImageGallery({
                     sizes="(max-width: 768px) 100vw, 50vw"
                 />
 
-                {/* Fullscreen style button */}
+                {/* Fullscreen Button */}
                 <button
                     type="button"
                     className="absolute right-4 top-4 flex h-10 w-10 items-center justify-center rounded-full bg-white shadow-md transition hover:bg-gray-100"

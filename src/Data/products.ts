@@ -1,5 +1,8 @@
 import { Product } from "@/types/product";
 import blackTShirt from "@/assets/Images/blacktshirt.png"
+import blackTShirtBack from "@/assets/Images/blacktshirtback.png"
+import blueTShirt from "@/assets/Images/bluetshirt.png"
+import yellowTShirt from "@/assets/Images/yellowTShirt.png"
 import shirt1 from "@/assets/Images/shirt1.png"
 import shirt2 from "@/assets/Images/shirt2.png"
 import shirt3 from "@/assets/Images/shirt3.png"
@@ -7,11 +10,13 @@ import shirt3 from "@/assets/Images/shirt3.png"
 export const products: Product[] = [
   {
     id: "prod_001",
-    name: "Premium Cotton Shirt",
-    slug: "premium-cotton-shirt",
+    name: "Premium Cotton T-Shirt",
+    slug: "premium-cotton-tshirt",
     images: [
       blackTShirt,
-      "/images/products/shirt-1-back.jpg",
+      blackTShirtBack,
+      blueTShirt,
+      yellowTShirt
     ],
     category: "men",
     subcategory: "men_shirts",
@@ -26,38 +31,29 @@ export const products: Product[] = [
       {
         id: "var_001",
         size: "S",
-        color: "White",
+        color: "Black",
         price: 2200,
-        salePrice: 1890,
+        salePrice: 1275,
         stock: 8,
-        image: "/images/products/shirt-1.jpg",
+        image: blackTShirt,
       },
       {
         id: "var_002",
         size: "M",
-        color: "White",
+        color: "Blue",
         price: 2200,
-        salePrice: 1890,
+        salePrice: 1590,
         stock: 12,
-        image: "/images/products/shirt-1.jpg",
+        image: blueTShirt,
       },
       {
         id: "var_003",
         size: "L",
-        color: "Black",
+        color: "Yellow",
         price: 2200,
-        salePrice: 1890,
-        stock: 7,
-        image: "/images/products/shirt-1-black.jpg",
-      },
-      {
-        id: "var_004",
-        size: "XL",
-        color: "Blue",
-        price: 2200,
-        salePrice: 1890,
+        salePrice: 1780,
         stock: 5,
-        image: "/images/products/shirt-1-blue.jpg",
+        image: yellowTShirt,
       },
     ],
     description:

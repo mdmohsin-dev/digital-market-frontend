@@ -15,7 +15,7 @@ export interface ProductVariation {
   price: number;
   salePrice?: number;
   stock: number;
-  image: string;
+  image: string | StaticImageData;
 }
 
 export interface Product {
