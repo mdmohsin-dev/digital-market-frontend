@@ -63,4 +63,5 @@ export interface Product {
   // Homepage / Product flags
   featured?: boolean;
   newArrival?: boolean;
+  bestSelling?: boolean;
 }

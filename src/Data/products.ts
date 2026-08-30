@@ -330,6 +330,7 @@ export const products: Product[] = [
     relatedProductIds: ["prod_003", "prod_005", "prod_009"],
     featured: true,
     newArrival: true,
+    bestSelling:true
   },
 
   {
@@ -502,6 +503,7 @@ export const products: Product[] = [
     relatedProductIds: ["prod_005", "prod_007", "prod_011"],
     featured: false,
     newArrival: true,
+    bestSelling:true
   },
 
   {
@@ -674,6 +676,7 @@ export const products: Product[] = [
     relatedProductIds: ["prod_007", "prod_009", "prod_014"],
     featured: false,
     newArrival: true,
+    bestSelling:true
   },
 
   {
@@ -846,6 +849,7 @@ export const products: Product[] = [
     relatedProductIds: ["prod_007", "prod_009", "prod_011"],
     featured: true,
     newArrival: true,
+    bestSelling:true,
   },
 
 
@@ -1001,5 +1005,6 @@ export const products: Product[] = [
     relatedProductIds: ["prod_001", "prod_005", "prod_013"],
     featured: false,
     newArrival: false,
+    bestSelling:true
   },
 ];
