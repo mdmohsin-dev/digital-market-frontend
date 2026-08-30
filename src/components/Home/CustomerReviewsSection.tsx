@@ -72,7 +72,7 @@ export default function CustomerReviewsSection() {
                                                 key={index}
                                                 className={`h-4 w-4 ${
                                                     index < review.rating
-                                                        ? "fill-primary text-primary"
+                                                        ? "fill-yellow-400 text-yellow-400"
                                                         : "text-gray-300"
                                                 }`}
                                             />
