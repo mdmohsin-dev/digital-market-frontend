@@ -44,9 +44,9 @@ export default function BestSellingSection() {
 
                 <Link
                     href="/shop"
-                    className="text-sm font-medium underline underline-offset-4 transition-opacity hover:opacity-60"
-                >
+                    className="text-sm flex items-center gap-1 font-medium underline underline-offset-4 transition-opacity hover:opacity-60">
                     View All
+                    <ChevronRight size={20}/>
                 </Link>
             </div>
 

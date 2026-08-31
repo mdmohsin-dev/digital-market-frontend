@@ -35,7 +35,7 @@ export default function NewArrivalsSection() {
     return (
         <section className="mx-auto mt-32 max-w-350 px-4 sm:px-6 lg:px-8">
             {/* Header */}
-            <div className="mb-4 flex items-end justify-between sm:mb-10">
+            <div className="mb-4 flex items-end justify-between sm:mb-6">
                 <div>
                     <h2 className="text-2xl font-semibold sm:text-4xl">
                         New Arrivals
@@ -44,9 +44,9 @@ export default function NewArrivalsSection() {
 
                 <Link
                     href="/shop"
-                    className="text-sm font-medium underline underline-offset-4 transition-opacity hover:opacity-60"
-                >
+                    className="text-sm flex items-center gap-1 font-medium underline underline-offset-4 transition-opacity hover:opacity-60" >
                     View All
+                    <ChevronRight size={20}/>
                 </Link>
             </div>
 

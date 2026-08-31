@@ -56,7 +56,7 @@ export default function FlashSaleSection({
     return (
         <section
             aria-labelledby="flash-sale-title"
-            className="py-12 sm:py-16"
+            className="mt-32"
         >
             <div className="mx-auto max-w-350 px-4 sm:px-6 lg:px-8">
                 {/* Header */}
@@ -88,9 +88,9 @@ export default function FlashSaleSection({
                     {/* View All */}
                     <Link
                         href="/flash-sale"
-                        className="shrink-0 text-sm font-medium text-primary underline-offset-4 hover:underline"
-                    >
+                        className="shrink-0 text-sm flex items-center gap-1 font-medium text-primary underline-offset-4">
                         View All Flash Sale
+                        <ChevronRight size={20}/>
                     </Link>
                 </div>
 

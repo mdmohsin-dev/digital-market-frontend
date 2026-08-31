@@ -30,7 +30,7 @@ export default function FlashSaleCard({
     const image = product.images?.[0];
 
     return (
-        <article className="group overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-md">
+        <article className="group overflow-hidden rounded-lg border border-gray-200 transition-shadow hover:shadow-md">
             {/* Product Image */}
             <Link
                 href={`/shop/${product.slug}`}

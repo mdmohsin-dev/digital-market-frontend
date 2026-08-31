@@ -25,25 +25,28 @@ function ShopContent() {
   const pathname = usePathname();
   const searchParams = useSearchParams();
 
-  /**
+  /*
    * URL is the single source of truth.
    */
+
   const selectedCategories = useMemo(() => {
     const value = searchParams.get("category");
 
-    return value ? value.split(",").filter(Boolean) : [];
+    return value
+      ? value.split(",").filter(Boolean)
+      : [];
   }, [searchParams]);
 
   const selectedSubcategories = useMemo(() => {
     const value = searchParams.get("subcategory");
 
-    return value ? value.split(",").filter(Boolean) : [];
+    return value
+      ? value.split(",").filter(Boolean)
+      : [];
   }, [searchParams]);
 
-  /**
-   * Update only the URL.
-   * No useEffect.
-   * No state -> URL loop.
+  /*
+   * Update URL
    */
   const updateUrl = (
     categoryIds: string[],
@@ -58,7 +61,10 @@ function ShopContent() {
     }
 
     if (subcategoryIds.length > 0) {
-      params.set("subcategory", subcategoryIds.join(","));
+      params.set(
+        "subcategory",
+        subcategoryIds.join(","),
+      );
     } else {
       params.delete("subcategory");
     }
@@ -73,60 +79,160 @@ function ShopContent() {
     );
   };
 
-  /**
+  /*
    * Category change
    */
-  const handleCategoryChange = (categoryIds: string[]) => {
-    updateUrl(categoryIds, selectedSubcategories);
+  const handleCategoryChange = (
+    categoryIds: string[],
+  ) => {
+
+    updateUrl(
+      categoryIds,
+      selectedSubcategories,
+    );
   };
 
-  /**
-   * Subcategory change
-   */
+
+
   const handleSubcategoryChange = (
     subcategoryIds: string[],
   ) => {
-    updateUrl(selectedCategories, subcategoryIds);
+    updateUrl(
+      selectedCategories,
+      subcategoryIds,
+    );
   };
 
-  /**
+  /*
    * Product filtering
    */
   const filteredProducts = useMemo(() => {
+    /*
+     * No filters selected
+     */
+    if (
+      selectedCategories.length === 0 &&
+      selectedSubcategories.length === 0
+    ) {
+      return products;
+    }
+
+
+
+
+    const selectedSubcategoriesByCategory =
+      new Map<string, Set<string>>();
+
+    for (const subcategoryId of selectedSubcategories) {
+      for (const category of categories) {
+        const subcategory =
+          category.subcategories.find(
+            (sub) => sub.id === subcategoryId,
+          );
+
+        if (subcategory) {
+          if (
+            !selectedSubcategoriesByCategory.has(
+              category.id,
+            )
+          ) {
+            selectedSubcategoriesByCategory.set(
+              category.id,
+              new Set(),
+            );
+          }
+
+          selectedSubcategoriesByCategory
+            .get(category.id)!
+            .add(subcategoryId);
+
+          break;
+        }
+      }
+    }
+
     return products.filter((product) => {
-      const categoryMatch =
-        selectedCategories.length > 0 &&
-        selectedCategories.includes(product.category);
+      const productCategory = product.category;
+      const productSubcategory =
+        product.subcategory;
 
-      const subcategoryMatch =
-        selectedSubcategories.length > 0 &&
-        selectedSubcategories.includes(product.subcategory);
 
-      // No filter selected
+
       if (
         selectedCategories.length === 0 &&
-        selectedSubcategories.length === 0
+        selectedSubcategories.length > 0
       ) {
-        return true;
+        return selectedSubcategories.includes(
+          productSubcategory,
+        );
       }
 
-      // Any selected filter matches
-      return categoryMatch || subcategoryMatch;
+
+      const selectedSubcategoriesForProductCategory =
+        selectedSubcategoriesByCategory.get(
+          productCategory,
+        );
+
+      if (
+        selectedCategories.includes(
+          productCategory,
+        )
+      ) {
+
+        if (
+          !selectedSubcategoriesForProductCategory ||
+          selectedSubcategoriesForProductCategory.size ===
+          0
+        ) {
+          return true;
+        }
+
+
+
+        return selectedSubcategoriesForProductCategory.has(
+          productSubcategory,
+        );
+      }
+
+
+
+      if (
+        selectedSubcategoriesByCategory.has(
+          productCategory,
+        )
+      ) {
+        return selectedSubcategoriesByCategory
+          .get(productCategory)!
+          .has(productSubcategory);
+      }
+
+      return false;
     });
-  }, [selectedCategories, selectedSubcategories]);
+  }, [
+    selectedCategories,
+    selectedSubcategories,
+  ]);
 
   return (
     <div className="mx-auto flex max-w-350 gap-8">
       {/* Filter */}
+
       <ShopFilter
         categories={categories}
         selectedCategories={selectedCategories}
-        selectedSubcategories={selectedSubcategories}
-        onCategoryChange={handleCategoryChange}
-        onSubcategoryChange={handleSubcategoryChange}
+        selectedSubcategories={
+          selectedSubcategories
+        }
+        onCategoryChange={
+          handleCategoryChange
+        }
+        onSubcategoryChange={
+          handleSubcategoryChange
+        }
       />
 
       {/* Products */}
+
       <div className="grid flex-1 grid-cols-2 gap-6 md:grid-cols-3">
         {filteredProducts.map((product) => (
           <ProductCard

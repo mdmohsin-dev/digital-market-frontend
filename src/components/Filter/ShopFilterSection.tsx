@@ -1,7 +1,7 @@
 "use client";
 
 import * as React from "react";
-import { Minus, Plus, SlidersHorizontal } from "lucide-react";
+import { ChevronDown, ChevronUp, SlidersHorizontal } from "lucide-react";
 
 import { Checkbox } from "@/components/ui/checkbox";
 import {
@@ -39,12 +39,28 @@ export function ShopFilter({
   onCategoryChange,
   onSubcategoryChange,
 }: ShopFilterProps) {
+  // By default all categories are collapsed.
+  // defaultExpanded can be used to open specific categories initially.
   const [expanded, setExpanded] = React.useState<Set<string>>(
-    () =>
-      new Set(
-        defaultExpanded ?? categories.map((category) => category.id)
-      )
+    () => new Set(defaultExpanded ?? [])
   );
+
+  // Automatically expand selected main categories.
+  // For example, when a category is selected from the Home page
+  // and the user comes to the Shop page, that category will open.
+  React.useEffect(() => {
+    if (selectedCategories.length === 0) return;
+
+    setExpanded((prev) => {
+      const next = new Set(prev);
+
+      selectedCategories.forEach((categoryId) => {
+        next.add(categoryId);
+      });
+
+      return next;
+    });
+  }, [selectedCategories]);
 
   const toggleExpanded = (id: string) => {
     setExpanded((prev) => {
@@ -58,14 +74,6 @@ export function ShopFilter({
 
       return next;
     });
-  };
-
-  const toggleCategory = (id: string) => {
-    const next = selectedCategories.includes(id)
-      ? selectedCategories.filter((categoryId) => categoryId !== id)
-      : [...selectedCategories, id];
-
-    onCategoryChange(next);
   };
 
   const toggleSubcategory = (id: string) => {
@@ -84,9 +92,6 @@ export function ShopFilter({
   };
 
   const isExpanded = (id: string) => expanded.has(id);
-
-  const isCategorySelected = (id: string) =>
-    selectedCategories.includes(id);
 
   const isSubcategorySelected = (id: string) =>
     selectedSubcategories.includes(id);
@@ -131,67 +136,53 @@ export function ShopFilter({
             open={isExpanded(category.id)}
             onOpenChange={() => toggleExpanded(category.id)}
           >
-            <div className="px-5 py-4">
-              {/* Main category */}
-              <div className="flex items-center justify-between">
-                <label
-                  htmlFor={category.id}
-                  className="flex cursor-pointer items-center gap-3"
-                >
-                  <Checkbox
-                    id={category.id}
-                    checked={isCategorySelected(category.id)}
-                    onCheckedChange={() =>
-                      toggleCategory(category.id)
-                    }
-                    className="border-gray-300 data-[state=checked]:border-primary data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary"
-                  />
+            <div>
+              {/* Main category row */}
+              <CollapsibleTrigger
+                className="flex w-full items-center justify-between px-5 py-4 text-left transition-colors hover:bg-gray-200"
+                aria-label={
+                  isExpanded(category.id)
+                    ? `Collapse ${category.name}`
+                    : `Expand ${category.name}`
+                }
+              >
+                <span className="text-sm font-medium tracking-wide text-foreground">
+                  {category.name}
+                </span>
 
-                  <span className="text-sm font-medium tracking-wide text-foreground">
-                    {category.name}
-                  </span>
-                </label>
-
-                <CollapsibleTrigger
-                  className="flex h-6 w-6 items-center justify-center border border-gray-300 text-muted-foreground transition-colors hover:border-primary/50 hover:text-primary"
-                  aria-label={
-                    isExpanded(category.id)
-                      ? "Collapse"
-                      : "Expand"
-                  }
-                >
-                  {isExpanded(category.id) ? (
-                    <Minus className="h-3 w-3" />
-                  ) : (
-                    <Plus className="h-3 w-3" />
-                  )}
-                </CollapsibleTrigger>
-              </div>
+                {isExpanded(category.id) ? (
+                  <ChevronUp className="h-4 w-4 shrink-0 text-muted-foreground" />
+                ) : (
+                  <ChevronDown className="h-4 w-4 shrink-0 text-muted-foreground" />
+                )}
+              </CollapsibleTrigger>
 
               {/* Subcategories */}
-              <CollapsibleContent className="mt-3 space-y-2.5 overflow-hidden pl-7">
-                {category.subcategories.map((subcategory) => (
-                  <label
-                    key={subcategory.id}
-                    htmlFor={subcategory.id}
-                    className="flex cursor-pointer items-center gap-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
-                  >
-                    <Checkbox
-                      id={subcategory.id}
-                      checked={isSubcategorySelected(
-                        subcategory.id
-                      )}
-                      onCheckedChange={() =>
-                        toggleSubcategory(subcategory.id)
-                      }
-                      className="border-gray-300 data-[state=checked]:border-primary data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary"
-                    />
+              <CollapsibleContent className="px-5 pb-4">
+                <div className="space-y-2.5 pl-2">
+                  {category.subcategories.map((subcategory) => (
+                    <label
+                      key={subcategory.id}
+                      htmlFor={subcategory.id}
+                      className="flex cursor-pointer items-center gap-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    >
+                      <Checkbox
+                        id={subcategory.id}
+                        checked={isSubcategorySelected(
+                          subcategory.id
+                        )}
+                        onCheckedChange={() =>
+                          toggleSubcategory(subcategory.id)
+                        }
+                        className="border-gray-300 data-[state=checked]:border-primary data-[state=checked]:bg-primary/10 data-[state=checked]:text-primary"
+                      />
 
-                    <span className="select-none">
-                      {subcategory.name}
-                    </span>
-                  </label>
-                ))}
+                      <span className="select-none">
+                        {subcategory.name}
+                      </span>
+                    </label>
+                  ))}
+                </div>
               </CollapsibleContent>
             </div>
           </Collapsible>

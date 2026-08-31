@@ -15,6 +15,7 @@ export default function Home() {
     <>
       <Hero />
       <CategorySection />
+      <NewArrivalsSection />
       {activeFlashSale && (
         <FlashSaleSection
           flashSale={
@@ -23,9 +24,9 @@ export default function Home() {
           products={products}
         />
       )}
-      <NewArrivalsSection />
-      <BestSellingSection />
+
       <CampaignSection />
+      <BestSellingSection />
       <CustomerReviewsSection />
       <NewsletterSection />
     </>
