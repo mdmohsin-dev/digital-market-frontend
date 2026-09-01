@@ -40,8 +40,7 @@ export interface Product {
   reviewCount: number;
   reviews: ProductReview[];
 
-  // Stock
-  stock: number;
+  
 
   // Variations
   variations?: ProductVariation[];

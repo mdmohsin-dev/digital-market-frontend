@@ -102,11 +102,9 @@ export default function PublicNavbar() {
                         >
                             <Heart className="h-5 w-5" />
 
-                            {isLoaded && wishlistCount > 0 && (
-                                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] text-primary-foreground">
-                                    {wishlistCount > 99
-                                        ? "99+"
-                                        : wishlistCount}
+                            {isLoaded && (
+                                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] text-white">
+                                    {wishlistCount > 99 ? "99+" : wishlistCount}
                                 </span>
                             )}
                         </Link>

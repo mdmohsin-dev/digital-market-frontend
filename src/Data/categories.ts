@@ -40,7 +40,7 @@ export const categories: Category[] = [
         slug: "pants",
       },
       {
-        id: "men_tshirts",
+        id: "men_t-shirts",
         name: "T-Shirts",
         slug: "t-shirts",
       },

@@ -19,14 +19,12 @@ export const products: Product[] = [
       yellowTShirt
     ],
     category: "men",
-    subcategory: "men_shirts",
+    subcategory: "men_t-shirts",
     regularPrice: 2200,
     salePrice: 1890,
     discount: 14,
     rating: 4.8,
     reviewCount: 124,
-    stock: 32,
-
     variations: [
       {
         id: "var_001",
@@ -39,7 +37,7 @@ export const products: Product[] = [
       },
       {
         id: "var_002",
-        size: "M",
+        size: "S",
         color: "Blue",
         price: 2200,
         salePrice: 1590,
@@ -48,8 +46,26 @@ export const products: Product[] = [
       },
       {
         id: "var_003",
+        size: "M",
+        color: "Chocolet",
+        price: 2200,
+        salePrice: 1590,
+        stock: 12,
+        image: blueTShirt,
+      },
+      {
+        id: "var_004",
         size: "L",
         color: "Yellow",
+        price: 2200,
+        salePrice: 1780,
+        stock: 5,
+        image: yellowTShirt,
+      },
+      {
+        id: "var_005",
+        size: "L",
+        color: "Red",
         price: 2200,
         salePrice: 1780,
         stock: 5,
@@ -103,7 +119,6 @@ export const products: Product[] = [
     discount: 16,
     rating: 3.5,
     reviewCount: 98,
-    stock: 25,
     variations: [
       {
         id: "var_005",
@@ -174,13 +189,12 @@ export const products: Product[] = [
       "/images/products/tshirt-1-back.jpg",
     ],
     category: "men",
-    subcategory: "men_t-shirts",
+    subcategory: "men_shirts",
     regularPrice: 1400,
     salePrice: 1090,
     discount: 22,
     rating: 4.6,
     reviewCount: 156,
-    stock: 45,
     variations: [
       {
         id: "var_008",
@@ -266,7 +280,6 @@ export const products: Product[] = [
     discount: 19,
     rating: 4.5,
     reviewCount: 87,
-    stock: 28,
     variations: [
       {
         id: "var_012",
@@ -344,7 +357,6 @@ export const products: Product[] = [
     discount: 13,
     rating: 4.8,
     reviewCount: 142,
-    stock: 36,
     variations: [
       {
         id: "var_015",
@@ -430,7 +442,6 @@ export const products: Product[] = [
     discount: 14,
     rating: 4.6,
     reviewCount: 73,
-    stock: 30,
     variations: [
       {
         id: "var_019",
@@ -517,7 +528,6 @@ export const products: Product[] = [
     discount: 15,
     rating: 4.9,
     reviewCount: 186,
-    stock: 24,
     variations: [
       {
         id: "var_023",
@@ -603,7 +613,6 @@ export const products: Product[] = [
     discount: 17,
     rating: 4.7,
     reviewCount: 91,
-    stock: 27,
     variations: [
       {
         id: "var_027",
@@ -690,7 +699,6 @@ export const products: Product[] = [
     discount: 15,
     rating: 4.6,
     reviewCount: 68,
-    stock: 22,
     variations: [
       {
         id: "var_031",
@@ -776,7 +784,6 @@ export const products: Product[] = [
     discount: 15,
     rating: 4.8,
     reviewCount: 112,
-    stock: 19,
     variations: [
       {
         id: "var_035",
@@ -864,7 +871,6 @@ export const products: Product[] = [
     discount: 13,
     rating: 4.8,
     reviewCount: 129,
-    stock: 18,
     variations: [
       {
         id: "var_047",
@@ -941,7 +947,6 @@ export const products: Product[] = [
     discount: 17,
     rating: 4.7,
     reviewCount: 76,
-    stock: 34,
     variations: [
       {
         id: "var_050",
