@@ -8,15 +8,23 @@ import {
     ShoppingCart,
 } from "lucide-react";
 import Link from "next/link";
-import { useEffect, useMemo, useState } from "react";
+import {
+    useEffect,
+    useMemo,
+    useState,
+} from "react";
+
 import type { Product } from "@/types/product";
+
 import ProductImageGallery from "./ProductImageGallery";
 import ProductRating from "./ProductRating";
 import ProductTabs from "./ProductTabs";
+
 import {
     isInWishlist,
     toggleWishlist,
 } from "@/lib/wishlist";
+
 import { addToCart } from "@/lib/cart";
 
 interface ProductDetailsProps {
@@ -26,7 +34,8 @@ interface ProductDetailsProps {
 export default function ProductDetails({
     product,
 }: ProductDetailsProps) {
-    const [quantity, setQuantity] = useState(1);
+    const [quantity, setQuantity] =
+        useState(1);
 
     const [selectedColor, setSelectedColor] =
         useState<string | null>(null);
@@ -43,12 +52,12 @@ export default function ProductDetails({
 
     useEffect(() => {
         setIsWishlisted(
-            isInWishlist(product.id)
+            isInWishlist(product.id),
         );
     }, [product.id]);
 
     const handleWishlist = (
-        event: React.MouseEvent<HTMLButtonElement>
+        event: React.MouseEvent<HTMLButtonElement>,
     ) => {
         event.preventDefault();
         event.stopPropagation();
@@ -57,7 +66,9 @@ export default function ProductDetails({
             toggleWishlist(product.id);
 
         setIsWishlisted(
-            updatedWishlist.includes(product.id)
+            updatedWishlist.includes(
+                product.id,
+            ),
         );
     };
 
@@ -65,7 +76,8 @@ export default function ProductDetails({
     // VARIATIONS
     // =========================================================
 
-    const variations = product.variations ?? [];
+    const variations =
+        product.variations ?? [];
 
     // =========================================================
     // AVAILABLE COLORS
@@ -77,15 +89,15 @@ export default function ProductDetails({
                 variations
                     .map(
                         (variation) =>
-                            variation.color
+                            variation.color,
                     )
                     .filter(
                         (
-                            color
+                            color,
                         ): color is string =>
-                            Boolean(color)
-                    )
-            )
+                            Boolean(color),
+                    ),
+            ),
         );
     }, [variations]);
 
@@ -99,15 +111,15 @@ export default function ProductDetails({
                 variations
                     .map(
                         (variation) =>
-                            variation.size
+                            variation.size,
                     )
                     .filter(
                         (
-                            size
+                            size,
                         ): size is string =>
-                            Boolean(size)
-                    )
-            )
+                            Boolean(size),
+                    ),
+            ),
         );
     }, [variations]);
 
@@ -116,7 +128,7 @@ export default function ProductDetails({
     // =========================================================
 
     const isColorCompatible = (
-        color: string
+        color: string,
     ) => {
         if (!selectedSize) {
             return true;
@@ -124,8 +136,9 @@ export default function ProductDetails({
 
         return variations.some(
             (variation) =>
-                variation.size === selectedSize &&
-                variation.color === color
+                variation.size ===
+                selectedSize &&
+                variation.color === color,
         );
     };
 
@@ -133,9 +146,8 @@ export default function ProductDetails({
     // SIZE COMPATIBILITY
     // =========================================================
 
-    // Color কখনো size disable করবে না।
     const isSizeCompatible = (
-        _size: string
+        _size: string,
     ) => {
         return true;
     };
@@ -154,8 +166,10 @@ export default function ProductDetails({
 
         return variations.find(
             (variation) =>
-                variation.size === selectedSize &&
-                variation.color === selectedColor
+                variation.size ===
+                selectedSize &&
+                variation.color ===
+                selectedColor,
         );
     }, [
         variations,
@@ -189,15 +203,12 @@ export default function ProductDetails({
         selectedVariation?.stock ?? 0;
 
     // =========================================================
-    // COLOR SELECT
+    // COLOR CHANGE
     // =========================================================
 
     const handleColorChange = (
-        color: string
+        color: string,
     ) => {
-        // Selected size-এর অধীনে color available
-        // না থাকলে select করা যাবে না।
-
         if (
             selectedSize &&
             !isColorCompatible(color)
@@ -210,25 +221,23 @@ export default function ProductDetails({
     };
 
     // =========================================================
-    // SIZE SELECT
+    // SIZE CHANGE
     // =========================================================
 
     const handleSizeChange = (
-        size: string
+        size: string,
     ) => {
         setSelectedSize(size);
         setQuantity(1);
-
-        // নতুন size-এর অধীনে আগের color না থাকলে
-        // color reset হবে।
 
         if (
             selectedColor &&
             !variations.some(
                 (variation) =>
-                    variation.size === size &&
+                    variation.size ===
+                    size &&
                     variation.color ===
-                        selectedColor
+                    selectedColor,
             )
         ) {
             setSelectedColor(null);
@@ -246,7 +255,7 @@ export default function ProductDetails({
         ) {
             setQuantity(
                 (previous) =>
-                    previous + 1
+                    previous + 1,
             );
         }
     };
@@ -255,7 +264,7 @@ export default function ProductDetails({
         if (quantity > 1) {
             setQuantity(
                 (previous) =>
-                    previous - 1
+                    previous - 1,
             );
         }
     };
@@ -264,72 +273,65 @@ export default function ProductDetails({
     // VALIDATE ADD TO CART
     // =========================================================
 
-    const validateAddToCartSelection = () => {
-        // Product-এর কোনো variation না থাকলে
-        // selection দরকার নেই।
+    const validateAddToCartSelection =
+        () => {
+            // No variation product
+            if (variations.length === 0) {
+                return true;
+            }
 
-        if (variations.length === 0) {
+            // Size missing
+            if (!selectedSize) {
+                alert(
+                    "Please select a size.",
+                );
+
+                return false;
+            }
+
+            // Color missing
+            if (!selectedColor) {
+                alert(
+                    "Please select an available color for the selected size.",
+                );
+
+                return false;
+            }
+
+            // Invalid combination
+            if (!selectedVariation) {
+                alert(
+                    "This size and color combination is unavailable.",
+                );
+
+                return false;
+            }
+
+            // Out of stock
+            if (currentStock <= 0) {
+                alert(
+                    "This product variation is out of stock.",
+                );
+
+                return false;
+            }
+
             return true;
-        }
-
-        // Size required
-
-        if (!selectedSize) {
-            alert(
-                "Please select a size."
-            );
-
-            return false;
-        }
-
-        // Color required
-
-        if (!selectedColor) {
-            alert(
-                "Please select an available color for the selected size."
-            );
-
-            return false;
-        }
-
-        // Valid combination check
-
-        if (!selectedVariation) {
-            alert(
-                "This size and color combination is unavailable."
-            );
-
-            return false;
-        }
-
-        // Stock check
-
-        if (currentStock <= 0) {
-            alert(
-                "This variation is out of stock."
-            );
-
-            return false;
-        }
-
-        return true;
-    };
+        };
 
     // =========================================================
     // ADD TO CART
-    // STEP 2
     // =========================================================
 
     const handleAddToCart = () => {
-        // First validate selection
-
-        if (!validateAddToCartSelection()) {
+        if (
+            !validateAddToCartSelection()
+        ) {
             return;
         }
 
-        // Variation product হলে selected variation
-        // অবশ্যই থাকতে হবে।
-
+        // Variation product হলে
+        // selectedVariation অবশ্যই থাকতে হবে
         if (
             variations.length > 0 &&
             !selectedVariation
@@ -337,34 +339,23 @@ export default function ProductDetails({
             return;
         }
 
-        // =====================================================
-        // CART ITEM
-        // =====================================================
-
         const cartItem = {
             productId: product.id,
-
             name: product.name,
-
+            image:
+                typeof product.images[0] === "string"
+                    ? product.images[0]
+                    : product.images[0].src,
             price: currentPrice,
-
             quantity,
-
-            size: selectedSize ?? "",
-
-            color: selectedColor ?? "",
+            size: selectedSize!,
+            color: selectedColor!,
         };
-
-        // =====================================================
-        // SAVE TO LOCAL STORAGE
-        // =====================================================
 
         addToCart(cartItem);
 
-        // Success message
-
         alert(
-            "Product added to cart."
+            "Product added to cart.",
         );
     };
 
@@ -380,8 +371,8 @@ export default function ProductDetails({
             return;
         }
 
-        // Buy Now-এর actual flow
-        // পরের cart/checkout step-এ implement হবে।
+        // এখন Buy Now শুধু validation করবে।
+        // Checkout flow পরের step-এ হবে।
     };
 
     // =========================================================
@@ -423,22 +414,16 @@ export default function ProductDetails({
             ================================================= */}
 
             <section className="grid gap-10 lg:grid-cols-2 lg:gap-16">
-                {/* =================================================
-                    GALLERY
-                ================================================= */}
+                {/* GALLERY */}
 
                 <ProductImageGallery
                     product={product}
                 />
 
-                {/* =================================================
-                    DETAILS
-                ================================================= */}
+                {/* DETAILS */}
 
                 <div className="flex flex-col">
-                    {/* =================================================
-                        BADGES
-                    ================================================= */}
+                    {/* BADGES */}
 
                     <div className="mb-4 flex items-center gap-2">
                         {product.newArrival && (
@@ -449,7 +434,8 @@ export default function ProductDetails({
 
                         {product.discount !==
                             undefined &&
-                            product.discount > 0 && (
+                            product.discount >
+                            0 && (
                                 <span className="rounded bg-red-100 px-3 py-1 text-xs font-medium text-red-600">
                                     -
                                     {
@@ -460,17 +446,13 @@ export default function ProductDetails({
                             )}
                     </div>
 
-                    {/* =================================================
-                        NAME
-                    ================================================= */}
+                    {/* NAME */}
 
                     <h1 className="text-3xl font-semibold tracking-tight sm:text-4xl">
                         {product.name}
                     </h1>
 
-                    {/* =================================================
-                        RATING + STOCK
-                    ================================================= */}
+                    {/* RATING + STOCK */}
 
                     <div className="mt-4 flex flex-wrap items-center gap-4">
                         <ProductRating
@@ -485,7 +467,7 @@ export default function ProductDetails({
                         <span className="h-4 w-px bg-gray-300" />
 
                         {variations.length ===
-                        0 ? (
+                            0 ? (
                             <span className="flex items-center gap-1.5 text-sm text-green-600">
                                 <Check
                                     size={16}
@@ -512,9 +494,7 @@ export default function ProductDetails({
                         )}
                     </div>
 
-                    {/* =================================================
-                        PRICE
-                    ================================================= */}
+                    {/* PRICE */}
 
                     <div className="mt-6 flex flex-wrap items-center gap-3">
                         <span className="text-3xl font-bold text-red-500">
@@ -524,16 +504,14 @@ export default function ProductDetails({
 
                         {currentRegularPrice >
                             currentPrice && (
-                            <span className="text-lg text-gray-400 line-through">
-                                ৳
-                                {currentRegularPrice.toLocaleString()}
-                            </span>
-                        )}
+                                <span className="text-lg text-gray-400 line-through">
+                                    ৳
+                                    {currentRegularPrice.toLocaleString()}
+                                </span>
+                            )}
                     </div>
 
-                    {/* =================================================
-                        DESCRIPTION
-                    ================================================= */}
+                    {/* DESCRIPTION */}
 
                     <p className="mt-6 leading-7 text-gray-600">
                         {product.description}
@@ -541,9 +519,7 @@ export default function ProductDetails({
 
                     <div className="my-7 border-t border-gray-200" />
 
-                    {/* =================================================
-                        COLOR SELECTION
-                    ================================================= */}
+                    {/* COLOR */}
 
                     {colors.length > 0 && (
                         <div>
@@ -560,7 +536,7 @@ export default function ProductDetails({
 
                                         const isCompatible =
                                             isColorCompatible(
-                                                color
+                                                color,
                                             );
 
                                         return (
@@ -571,12 +547,12 @@ export default function ProductDetails({
                                                 type="button"
                                                 onClick={() =>
                                                     handleColorChange(
-                                                        color
+                                                        color,
                                                     )
                                                 }
                                                 disabled={
                                                     Boolean(
-                                                        selectedSize
+                                                        selectedSize,
                                                     ) &&
                                                     !isCompatible
                                                 }
@@ -587,10 +563,9 @@ export default function ProductDetails({
                                                     py-2.5
                                                     text-sm
                                                     transition
-                                                    ${
-                                                        isSelected
-                                                            ? "border-black bg-black text-white"
-                                                            : isCompatible
+                                                    ${isSelected
+                                                        ? "border-black bg-black text-white"
+                                                        : isCompatible
                                                             ? "border-gray-300 hover:border-black"
                                                             : "cursor-not-allowed border-gray-200 bg-gray-50 text-gray-400 line-through opacity-50"
                                                     }
@@ -601,15 +576,13 @@ export default function ProductDetails({
                                                 }
                                             </button>
                                         );
-                                    }
+                                    },
                                 )}
                             </div>
                         </div>
                     )}
 
-                    {/* =================================================
-                        SIZE SELECTION
-                    ================================================= */}
+                    {/* SIZE */}
 
                     {sizes.length > 0 && (
                         <div className="mt-6">
@@ -626,7 +599,7 @@ export default function ProductDetails({
 
                                         const isCompatible =
                                             isSizeCompatible(
-                                                size
+                                                size,
                                             );
 
                                         return (
@@ -637,7 +610,7 @@ export default function ProductDetails({
                                                 type="button"
                                                 onClick={() =>
                                                     handleSizeChange(
-                                                        size
+                                                        size,
                                                     )
                                                 }
                                                 disabled={
@@ -654,25 +627,24 @@ export default function ProductDetails({
                                                     px-4
                                                     text-sm
                                                     transition
-                                                    ${
-                                                        isSelected
-                                                            ? "border-black bg-black text-white"
-                                                            : "border-gray-300 hover:border-black"
+                                                    ${isSelected
+                                                        ? "border-black bg-black text-white"
+                                                        : "border-gray-300 hover:border-black"
                                                     }
                                                 `}
                                             >
-                                                {size}
+                                                {
+                                                    size
+                                                }
                                             </button>
                                         );
-                                    }
+                                    },
                                 )}
                             </div>
                         </div>
                     )}
 
-                    {/* =================================================
-                        SELECTED VARIATION STOCK
-                    ================================================= */}
+                    {/* SELECTED VARIATION STOCK */}
 
                     {selectedVariation && (
                         <div className="mt-5">
@@ -696,9 +668,7 @@ export default function ProductDetails({
                         </div>
                     )}
 
-                    {/* =================================================
-                        QUANTITY + WISHLIST
-                    ================================================= */}
+                    {/* QUANTITY + WISHLIST */}
 
                     <div className="mt-6">
                         <p className="mb-3 text-sm font-medium">
@@ -706,7 +676,7 @@ export default function ProductDetails({
                         </p>
 
                         <div className="flex items-center gap-3">
-                            {/* Quantity */}
+                            {/* QUANTITY */}
 
                             <div className="flex h-12 w-32 items-center justify-between rounded-md border border-gray-300">
                                 <button
@@ -716,7 +686,7 @@ export default function ProductDetails({
                                     }
                                     disabled={
                                         quantity <=
-                                            1 ||
+                                        1 ||
                                         !selectedVariation
                                     }
                                     className="flex h-full w-10 items-center justify-center text-gray-600 transition hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
@@ -727,9 +697,7 @@ export default function ProductDetails({
                                 </button>
 
                                 <span className="text-sm font-medium">
-                                    {
-                                        quantity
-                                    }
+                                    {quantity}
                                 </span>
 
                                 <button
@@ -740,7 +708,7 @@ export default function ProductDetails({
                                     disabled={
                                         !selectedVariation ||
                                         quantity >=
-                                            currentStock
+                                        currentStock
                                     }
                                     className="flex h-full w-10 items-center justify-center text-gray-600 transition hover:text-black disabled:cursor-not-allowed disabled:opacity-40"
                                 >
@@ -750,7 +718,7 @@ export default function ProductDetails({
                                 </button>
                             </div>
 
-                            {/* Wishlist */}
+                            {/* WISHLIST */}
 
                             <button
                                 type="button"
@@ -769,10 +737,9 @@ export default function ProductDetails({
                                     px-4
                                     font-medium
                                     transition
-                                    ${
-                                        isWishlisted
-                                            ? "border-red-500 bg-red-500 text-white"
-                                            : "border-gray-300 text-gray-700 hover:border-black hover:text-black"
+                                    ${isWishlisted
+                                        ? "border-red-500 bg-red-500 text-white"
+                                        : "border-gray-300 text-gray-700 hover:border-black hover:text-black"
                                     }
                                 `}
                             >
@@ -792,9 +759,7 @@ export default function ProductDetails({
                         </div>
                     </div>
 
-                    {/* =================================================
-                        ADD TO CART + BUY NOW
-                    ================================================= */}
+                    {/* ADD TO CART + BUY NOW */}
 
                     <div className="mt-4 grid grid-cols-2 gap-3">
                         <button
