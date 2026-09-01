@@ -1,26 +1,52 @@
+"use client";
+
 import { Product } from "@/types/product";
 import Image from "next/image";
 import Link from "next/link";
-import { Star } from "lucide-react";
+import { Star, Heart } from "lucide-react";
 import { FaCartPlus } from "react-icons/fa6";
+import { useEffect, useState } from "react";
+import {
+    isInWishlist,
+    toggleWishlist,
+} from "@/lib/wishlist";
 
 interface ProductCardProps {
     product: Product;
 }
 
 export default function ProductCard({ product }: ProductCardProps) {
-    const displayPrice = product.salePrice ?? product.regularPrice;
+    const displayPrice =
+        product.salePrice ?? product.regularPrice;
 
-    const { images, name, rating, reviewCount, slug } = product;
+    const {
+        images,
+        name,
+        rating,
+        reviewCount,
+        slug,
+    } = product;
 
-    const handleAddToCart = (
+
+
+    const [isWishlisted, setIsWishlisted] =
+        useState(false);
+
+    useEffect(() => {
+        setIsWishlisted(isInWishlist(product.id));
+    }, [product.id]);
+
+    const handleWishlist = (
         event: React.MouseEvent<HTMLButtonElement>
     ) => {
         event.preventDefault();
         event.stopPropagation();
 
-        // Add to cart logic এখানে থাকবে
-        console.log("Added to cart:", product.id);
+        const updatedWishlist = toggleWishlist(product.id);
+
+        setIsWishlisted(
+            updatedWishlist.includes(product.id)
+        );
     };
 
     return (
@@ -38,6 +64,27 @@ export default function ProductCard({ product }: ProductCardProps) {
                         src={images[0]}
                         alt={name}
                     />
+
+                    {/* Wishlist */}
+                    <button
+                        type="button"
+                        onClick={handleWishlist}
+                        aria-label={
+                            isWishlisted
+                                ? "Remove from wishlist"
+                                : "Add to wishlist"
+                        }
+                        className="absolute right-3 top-3 z-10 flex h-9 w-9 items-center justify-center rounded-full bg-white shadow-sm transition-colors hover:bg-gray-100"
+                    >
+                        <Heart
+                            size={20}
+                            className={
+                                isWishlisted
+                                    ? "fill-red-500 text-red-500"
+                                    : "text-gray-600"
+                            }
+                        />
+                    </button>
                 </div>
 
                 {/* Product Info */}
@@ -51,41 +98,44 @@ export default function ProductCard({ product }: ProductCardProps) {
                         {/* Rating */}
                         <div className="flex items-center gap-1.5">
                             <div className="flex items-center">
-                                {Array.from({ length: 5 }).map((_, i) => {
-                                    const fillPercent = Math.max(
-                                        0,
-                                        Math.min(
-                                            100,
-                                            (rating - i) * 100
-                                        )
-                                    );
+                                {Array.from({ length: 5 }).map(
+                                    (_, i) => {
+                                        const fillPercent =
+                                            Math.max(
+                                                0,
+                                                Math.min(
+                                                    100,
+                                                    (rating - i) * 100
+                                                )
+                                            );
 
-                                    return (
-                                        <div
-                                            key={i}
-                                            className="relative h-4 w-4"
-                                        >
-                                            {/* Empty Star */}
-                                            <Star
-                                                size={16}
-                                                className="absolute inset-0 fill-gray-200 text-gray-200"
-                                            />
-
-                                            {/* Filled Star */}
+                                        return (
                                             <div
-                                                className="absolute inset-0 overflow-hidden"
-                                                style={{
-                                                    width: `${fillPercent}%`,
-                                                }}
+                                                key={i}
+                                                className="relative h-4 w-4"
                                             >
+                                                {/* Empty Star */}
                                                 <Star
                                                     size={16}
-                                                    className="fill-yellow-400 text-yellow-400"
+                                                    className="absolute inset-0 fill-gray-200 text-gray-200"
                                                 />
+
+                                                {/* Filled Star */}
+                                                <div
+                                                    className="absolute inset-0 overflow-hidden"
+                                                    style={{
+                                                        width: `${fillPercent}%`,
+                                                    }}
+                                                >
+                                                    <Star
+                                                        size={16}
+                                                        className="fill-yellow-400 text-yellow-400"
+                                                    />
+                                                </div>
                                             </div>
-                                        </div>
-                                    );
-                                })}
+                                        );
+                                    }
+                                )}
                             </div>
 
                             <span className="text-sm text-gray-500">
@@ -102,7 +152,6 @@ export default function ProductCard({ product }: ProductCardProps) {
                     {/* Add To Cart */}
                     <button
                         type="button"
-                        onClick={handleAddToCart}
                         className="mt-auto flex w-full items-center justify-center gap-2 rounded-md bg-primary p-2 text-white transition-opacity hover:opacity-90"
                     >
                         <FaCartPlus size={24} />

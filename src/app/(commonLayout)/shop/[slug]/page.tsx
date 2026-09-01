@@ -8,9 +8,7 @@ interface ProductDetailsPageProps {
     }>;
 }
 
-export default async function ProductDetailsPage({
-    params,
-}: ProductDetailsPageProps) {
+export default async function ProductDetailsPage({params,}: ProductDetailsPageProps) {
     const { slug } = await params;
 
     const product = products.find(

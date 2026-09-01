@@ -5,6 +5,7 @@ import {
 } from "lucide-react";
 import Link from "next/link";
 import { useState } from "react";
+import { useWishlist } from "@/hooks/useWishlist";
 
 import brandLogo from "@/assets/Images/brandLogo.png";
 import Image from "next/image";
@@ -64,6 +65,10 @@ function SearchBar({ className = "" }: { className?: string }) {
 
 export default function PublicNavbar() {
     const [open, setOpen] = useState(false);
+    const {
+        wishlistCount,
+        isLoaded,
+    } = useWishlist();
 
     return (
         // relative + isolate => this header gets its own stacking context,
@@ -91,9 +96,20 @@ export default function PublicNavbar() {
                     </Link>
 
                     <div className="hidden shrink-0 items-center gap-6 sm:flex">
-                        <IconWithCount count={0} label="Wishlist">
-                            <Heart size={22} />
-                        </IconWithCount>
+                        <Link
+                            href="/wishlist"
+                            className="relative"
+                        >
+                            <Heart className="h-5 w-5" />
+
+                            {isLoaded && wishlistCount > 0 && (
+                                <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] text-primary-foreground">
+                                    {wishlistCount > 99
+                                        ? "99+"
+                                        : wishlistCount}
+                                </span>
+                            )}
+                        </Link>
 
                     </div>
 

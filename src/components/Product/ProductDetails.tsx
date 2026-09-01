@@ -1,6 +1,6 @@
 "use client";
 
-import { useMemo, useState } from "react";
+import { useEffect, useMemo, useState } from "react";
 import Link from "next/link";
 import {
     Check,
@@ -15,14 +15,11 @@ import type { Product } from "@/types/product";
 import ProductImageGallery from "./ProductImageGallery";
 import ProductRating from "./ProductRating";
 import ProductTabs from "./ProductTabs";
+import { isInWishlist, toggleWishlist } from "@/lib/wishlist";
 
-interface ProductDetailsProps {
-    product: Product;
-}
+interface ProductDetailsProps {product: Product;}
 
-export default function ProductDetails({
-    product,
-}: ProductDetailsProps) {
+export default function ProductDetails({product,}: ProductDetailsProps) {
     const [quantity, setQuantity] = useState(1);
 
     const [selectedColor, setSelectedColor] =
@@ -31,15 +28,30 @@ export default function ProductDetails({
     const [selectedSize, setSelectedSize] =
         useState<string | null>(null);
 
-    const [isWishlisted, setIsWishlisted] =
-        useState(false);
-
+     const [isWishlisted, setIsWishlisted] =
+            useState(false);
+    
+        useEffect(() => {
+            setIsWishlisted(isInWishlist(product.id));
+        }, [product.id]);
+    
+        const handleWishlist = (
+            event: React.MouseEvent<HTMLButtonElement>
+        ) => {
+            event.preventDefault();
+            event.stopPropagation();
+    
+            const updatedWishlist = toggleWishlist(product.id);
+    
+            setIsWishlisted(
+                updatedWishlist.includes(product.id)
+            );
+        };
     const [selectionError, setSelectionError] =
         useState("");
 
-    // =========================
-    // AVAILABLE COLORS
-    // =========================
+
+        //Available Colors
 
     const colors = useMemo(() => {
         return Array.from(
@@ -59,9 +71,9 @@ export default function ProductDetails({
         );
     }, [product.variations]);
 
-    // =========================
+    
     // AVAILABLE SIZES
-    // =========================
+    
 
     const sizes = useMemo(() => {
         return Array.from(
@@ -80,10 +92,8 @@ export default function ProductDetails({
             )
         );
     }, [product.variations]);
-
-    // =========================
+    
     // SELECTED VARIATION
-    // =========================
 
     const selectedVariation = useMemo(() => {
         if (
@@ -105,11 +115,9 @@ export default function ProductDetails({
         selectedColor,
         selectedSize,
     ]);
-
-    // =========================
+    
     // CURRENT PRICE
-    // =========================
-
+    
     const currentPrice =
         selectedVariation?.salePrice ??
         selectedVariation?.price ??
@@ -292,15 +300,6 @@ export default function ProductDetails({
         window.location.href = "/cart";
     };
 
-    // =========================
-    // WISHLIST
-    // =========================
-
-    const handleWishlist = () => {
-        setIsWishlisted(
-            (previous) => !previous
-        );
-    };
 
     return (
         <main className="mx-auto max-w-350 px-4 py-8 sm:px-6 lg:px-8">
