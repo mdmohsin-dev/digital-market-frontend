@@ -9,7 +9,7 @@ export default function NewsletterSection() {
   return (
     <section
       aria-label="Newsletter"
-      className=" bg-[#f9f7f4] max-w-350 mx-auto px-6 rounded-xl mt-32"
+      className=" bg-[#f9f7f4] max-w-350 mx-auto px-8 rounded-xl mt-32 -mb-36 relative z-10"
       style={{
         backgroundImage: `url(${newsletterbg.src})`,
         backgroundSize: "cover",
@@ -21,7 +21,7 @@ export default function NewsletterSection() {
         {/* Newsletter Image */}
         <Image
           src={newsLetterImage.src}
-          width={600}
+          width={500}
           height={500}
           alt=""
           aria-hidden="true"
@@ -30,7 +30,7 @@ export default function NewsletterSection() {
 
         {/* Content */}
         <div className="relative z-10 mx-auto w-full max-w-350">
-          <div className="flex h-auto flex-col justify-center py-14">
+          <div className="flex h-auto flex-col justify-center py-12">
             <div className="w-full max-w-md sm:max-w-lg lg:max-w-xl">
               <div className="flex items-center gap-2 text-xs font-semibold uppercase tracking-widest text-neutral-600">
                 <Mail className="h-4 w-4" aria-hidden="true" />

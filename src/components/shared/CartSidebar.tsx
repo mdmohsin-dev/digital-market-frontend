@@ -259,7 +259,7 @@ export default function CartSidebar({
 
                                             <div className="mt-3 flex items-center gap-3 font-semibold">
 
-                                                <div className="flex items-center rounded-xl px-3 border gap-3">
+                                                <div className="flex items-center rounded-xl px-3 border gap-2">
 
                                                     <button
                                                         type="button"
@@ -274,7 +274,7 @@ export default function CartSidebar({
                                                         <Minus size={14} />
                                                     </button>
 
-                                                    <span className="flex justify-center text-sm font-medium">
+                                                    <span className="flex border-x px-2 justify-center text-sm font-medium">
                                                         {item.quantity}
                                                     </span>
 

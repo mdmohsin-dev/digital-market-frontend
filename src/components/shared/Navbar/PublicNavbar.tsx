@@ -156,16 +156,16 @@ export default function PublicNavbar() {
                         </Link>
 
                         {/* WISHLIST */}
-                        <div className="hidden shrink-0 items-center gap-6 sm:flex">
+                        <div className="hidden items-center gap-6 sm:flex">
                             <Link
                                 href="/wishlist"
                                 className="relative flex flex-col items-center gap-1"
                             >
-                                <Heart className="h-5 w-5" />
+                                <Heart size={22} />
 
                                 {isLoaded &&
                                     wishlistCount > 0 && (
-                                        <span className="absolute -right-2 -top-1 flex h-4 min-w-4 items-center justify-center rounded-full bg-red-500 px-1 text-[9px] text-white">
+                                        <span className="absolute right-1 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-badge px-1 text-[10px] font-semibold text-badge-foreground">
                                             {wishlistCount > 99
                                                 ? "99+"
                                                 : wishlistCount}

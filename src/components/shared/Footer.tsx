@@ -7,6 +7,9 @@ import Link from "next/link";
 import { BsInstagram } from "react-icons/bs";
 import { FaFacebook, FaWhatsapp } from "react-icons/fa6";
 
+import logo from "@/assets/Images/brandLogo.png"
+import Image from "next/image";
+
 const quickLinks = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
@@ -45,8 +48,8 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-    <footer className="bg-background">
-      <div className="mx-auto max-w-350 px-4 py-12 sm:px-6 lg:px-8 lg:py-16">
+   <footer className="bg-[#0B0B0A] text-[#EDEDEA] relative">
+     <div className="mx-auto max-w-350 px-4 pb-12 pt-56 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
           {/* Brand */}
           <div className="space-y-4">
@@ -55,7 +58,12 @@ export default function Footer() {
               className="inline-block text-2xl font-semibold tracking-tight text-foreground"
               aria-label="Kalni home"
             >
-              Kalni
+              <Image
+                            width={160}
+                            height={160}
+                            alt="kalni"
+                            src={logo}
+                        />
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
               Discover modern fashion, timeless essentials, and everyday styles
@@ -144,7 +152,7 @@ export default function Footer() {
 
       {/* Footer Bottom */}
       <div className="border-t border-border">
-        <div className="mx-auto flex max-w-350 flex-col items-center justify-between gap-4 px-4 py-6 sm:flex-row sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-350 flex-col items-center justify-between gap-4 p-4 sm:flex-row sm:px-6 lg:px-8">
           <p className="text-xs text-muted-foreground">
             &copy; 2026 Kalni. All rights reserved.
           </p>
