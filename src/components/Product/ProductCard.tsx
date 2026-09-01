@@ -1,15 +1,15 @@
 "use client";
 
-import { Product } from "@/types/product";
-import Image from "next/image";
-import Link from "next/link";
-import { Star, Heart } from "lucide-react";
-import { FaCartPlus } from "react-icons/fa6";
-import { useEffect, useState } from "react";
 import {
     isInWishlist,
     toggleWishlist,
 } from "@/lib/wishlist";
+import { Product } from "@/types/product";
+import { Heart, Star } from "lucide-react";
+import Image from "next/image";
+import Link from "next/link";
+import { useEffect, useState } from "react";
+import { FaCartPlus } from "react-icons/fa6";
 
 interface ProductCardProps {
     product: Product;

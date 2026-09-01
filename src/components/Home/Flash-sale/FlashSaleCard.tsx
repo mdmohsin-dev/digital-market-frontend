@@ -85,11 +85,11 @@ export default function FlashSaleCard({
                 </div>
 
                 {/* Stock */}
-                {product.stock > 0 && (
+                {/* {product.stock > 0 && (
                     <p className="mt-2 text-xs text-gray-500">
                         {product.stock} left
                     </p>
-                )}
+                )} */}
 
                 {/* Add To Cart */}
                 <button
