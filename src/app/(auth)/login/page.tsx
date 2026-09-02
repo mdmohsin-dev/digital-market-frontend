@@ -3,30 +3,17 @@
 import Link from "next/link";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
-import {
-    Eye,
-    EyeOff,
-    Lock,
-    Mail,
-    ShoppingCart,
-} from "lucide-react";
+import { Eye, EyeOff, Lock, Mail, ShoppingCart, } from "lucide-react";
+import { BsArrowLeft } from "react-icons/bs";
+import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
 
-type LoginFormData = {
-    email: string;
-    password: string;
-    rememberMe: boolean;
-};
+type LoginFormData = { email: string; password: string; rememberMe: boolean; };
 
 export default function LoginPage() {
 
-    console.log('Loign agun thek parni')
     const [showPassword, setShowPassword] = useState(false);
 
-    const {
-        register,
-        handleSubmit,
-        formState: { errors },
-    } = useForm<LoginFormData>({
+    const { register, handleSubmit, formState: { errors }, } = useForm<LoginFormData>({
         defaultValues: {
             email: "",
             password: "",
@@ -43,8 +30,15 @@ export default function LoginPage() {
 
     return (
         <main className="min-h-screen bg-white px-4 py-10 sm:px-6 lg:px-8">
+            <Link
+                href="/"
+                className="absolute left-5 top-5 inline-flex items-center gap-2 text-md font-medium text-gray-600 transition-colors hover:text-gray-950 sm:left-8 sm:top-8"
+            >
+                <BsArrowLeft size={25} />
+                Back
+            </Link>
             <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center">
-                <div className="w-full max-w-[610px] rounded-2xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(0,0,0,0.08)] sm:px-10 sm:py-12 md:px-12">
+                <div className="w-full max-w-[550px] rounded-2xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(0,0,0,0.08)] sm:px-10 sm:py-12 md:px-12">
                     {/* Icon */}
                     <div className="flex justify-center">
                         <div className="flex h-20 w-20 items-center justify-center rounded-full border border-gray-200 bg-gray-50">
@@ -59,7 +53,7 @@ export default function LoginPage() {
                     {/* Heading */}
                     <div className="mt-7 text-center">
                         <h1 className="text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
-                            Welcome Back! to Login page
+                            Welcome Back!
                         </h1>
 
                         <p className="mt-3 text-base text-gray-500 sm:text-lg">
@@ -75,11 +69,10 @@ export default function LoginPage() {
                         {/* Email */}
                         <div>
                             <div
-                                className={`flex h-14 items-center rounded-lg border bg-white px-4 transition-colors ${
-                                    errors.email
-                                        ? "border-red-500"
-                                        : "border-gray-300 focus-within:border-gray-500"
-                                }`}
+                                className={`flex h-14 items-center rounded-lg border bg-white px-4 transition-colors ${errors.email
+                                    ? "border-red-500"
+                                    : "border-gray-300 focus-within:border-gray-500"
+                                    }`}
                             >
                                 <Mail
                                     size={22}
@@ -113,11 +106,10 @@ export default function LoginPage() {
                         {/* Password */}
                         <div>
                             <div
-                                className={`flex h-14 items-center rounded-lg border bg-white px-4 transition-colors ${
-                                    errors.password
-                                        ? "border-red-500"
-                                        : "border-gray-300 focus-within:border-gray-500"
-                                }`}
+                                className={`flex h-14 items-center rounded-lg border bg-white px-4 transition-colors ${errors.password
+                                    ? "border-red-500"
+                                    : "border-gray-300 focus-within:border-gray-500"
+                                    }`}
                             >
                                 <Lock
                                     size={22}
@@ -212,18 +204,9 @@ export default function LoginPage() {
                     </div>
 
                     {/* Social Login */}
-                    <div className="grid grid-cols-3 gap-3">
+                    <div className="w-full flex justify-center">
                         {/* Google */}
-                        <button
-                            type="button"
-                            className="flex h-12 items-center justify-center rounded-lg border border-gray-200 bg-white text-xl font-medium text-gray-900 transition-colors hover:bg-gray-50"
-                            aria-label="Continue with Google"
-                            onClick={() =>
-                                console.log("Google login clicked")
-                            }
-                        >
-                            G
-                        </button>
+                        <GoogleLoginButton />
                     </div>
 
                     {/* Register */}

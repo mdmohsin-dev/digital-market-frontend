@@ -12,6 +12,7 @@ import {
     User,
 } from "lucide-react";
 import { useState } from "react";
+import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
 
 type RegisterFormData = {
     name: string;
@@ -92,11 +93,10 @@ export default function RegisterPage() {
                     {/* Name */}
                     <div>
                         <div
-                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${
-                                errors.name
+                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${errors.name
                                     ? "border-red-500"
                                     : "border-gray-300"
-                            }`}
+                                }`}
                         >
                             <User
                                 size={21}
@@ -129,11 +129,10 @@ export default function RegisterPage() {
                     {/* Email */}
                     <div>
                         <div
-                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${
-                                errors.email
+                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${errors.email
                                     ? "border-red-500"
                                     : "border-gray-300"
-                            }`}
+                                }`}
                         >
                             <Mail
                                 size={21}
@@ -167,11 +166,10 @@ export default function RegisterPage() {
                     {/* Password */}
                     <div>
                         <div
-                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${
-                                errors.password
+                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${errors.password
                                     ? "border-red-500"
                                     : "border-gray-300"
-                            }`}
+                                }`}
                         >
                             <LockKeyhole
                                 size={21}
@@ -227,11 +225,10 @@ export default function RegisterPage() {
                     {/* Confirm Password */}
                     <div>
                         <div
-                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${
-                                errors.confirmPassword
+                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${errors.confirmPassword
                                     ? "border-red-500"
                                     : "border-gray-300"
-                            }`}
+                                }`}
                         >
                             <LockKeyhole
                                 size={21}
@@ -337,34 +334,9 @@ export default function RegisterPage() {
                 </div>
 
                 {/* Social Buttons */}
-                <div className="grid grid-cols-3 gap-3">
-
+                <div className="w-full flex justify-center">
                     {/* Google */}
-                    <button
-                        type="button"
-                        className="flex h-12 items-center justify-center rounded-lg border border-gray-200 bg-white text-xl font-semibold text-black transition-colors hover:bg-gray-50"
-                        aria-label="Continue with Google"
-                    >
-                        G
-                    </button>
-
-                    {/* Apple */}
-                    <button
-                        type="button"
-                        className="flex h-12 items-center justify-center rounded-lg border border-gray-200 bg-white text-xl text-black transition-colors hover:bg-gray-50"
-                        aria-label="Continue with Apple"
-                    >
-                        
-                    </button>
-
-                    {/* Meta */}
-                    <button
-                        type="button"
-                        className="flex h-12 items-center justify-center rounded-lg border border-gray-200 bg-white text-xl font-semibold text-black transition-colors hover:bg-gray-50"
-                        aria-label="Continue with Meta"
-                    >
-                        ∞
-                    </button>
+                    <GoogleLoginButton />
                 </div>
 
                 {/* Login Link */}
