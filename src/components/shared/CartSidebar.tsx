@@ -29,7 +29,6 @@ import {
 
 import { useEffect, useState } from "react";
 import { IoIosClose } from "react-icons/io";
-import { HiArrowLongRight } from "react-icons/hi2";
 import { BsArrowRight } from "react-icons/bs";
 
 interface CartSidebarProps {
