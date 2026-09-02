@@ -134,10 +134,10 @@ export default function CartSidebar({
                     className="relative cursor-pointer flex shrink-0 flex-col items-center gap-1 text-foreground transition-colors hover:text-brand"
                 >
                     <div className="relative">
-                        <ShoppingCart size={22} />
+                        <ShoppingCart size={28} />
 
                         {cartCount > 0 && (
-                            <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-badge px-1 text-[10px] font-semibold text-badge-foreground">
+                            <span className="absolute -right-2 -top-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-badge px-1 text-[10px] font-medium text-badge-foreground">
                                 {cartCount > 99
                                     ? "99+"
                                     : cartCount}
@@ -145,7 +145,7 @@ export default function CartSidebar({
                         )}
                     </div>
 
-                    <span className="text-xs font-semibold text-foreground">
+                    <span className="text-xs font-medium text-foreground">
                         Cart
                     </span>
                 </button>
