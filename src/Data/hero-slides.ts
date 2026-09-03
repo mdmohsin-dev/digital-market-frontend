@@ -31,7 +31,7 @@ export const heroSlides: HeroSlide[] = [
   {
     id: "hero-3",
     heading: "Celebrate Your Special Day in Style",
-    description: "Discover elegant wedding outfits for every unforgettable moment. From timeless bridal sarees to sophisticated groom wear, find the perfect look for your special day",
+    description: "Discover elegant wedding outfits for every unforgettable moment. From timeless bridal sarees to sophisticated groom wear.",
     desktopImage: slider3Man,
     mobileImage: slider3Man,
     ctaText: "Explore Collection",

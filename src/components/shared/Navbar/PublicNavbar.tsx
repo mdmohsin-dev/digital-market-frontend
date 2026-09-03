@@ -1,14 +1,6 @@
 "use client";
 
-import {
-    Heart,
-    Menu,
-    Search,
-    ShoppingCart,
-    Tag,
-    User,
-    X,
-} from "lucide-react";
+import { Heart, Menu, Search, ShoppingCart, Tag, User, X } from "lucide-react";
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
@@ -47,36 +39,15 @@ const navItems = [
 export default function PublicNavbar() {
     const [open, setOpen] = useState(false);
     const [cartOpen, setCartOpen] = useState(false);
-    const [mobileSearchOpen, setMobileSearchOpen] =
-        useState(false);
+    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
-    // =========================================================
-    // CART
-    // =========================================================
 
     const cartCount = useCartCount();
 
-    // =========================================================
-    // WISHLIST
-    // =========================================================
+    const { wishlistCount, isLoaded, } = useWishlist();
 
-    const {
-        wishlistCount,
-        isLoaded,
-    } = useWishlist();
+    const { isLoggedIn, isPending, } = useUserSession();
 
-    // =========================================================
-    // USER SESSION
-    // =========================================================
-
-    const {
-        isLoggedIn,
-        isPending,
-    } = useUserSession();
-
-    // =========================================================
-    // MOBILE SEARCH BODY SCROLL CONTROL
-    // =========================================================
 
     useEffect(() => {
         if (mobileSearchOpen) {
@@ -90,9 +61,6 @@ export default function PublicNavbar() {
         };
     }, [mobileSearchOpen]);
 
-    // =========================================================
-    // MOBILE MENU BODY SCROLL CONTROL
-    // =========================================================
 
     useEffect(() => {
         if (open) {
@@ -106,9 +74,6 @@ export default function PublicNavbar() {
         };
     }, [open]);
 
-    // =========================================================
-    // CLOSE MOBILE SEARCH / MENU ON DESKTOP
-    // =========================================================
 
     useEffect(() => {
         const handleResize = () => {
@@ -128,9 +93,6 @@ export default function PublicNavbar() {
         };
     }, []);
 
-    // =========================================================
-    // HELPERS - TOGGLE MENU / SEARCH (MUTUALLY EXCLUSIVE)
-    // =========================================================
 
     const toggleMenu = () => {
         setMobileSearchOpen(false);
@@ -144,14 +106,7 @@ export default function PublicNavbar() {
 
     return (
         <>
-            {/* =====================================================
-                HEADER
-            ====================================================== */}
-
             <header className="relative isolate z-30 mt-8 w-full bg-white">
-                {/* =================================================
-                    TOP BAR
-                ================================================= */}
 
                 <div
                     className="
@@ -159,15 +114,14 @@ export default function PublicNavbar() {
                         grid-cols-[auto_minmax(0,1fr)_auto]
                         items-center gap-3
                         px-4 py-3
-                        sm:gap-4
+                        sm:gap-6
                         lg:grid-cols-[auto_minmax(0,1fr)_auto]
-                        lg:gap-24
+                        lg:gap-28
+                        xl:gap-40
                         lg:py-4
                     "
                 >
-                    {/* =================================================
-                        LOGO
-                    ================================================= */}
+
 
                     <Link
                         href="/"
@@ -181,9 +135,6 @@ export default function PublicNavbar() {
                         />
                     </Link>
 
-                    {/* =================================================
-                        SEARCH - TABLET
-                    ================================================= */}
 
                     <ProductSearch
                         className="
@@ -197,9 +148,6 @@ export default function PublicNavbar() {
                         "
                     />
 
-                    {/* =================================================
-                        SEARCH - DESKTOP
-                    ================================================= */}
 
                     <ProductSearch
                         className="
@@ -209,9 +157,6 @@ export default function PublicNavbar() {
                         "
                     />
 
-                    {/* =================================================
-                        ACTIONS
-                    ================================================= */}
 
                     <div
                         className="
@@ -223,9 +168,7 @@ export default function PublicNavbar() {
                             sm:gap-6
                         "
                     >
-                        {/* =================================================
-                            LOGIN / MY ACCOUNT
-                        ================================================= */}
+
 
                         <Link
                             href={
@@ -256,9 +199,6 @@ export default function PublicNavbar() {
                             </span>
                         </Link>
 
-                        {/* =================================================
-                            WISHLIST
-                        ================================================= */}
 
                         <div className="hidden items-center gap-6 sm:flex">
                             <Link
@@ -305,10 +245,6 @@ export default function PublicNavbar() {
                             </Link>
                         </div>
 
-                        {/* =================================================
-                            DESKTOP CART
-                        ================================================= */}
-
                         <div className="hidden md:block">
                             <CartSidebar
                                 open={cartOpen}
@@ -317,9 +253,6 @@ export default function PublicNavbar() {
                             />
                         </div>
 
-                        {/* =================================================
-                            MOBILE MENU ICON
-                        ================================================= */}
 
                         <button
                             type="button"
@@ -341,9 +274,6 @@ export default function PublicNavbar() {
                     </div>
                 </div>
 
-                {/* =====================================================
-                    DESKTOP BOTTOM NAV
-                ====================================================== */}
 
                 <div className="sticky top-10">
                     <div
@@ -425,11 +355,6 @@ export default function PublicNavbar() {
                 </div>
             </header>
 
-            {/* =====================================================
-                MOBILE SEARCH (rendered outside <header> so it isn't
-                trapped by header's `isolate` stacking context — this
-                is what let AnnouncementBar sit above it)
-            ====================================================== */}
 
             <div
                 className={`
@@ -522,9 +447,6 @@ export default function PublicNavbar() {
                 `}
             />
 
-            {/* =====================================================
-                MOBILE MENU (also outside <header>, same reason)
-            ====================================================== */}
 
             <div
                 className={`
@@ -639,9 +561,6 @@ export default function PublicNavbar() {
                 `}
             />
 
-            {/* =====================================================
-                MOBILE BOTTOM NAVIGATION
-            ====================================================== */}
 
             <nav className="
                     fixed
@@ -669,9 +588,7 @@ export default function PublicNavbar() {
                         items-center
                         justify-center
                         gap-0.5
-                        text-white
-                    "
-                >
+                        text-white">
                     <span className="text-lg leading-none">
                         ⌂
                     </span>
@@ -685,41 +602,13 @@ export default function PublicNavbar() {
 
                 <Link
                     href="/wishlist"
-                    className="
-                        relative
-                        flex
-                        h-full
-                        flex-1
-                        flex-col
-                        items-center
-                        justify-center
-                        gap-0.5
-                        text-white
-                    "
-                >
+                    className=" relative flex h-full flex-1 flex-col items-center justify-center gap-0.5 text-white">
                     <Heart size={20} />
 
                     {isLoaded &&
                         wishlistCount > 0 && (
                             <span
-                                className="
-                                    absolute
-                                    top-1
-                                    left-1/2
-                                    ml-2
-                                    flex
-                                    h-4
-                                    min-w-4
-                                    items-center
-                                    justify-center
-                                    rounded-full
-                                    bg-black
-                                    px-1
-                                    text-[9px]
-                                    font-semibold
-                                    text-white
-                                "
-                            >
+                                className="absolute top-1 left-1/2 ml-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-black px-1 text-[9px] font-semibold text-white ">
                                 {wishlistCount > 99
                                     ? "99+"
                                     : wishlistCount}
@@ -754,24 +643,7 @@ export default function PublicNavbar() {
 
                     {cartCount > 0 && (
                         <span
-                            className="
-                                absolute
-                                top-1
-                                left-1/2
-                                ml-2
-                                flex
-                                h-4
-                                min-w-4
-                                items-center
-                                justify-center
-                                rounded-full
-                                bg-black
-                                px-1
-                                text-[9px]
-                                font-semibold
-                                text-white
-                            "
-                        >
+                            className="absolute top-1 left-1/2 ml-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-black px-1 text-[9px] font-semibold text-white">
                             {cartCount > 99
                                 ? "99+"
                                 : cartCount}
@@ -788,17 +660,7 @@ export default function PublicNavbar() {
                 <button
                     type="button"
                     onClick={openMobileSearch}
-                    className="
-                        flex
-                        h-full
-                        flex-1
-                        flex-col
-                        items-center
-                        justify-center
-                        gap-0.5
-                        text-white
-                    "
-                >
+                    className="flex h-full flex-1 flex-col items-center justify-center gap-0.5 text-white">
                     <Search size={20} />
 
                     <span className="text-[10px] font-semibold uppercase">
@@ -812,19 +674,9 @@ export default function PublicNavbar() {
                     href={
                         isLoggedIn
                             ? "/dashboard"
-                            : "/login"
-                    }
-                    className="
-                        flex
-                        h-full
-                        flex-1
-                        flex-col
-                        items-center
-                        justify-center
-                        gap-0.5
-                        text-white
-                    "
-                >
+                            : "/login"}
+
+                    className="flex h-full flex-1 flex-col items-center justify-center gap-0.5 text-white">
                     <User size={20} />
 
                     <span className="text-[10px] font-semibold uppercase">

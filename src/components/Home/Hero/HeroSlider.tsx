@@ -128,7 +128,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                 {/* Left: Text */}
                 <div className="flex w-full flex-col items-start justify-center gap-4 pb-72 sm:max-w-xl sm:pb-80 lg:w-1/2 lg:max-w-2xl lg:pb-0">
 
-                  <h1 className="max-w-xl text-3xl font-bold leading-tight text-black sm:text-4xl md:text-5xl lg:text-6xl">
+                  <h1 className="max-w-xl lg:mt-0 mt-10 text-3xl font-bold leading-tight text-black sm:text-4xl md:text-5xl lg:text-6xl">
                     {slide.heading}
                   </h1>
 
@@ -167,7 +167,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
                       fill
                       priority
                       sizes="75vw"
-                      className="object-contain object-right-bottom"
+                      className="object-contain object-right-bottom w-3"
                     />
                   </div>
 
@@ -182,7 +182,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
       <button
         type="button"
         aria-label="Previous slide"
-        className="hero-swiper-prev absolute left-3 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-primary bg-primary text-white hover:text-primary p-2.5 opacity-0 shadow-sm backdrop-blur-sm transition-all hover:bg-transparent group-hover:opacity-100 focus-visible:opacity-100 sm:left-5 sm:block"
+        className="hero-swiper-prev absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-primary bg-primary text-white hover:text-primary p-2.5 shadow-sm backdrop-blur-sm transition-all hover:bg-transparent  focus-visible:opacity-100 sm:left-5"
       >
         
         <IoIosArrowBack size={25}/>
@@ -192,7 +192,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
       <button
         type="button"
         aria-label="Next slide"
-        className="hero-swiper-next absolute right-3 top-1/2 z-20 hidden -translate-y-1/2 rounded-full border border-primary bg-primary hover:bg-transparent hover:text-primary p-2.5 text-white opacity-0 shadow-sm backdrop-blur-sm transition-all group-hover:opacity-100 focus-visible:opacity-100 sm:right-5 sm:block">
+        className="hero-swiper-next absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-primary bg-primary hover:bg-transparent hover:text-primary p-2.5 text-white shadow-sm backdrop-blur-sm transition-all  focus-visible:opacity-100 sm:right-5">
         <IoIosArrowForward size={25}/>
       </button>
 

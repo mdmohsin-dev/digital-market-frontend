@@ -152,7 +152,7 @@ export default function Footer() {
 
       {/* Footer Bottom */}
       <div className="border-t border-border">
-        <div className="mx-auto flex max-w-350 flex-col items-center justify-between gap-4 p-4 sm:flex-row sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-350 flex-col items-center justify-between gap-4 pt-4 md:pb-4 pb-20 sm:flex-row sm:px-6 lg:px-8">
           <p className="text-xs text-muted-foreground">
             &copy; 2026 Kalni. All rights reserved.
           </p>
