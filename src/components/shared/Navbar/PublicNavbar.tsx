@@ -12,84 +12,53 @@ import {
 
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { useWishlist } from "@/hooks/useWishlist";
+
+import { useCartCount } from "@/hooks/useCartCount";
 import { useUserSession } from "@/hooks/useUserSession";
+import { useWishlist } from "@/hooks/useWishlist";
 
 import brandLogo from "@/assets/Images/brandLogo.png";
+
 import Image from "next/image";
 
-import {
-    getCartCount,
-    CART_UPDATED_EVENT,
-} from "@/lib/cart";
-
-import CartSidebar from "../CartSidebar";
-
 import { LuUserRound } from "react-icons/lu";
+import CartSidebar from "../CartSidebar";
+import ProductSearch from "../ProductSearch";
 
 const navItems = [
-    { label: "Home", href: "/" },
-    { label: "All Products", href: "/shop" },
-    { label: "Flash Sale", href: "/flash-sale" },
-    { label: "Contact Us", href: "/contact" },
+    {
+        label: "Home",
+        href: "/",
+    },
+    {
+        label: "All Products",
+        href: "/shop",
+    },
+    {
+        label: "Flash Sale",
+        href: "/flash-sale",
+    },
+    {
+        label: "Contact Us",
+        href: "/contact",
+    },
 ];
-
-function SearchBar({
-    className = "",
-    compact = false,
-    onSubmit,
-}: {
-    className?: string;
-    compact?: boolean;
-    onSubmit?: (e: React.FormEvent<HTMLFormElement>) => void;
-}) {
-    return (
-        <form
-            onSubmit={onSubmit}
-            className={`flex h-11 items-center rounded-md border border-gray-300 bg-background focus-within:border-brand ${className}`}
-            role="search"
-        >
-            {!compact && (
-                <Search
-                    size={18}
-                    className="ml-3 shrink-0 text-muted-foreground"
-                />
-            )}
-
-            <input
-                type="search"
-                placeholder="Search for products..."
-                aria-label="Search for products"
-                className="h-full min-w-0 flex-1 bg-transparent px-3 text-sm text-foreground outline-none placeholder:text-muted-foreground"
-            />
-
-            {compact ? (
-                <button
-                    type="submit"
-                    aria-label="Search"
-                    className="m-1 inline-flex h-9 w-10 shrink-0 items-center justify-center rounded-md bg-primary text-primary-foreground transition-opacity hover:opacity-90"
-                >
-                    <Search size={18} />
-                </button>
-            ) : (
-                <button
-                    type="submit"
-                    className="m-1 inline-flex h-9 shrink-0 items-center rounded-md bg-primary px-5 text-sm font-medium text-primary-foreground transition-opacity hover:opacity-90"
-                >
-                    Search
-                </button>
-            )}
-        </form>
-    );
-}
 
 export default function PublicNavbar() {
     const [open, setOpen] = useState(false);
-    const [cartCount, setCartCount] = useState(0);
     const [cartOpen, setCartOpen] = useState(false);
-
     const [mobileSearchOpen, setMobileSearchOpen] =
         useState(false);
+
+    // =========================================================
+    // CART
+    // =========================================================
+
+    const cartCount = useCartCount();
+
+    // =========================================================
+    // WISHLIST
+    // =========================================================
 
     const {
         wishlistCount,
@@ -101,44 +70,9 @@ export default function PublicNavbar() {
     // =========================================================
 
     const {
-        user,
         isLoggedIn,
         isPending,
     } = useUserSession();
-
-    // =========================================================
-    // CART COUNT
-    // =========================================================
-
-    useEffect(() => {
-        const updateCartCount = () => {
-            setCartCount(getCartCount());
-        };
-
-        updateCartCount();
-
-        window.addEventListener(
-            CART_UPDATED_EVENT,
-            updateCartCount,
-        );
-
-        window.addEventListener(
-            "storage",
-            updateCartCount,
-        );
-
-        return () => {
-            window.removeEventListener(
-                CART_UPDATED_EVENT,
-                updateCartCount,
-            );
-
-            window.removeEventListener(
-                "storage",
-                updateCartCount,
-            );
-        };
-    }, []);
 
     // =========================================================
     // MOBILE SEARCH BODY SCROLL CONTROL
@@ -157,13 +91,30 @@ export default function PublicNavbar() {
     }, [mobileSearchOpen]);
 
     // =========================================================
-    // CLOSE MOBILE SEARCH ON DESKTOP
+    // MOBILE MENU BODY SCROLL CONTROL
+    // =========================================================
+
+    useEffect(() => {
+        if (open) {
+            document.body.style.overflow = "hidden";
+        } else {
+            document.body.style.overflow = "";
+        }
+
+        return () => {
+            document.body.style.overflow = "";
+        };
+    }, [open]);
+
+    // =========================================================
+    // CLOSE MOBILE SEARCH / MENU ON DESKTOP
     // =========================================================
 
     useEffect(() => {
         const handleResize = () => {
             if (window.innerWidth >= 1024) {
                 setMobileSearchOpen(false);
+                setOpen(false);
             }
         };
 
@@ -172,15 +123,32 @@ export default function PublicNavbar() {
         return () => {
             window.removeEventListener(
                 "resize",
-                handleResize,
+                handleResize
             );
         };
     }, []);
 
+    // =========================================================
+    // HELPERS - TOGGLE MENU / SEARCH (MUTUALLY EXCLUSIVE)
+    // =========================================================
+
+    const toggleMenu = () => {
+        setMobileSearchOpen(false);
+        setOpen((value) => !value);
+    };
+
+    const openMobileSearch = () => {
+        setOpen(false);
+        setMobileSearchOpen(true);
+    };
+
     return (
         <>
-            <header className="relative isolate z-30 mt-8 w-full bg-white">
+            {/* =====================================================
+                HEADER
+            ====================================================== */}
 
+            <header className="relative isolate z-30 mt-8 w-full bg-white">
                 {/* =================================================
                     TOP BAR
                 ================================================= */}
@@ -197,7 +165,6 @@ export default function PublicNavbar() {
                         lg:py-4
                     "
                 >
-
                     {/* =================================================
                         LOGO
                     ================================================= */}
@@ -215,27 +182,30 @@ export default function PublicNavbar() {
                     </Link>
 
                     {/* =================================================
-                        SEARCH - TABLET + DESKTOP
+                        SEARCH - TABLET
                     ================================================= */}
 
-                    <SearchBar
-                        compact
+                    <ProductSearch
                         className="
                             hidden
-                            sm:flex
-                            lg:hidden
                             w-full
                             max-w-75
                             justify-self-center
+                            sm:flex
+                            lg:hidden
                             md:max-w-100
                         "
                     />
 
-                    <SearchBar
+                    {/* =================================================
+                        SEARCH - DESKTOP
+                    ================================================= */}
+
+                    <ProductSearch
                         className="
                             hidden
-                            lg:flex
                             w-full
+                            lg:flex
                         "
                     />
 
@@ -243,8 +213,16 @@ export default function PublicNavbar() {
                         ACTIONS
                     ================================================= */}
 
-                    <div className="flex min-w-0 items-center justify-end gap-4 sm:gap-6">
-
+                    <div
+                        className="
+                            flex
+                            min-w-0
+                            items-center
+                            justify-end
+                            gap-4
+                            sm:gap-6
+                        "
+                    >
                         {/* =================================================
                             LOGIN / MY ACCOUNT
                         ================================================= */}
@@ -273,8 +251,8 @@ export default function PublicNavbar() {
                                 {isPending
                                     ? "Account"
                                     : isLoggedIn
-                                      ? "My Account"
-                                      : "Login"}
+                                        ? "My Account"
+                                        : "Login"}
                             </span>
                         </Link>
 
@@ -285,7 +263,13 @@ export default function PublicNavbar() {
                         <div className="hidden items-center gap-6 sm:flex">
                             <Link
                                 href="/wishlist"
-                                className="relative flex flex-col items-center gap-1"
+                                className="
+                                    relative
+                                    flex
+                                    flex-col
+                                    items-center
+                                    gap-1
+                                "
                             >
                                 <Heart size={28} />
 
@@ -323,10 +307,9 @@ export default function PublicNavbar() {
 
                         {/* =================================================
                             DESKTOP CART
-                            Mobile + Tablet hidden
                         ================================================= */}
 
-                        <div className="hidden lg:block">
+                        <div className="hidden md:block">
                             <CartSidebar
                                 open={cartOpen}
                                 onOpenChange={setCartOpen}
@@ -340,9 +323,7 @@ export default function PublicNavbar() {
 
                         <button
                             type="button"
-                            onClick={() =>
-                                setOpen((v) => !v)
-                            }
+                            onClick={toggleMenu}
                             aria-label="Toggle menu"
                             aria-expanded={open}
                             className="
@@ -360,104 +341,40 @@ export default function PublicNavbar() {
                     </div>
                 </div>
 
-                {/* =================================================
-                    MOBILE SEARCH
-                ================================================= */}
-
-                <div
-                    className={`
-                        fixed
-                        inset-x-0
-                        top-0
-                        z-50
-                        lg:hidden
-                        transition-all
-                        duration-300
-                        ease-out
-                        ${
-                            mobileSearchOpen
-                                ? "translate-y-0 opacity-100"
-                                : "-translate-y-full opacity-0 pointer-events-none"
-                        }
-                    `}
-                >
-                    <div className="mx-auto w-full max-w-110 bg-white shadow-xl">
-
-                        <div className="flex items-center justify-between border-b border-gray-200 px-4 py-3">
-                            <span className="text-sm font-semibold text-foreground">
-                                Search Products
-                            </span>
-
-                            <button
-                                type="button"
-                                onClick={() =>
-                                    setMobileSearchOpen(false)
-                                }
-                                aria-label="Close search"
-                                className="
-                                    flex
-                                    h-8
-                                    w-8
-                                    items-center
-                                    justify-center
-                                    rounded-full
-                                    bg-red-50
-                                    text-red-500
-                                    transition-colors
-                                    hover:bg-red-100
-                                "
-                            >
-                                <X size={18} />
-                            </button>
-                        </div>
-
-                        <div className="px-4 py-3">
-                            <SearchBar
-                                compact
-                                className="w-full"
-                                onSubmit={() =>
-                                    setMobileSearchOpen(false)
-                                }
-                            />
-                        </div>
-                    </div>
-                </div>
-
-                {/* =================================================
-                    MOBILE SEARCH BACKDROP
-                ================================================= */}
-
-                <div
-                    onClick={() =>
-                        setMobileSearchOpen(false)
-                    }
-                    className={`
-                        fixed
-                        inset-0
-                        z-40
-                        bg-black/50
-                        lg:hidden
-                        transition-opacity
-                        duration-300
-                        ${
-                            mobileSearchOpen
-                                ? "opacity-100"
-                                : "pointer-events-none opacity-0"
-                        }
-                    `}
-                />
-
-                {/* =================================================
+                {/* =====================================================
                     DESKTOP BOTTOM NAV
-                ================================================= */}
+                ====================================================== */}
 
                 <div className="sticky top-10">
-                    <div className="relative z-20 hidden border-t border-gray-300 lg:block">
-
-                        <nav className="mx-auto flex max-w-350 items-center gap-16 px-4 py-3">
-
-                            <ul className="flex w-full items-center justify-between">
-
+                    <div
+                        className="
+                            relative
+                            z-20
+                            hidden
+                            border-t
+                            border-gray-300
+                            lg:block
+                        "
+                    >
+                        <nav
+                            className="
+                                mx-auto
+                                flex
+                                max-w-350
+                                items-center
+                                gap-16
+                                px-4
+                                py-3
+                            "
+                        >
+                            <ul
+                                className="
+                                    flex
+                                    w-full
+                                    items-center
+                                    justify-between
+                                "
+                            >
                                 {navItems.map((item) => (
                                     <li
                                         key={item.label}
@@ -481,11 +398,21 @@ export default function PublicNavbar() {
                                         </Link>
                                     </li>
                                 ))}
-
                             </ul>
 
-                            <div className="ml-auto flex shrink-0 items-center gap-2 whitespace-nowrap text-sm font-semibold text-foreground">
-
+                            <div
+                                className="
+                                    ml-auto
+                                    flex
+                                    shrink-0
+                                    items-center
+                                    gap-2
+                                    whitespace-nowrap
+                                    text-sm
+                                    font-semibold
+                                    text-foreground
+                                "
+                            >
                                 <Tag
                                     size={16}
                                     className="text-badge"
@@ -493,78 +420,230 @@ export default function PublicNavbar() {
 
                                 $20 Off Your First Order
                             </div>
-
                         </nav>
                     </div>
                 </div>
-
-                {/* =================================================
-                    MOBILE MENU
-                ================================================= */}
-
-                {open && (
-                    <div className="relative z-20 border-t border-border lg:hidden">
-
-                        <nav className="mx-auto max-w-350 px-4 py-3">
-
-                            <div className="mb-2 flex items-center justify-between">
-
-                                <span className="text-sm font-semibold text-foreground">
-                                    Menu
-                                </span>
-
-                                <button
-                                    type="button"
-                                    onClick={() =>
-                                        setOpen(false)
-                                    }
-                                    aria-label="Close menu"
-                                    className="text-muted-foreground"
-                                >
-                                    <X size={18} />
-                                </button>
-
-                            </div>
-
-                            <ul>
-
-                                {navItems.map((item) => (
-                                    <li key={item.label}>
-
-                                        <Link
-                                            href={item.href}
-                                            onClick={() =>
-                                                setOpen(false)
-                                            }
-                                            className="
-                                                flex
-                                                items-center
-                                                justify-between
-                                                py-3
-                                                text-sm
-                                                font-medium
-                                                text-foreground
-                                            "
-                                        >
-                                            {item.label}
-                                        </Link>
-
-                                    </li>
-                                ))}
-
-                            </ul>
-
-                        </nav>
-                    </div>
-                )}
             </header>
 
             {/* =====================================================
-                MOBILE BOTTOM NAVIGATION
-            ===================================================== */}
+                MOBILE SEARCH (rendered outside <header> so it isn't
+                trapped by header's `isolate` stacking context — this
+                is what let AnnouncementBar sit above it)
+            ====================================================== */}
 
-            <nav
-                className="
+            <div
+                className={`
+                    fixed
+                    inset-x-0
+                    top-0
+                    z-[100]
+                    lg:hidden
+                    transition-all
+                    duration-500
+                    ease-in-out
+                    ${mobileSearchOpen
+                        ? "translate-y-0 opacity-100"
+                        : "-translate-y-full pointer-events-none opacity-0"
+                    }
+                `}
+            >
+                <div
+                    className="
+                        mx-auto
+                        w-full
+                        max-w-110
+                        bg-white
+                        shadow-xl
+                    "
+                >
+                    {/* SEARCH HEADER */}
+
+                    <div
+                        className="
+                            flex
+                            items-center
+                            justify-between
+                            border-b
+                            border-gray-200
+                            px-4
+                            py-3
+                        "
+                    >
+                        <span className="text-sm font-semibold text-foreground">
+                            Search Products
+                        </span>
+
+                        <button
+                            type="button"
+                            onClick={() =>
+                                setMobileSearchOpen(false)
+                            }
+                            aria-label="Close search"
+                            className="
+                                flex
+                                h-8
+                                w-8
+                                items-center
+                                justify-center
+                                rounded-full
+                                bg-red-50
+                                text-red-500
+                                transition-colors
+                                hover:bg-red-100
+                            "
+                        >
+                            <X size={18} />
+                        </button>
+                    </div>
+
+                    {/* PRODUCT SEARCH */}
+
+                    <div className="px-4 py-3">
+                        <ProductSearch className="w-full" />
+                    </div>
+                </div>
+            </div>
+
+            <div
+                onClick={() => setMobileSearchOpen(false)}
+                className={`
+                    fixed
+                    inset-0
+                    z-[90]
+                    bg-black/50
+                    lg:hidden
+                    transition-opacity
+                    duration-500
+                    ease-in-out
+                    ${mobileSearchOpen
+                        ? "opacity-100"
+                        : "pointer-events-none opacity-0"
+                    }
+                `}
+            />
+
+            {/* =====================================================
+                MOBILE MENU (also outside <header>, same reason)
+            ====================================================== */}
+
+            <div
+                className={`
+                    fixed
+                    inset-x-0
+                    top-0
+                    z-[100]
+                    lg:hidden
+                    transition-all
+                    duration-500
+                    ease-in-out
+                    ${open
+                        ? "translate-y-0 opacity-100"
+                        : "-translate-y-full pointer-events-none opacity-0"
+                    }
+                `}
+            >
+                <div
+                    className="
+                        mx-auto
+                        w-full
+                        bg-white
+                        shadow-xl
+                    "
+                >
+                    <nav
+                        className="
+                            mx-auto
+                            max-w-350
+                            px-4
+                            py-3
+                        "
+                    >
+                        <div
+                            className="
+                                mb-2
+                                flex
+                                items-center
+                                justify-between
+                                border-b
+                                border-gray-200
+                                pb-3
+                            "
+                        >
+                            <span className="text-sm font-semibold text-foreground">
+                                Menu
+                            </span>
+
+                            <button
+                                type="button"
+                                onClick={() => setOpen(false)}
+                                aria-label="Close menu"
+                                className="
+                                    flex
+                                    h-8
+                                    w-8
+                                    items-center
+                                    justify-center
+                                    rounded-full
+                                    bg-red-50
+                                    text-red-500
+                                    transition-colors
+                                    hover:bg-red-100
+                                "
+                            >
+                                <X size={18} />
+                            </button>
+                        </div>
+
+                        <ul>
+                            {navItems.map((item) => (
+                                <li key={item.label}>
+                                    <Link
+                                        href={item.href}
+                                        onClick={() =>
+                                            setOpen(false)
+                                        }
+                                        className="
+                                            flex
+                                            items-center
+                                            justify-between
+                                            py-3
+                                            text-sm
+                                            font-medium
+                                            text-foreground
+                                        "
+                                    >
+                                        {item.label}
+                                    </Link>
+                                </li>
+                            ))}
+                        </ul>
+                    </nav>
+                </div>
+            </div>
+
+            <div
+                onClick={() => setOpen(false)}
+                className={`
+                    fixed
+                    inset-0
+                    z-[90]
+                    bg-black/50
+                    lg:hidden
+                    transition-opacity
+                    duration-500
+                    ease-in-out
+                    ${open
+                        ? "opacity-100"
+                        : "pointer-events-none opacity-0"
+                    }
+                `}
+            />
+
+            {/* =====================================================
+                MOBILE BOTTOM NAVIGATION
+            ====================================================== */}
+
+            <nav className="
                     fixed
                     bottom-0
                     left-0
@@ -575,10 +654,9 @@ export default function PublicNavbar() {
                     items-center
                     justify-around
                     bg-primary
-                    lg:hidden
+                    md:hidden
                 "
             >
-
                 {/* HOME */}
 
                 <Link
@@ -621,31 +699,32 @@ export default function PublicNavbar() {
                 >
                     <Heart size={20} />
 
-                    {isLoaded && wishlistCount > 0 && (
-                        <span
-                            className="
-                                absolute
-                                top-1
-                                left-1/2
-                                ml-2
-                                flex
-                                h-4
-                                min-w-4
-                                items-center
-                                justify-center
-                                rounded-full
-                                bg-black
-                                px-1
-                                text-[9px]
-                                font-semibold
-                                text-white
-                            "
-                        >
-                            {wishlistCount > 99
-                                ? "99+"
-                                : wishlistCount}
-                        </span>
-                    )}
+                    {isLoaded &&
+                        wishlistCount > 0 && (
+                            <span
+                                className="
+                                    absolute
+                                    top-1
+                                    left-1/2
+                                    ml-2
+                                    flex
+                                    h-4
+                                    min-w-4
+                                    items-center
+                                    justify-center
+                                    rounded-full
+                                    bg-black
+                                    px-1
+                                    text-[9px]
+                                    font-semibold
+                                    text-white
+                                "
+                            >
+                                {wishlistCount > 99
+                                    ? "99+"
+                                    : wishlistCount}
+                            </span>
+                        )}
 
                     <span className="text-[10px] font-semibold uppercase">
                         Wishlist
@@ -708,9 +787,7 @@ export default function PublicNavbar() {
 
                 <button
                     type="button"
-                    onClick={() =>
-                        setMobileSearchOpen(true)
-                    }
+                    onClick={openMobileSearch}
                     className="
                         flex
                         h-full
@@ -754,11 +831,10 @@ export default function PublicNavbar() {
                         {isPending
                             ? "Account"
                             : isLoggedIn
-                              ? "Account"
-                              : "Login"}
+                                ? "Account"
+                                : "Login"}
                     </span>
                 </Link>
-
             </nav>
         </>
     );

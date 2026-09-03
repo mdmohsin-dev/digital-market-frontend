@@ -117,10 +117,6 @@ export default function ProfilePage() {
                                 <p className="mt-0.5 text-sm text-gray-500">
                                     Customer
                                 </p>
-
-                                <p className="mt-1 text-xs text-gray-400">
-                                    {userEmail}
-                                </p>
                             </div>
                         </div>
 
@@ -198,21 +194,15 @@ export default function ProfilePage() {
                             />
 
                             {/* PHONE */}
-                            <ProfileField
+                            {/* <ProfileField
                                 label="Phone"
                                 value={user.phone || "Not added yet"}
-                            />
+                            /> */}
 
                             {/* LOCATION */}
                             <ProfileField
                                 label="Location"
                                 value="Bangladesh"
-                            />
-
-                            {/* WEBSITE */}
-                            <ProfileField
-                                label="Website"
-                                value="Not added yet"
                             />
 
                             {/* BIO */}
@@ -274,11 +264,11 @@ export default function ProfilePage() {
                                     value={userEmail}
                                 />
 
-                                <InfoRow
+                                {/* <InfoRow
                                     icon={<Phone size={18} />}
                                     label="Phone"
                                     value={user.phone || "Not added yet"}
-                                />
+                                /> */}
                             </div>
                         </div>
                     </TabPanel>

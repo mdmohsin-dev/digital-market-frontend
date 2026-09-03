@@ -9,9 +9,6 @@ import { Heart, Star } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import { useEffect, useState } from "react";
-import { FaCartPlus } from "react-icons/fa6";
-
-import { addToCart } from "@/lib/cart";
 
 interface ProductCardProps {
     product: Product;
@@ -28,32 +25,6 @@ export default function ProductCard({ product }: ProductCardProps) {
         reviewCount,
         slug,
     } = product;
-
-const handleAddToCart = (
-    event: React.MouseEvent<HTMLButtonElement>,
-) => {
-    event.preventDefault();
-    event.stopPropagation();
-
-    const cartItem = {
-    productId: product.id,
-    name: product.name,
-    image:
-        typeof product.images[0] === "string"
-            ? product.images[0]
-            : product.images[0].src,
-    price:
-        product.salePrice ??
-        product.regularPrice,
-    quantity: 1,
-    size: "",
-    color: "",
-};
-
-    addToCart(cartItem);
-
-    alert("Product added to cart.");
-};
 
     const [isWishlisted, setIsWishlisted] =
         useState(false);
@@ -76,10 +47,7 @@ const handleAddToCart = (
     };
 
     return (
-        <Link
-            href={`/shop/${slug}`}
-            className="block h-full"
-        >
+        <div className="block h-full">
             <div className="flex h-full flex-col overflow-hidden rounded-lg border border-gray-200 bg-white transition-shadow hover:shadow-md">
                 {/* Product Image */}
                 <div className="relative aspect-square w-full overflow-hidden bg-gray-200 p-4">
@@ -88,8 +56,7 @@ const handleAddToCart = (
                         fill
                         sizes="(max-width: 640px) 100vw, (max-width: 1024px) 33vw, 25vw"
                         src={images[0]}
-                        alt={name}
-                    />
+                        alt={name}/>
 
                     {/* Wishlist */}
                     <button
@@ -115,9 +82,9 @@ const handleAddToCart = (
 
                 {/* Product Info */}
                 <div className="flex flex-1 flex-col bg-white p-4">
-                    <div className="flex flex-col gap-3">
+                    <div className="flex flex-1 flex-col gap-3">
                         {/* Product Name */}
-                        <h3 className="line-clamp-2 min-h-[3rem] text-xl">
+                        <h3 className="line-clamp-2 min-h-[3.5rem] text-xl">
                             {name}
                         </h3>
 
@@ -175,17 +142,12 @@ const handleAddToCart = (
                         </p>
                     </div>
 
-                    {/* Add To Cart */}
-                    <button
-                        type="button"
-                        onClick={handleAddToCart}
-                        className="mt-auto flex w-full items-center justify-center gap-2 rounded-md bg-primary p-2 text-white transition-opacity hover:opacity-90"
-                    >
-                        <FaCartPlus size={24} />
-                        Add to cart
-                    </button>
+                    <Link
+                        href={`/shop/${slug}`}
+                        className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-primary p-2 text-white transition-opacity hover:opacity-90">View Details
+                    </Link>
                 </div>
             </div>
-        </Link>
+        </div>
     );
 }

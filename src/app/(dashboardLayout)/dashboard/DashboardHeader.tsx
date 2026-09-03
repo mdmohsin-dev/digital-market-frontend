@@ -30,6 +30,20 @@ export default function DashboardHeader({
 
     const showLoading = !mounted || isPending;
 
+    const getGreeting = () => {
+    const hour = new Date().getHours();
+
+    if (hour < 12) {
+        return "Good morning";
+    }
+
+    if (hour < 17) {
+        return "Good afternoon";
+    }
+
+    return "Good evening";
+};
+
     return (
         <header className="flex h-16 shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 sm:px-6">
             {/* =====================================================
@@ -59,9 +73,13 @@ export default function DashboardHeader({
                     <Menu size={22} />
                 </button>
 
-                {/* Page Title */}
-                <h1 className="truncate text-lg font-semibold text-gray-800">
-                    My Account
+                {/* Greeting */}
+                <h1 className="truncate text-3xl font-semibold text-gray-800">
+                    {showLoading
+                        ? "Welcome"
+                        : isLoggedIn && user
+                            ? `${getGreeting()}, ${user.name}`
+                            : "Welcome, Guest"}
                 </h1>
             </div>
 
