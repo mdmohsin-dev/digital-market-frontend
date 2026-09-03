@@ -1,84 +1,155 @@
 "use client";
 
-import {
-    Bell,
-    Menu,
-    Search,
-} from "lucide-react";
+import { useEffect, useState } from "react";
+import Image from "next/image";
+import Link from "next/link";
 
-type DashboardHeaderProps = {
-    onMenuClick?: () => void;
-};
+import { ChevronDown, Menu } from "lucide-react";
+import { LuUserRound } from "react-icons/lu";
+
+import { useUserSession } from "@/hooks/useUserSession";
+
+interface DashboardHeaderProps {
+    onMenuClick: () => void;
+}
 
 export default function DashboardHeader({
     onMenuClick,
 }: DashboardHeaderProps) {
+    const [mounted, setMounted] = useState(false);
+
+    const {
+        user,
+        isLoggedIn,
+        isPending,
+    } = useUserSession();
+
+    useEffect(() => {
+        setMounted(true);
+    }, []);
+
+    const showLoading = !mounted || isPending;
+
     return (
-        <header className="flex h-16 shrink-0 items-center justify-between border-b border-border bg-white px-4 sm:px-6">
-            {/* Left */}
-            <div className="flex min-w-0 flex-1 items-center gap-3">
-                {/* Mobile Menu */}
+        <header className="flex h-16 shrink-0 items-center justify-between border-b border-gray-200 bg-white px-4 sm:px-6">
+            {/* =====================================================
+                LEFT SIDE
+            ====================================================== */}
+            <div className="flex min-w-0 items-center gap-3">
+                {/* Mobile / Tablet Menu Button */}
                 <button
                     type="button"
                     onClick={onMenuClick}
-                    className="shrink-0 text-muted-foreground lg:hidden"
-                    aria-label="Open dashboard menu"
+                    aria-label="Toggle dashboard sidebar"
+                    className="
+                        flex
+                        h-9
+                        w-9
+                        shrink-0
+                        items-center
+                        justify-center
+                        rounded-md
+                        text-gray-600
+                        transition-colors
+                        hover:bg-gray-100
+                        hover:text-gray-900
+                        lg:hidden
+                    "
                 >
                     <Menu size={22} />
                 </button>
 
-                {/* Search */}
-                <div className="hidden w-full max-w-md items-center gap-2 rounded-lg bg-muted px-3 py-2 sm:flex">
-                    <Search
-                        size={18}
-                        className="shrink-0 text-muted-foreground"
-                    />
-
-                    <input
-                        type="search"
-                        placeholder="Search..."
-                        className="
-                            min-w-0 flex-1
-                            bg-transparent
-                            text-sm
-                            text-foreground
-                            outline-none
-                            placeholder:text-muted-foreground
-                        "
-                    />
-                </div>
+                {/* Page Title */}
+                <h1 className="truncate text-lg font-semibold text-gray-800">
+                    My Account
+                </h1>
             </div>
 
-            {/* Right */}
-            <div className="flex items-center gap-3 sm:gap-5">
-                {/* Notification */}
-                <button
-                    type="button"
-                    className="relative flex h-9 w-9 items-center justify-center rounded-full text-muted-foreground transition-colors hover:bg-muted hover:text-foreground"
-                    aria-label="Notifications"
+            {/* =====================================================
+                RIGHT SIDE - USER
+            ====================================================== */}
+            <Link
+                href="/dashboard/profile"
+                className="
+                    flex
+                    shrink-0
+                    items-center
+                    gap-3
+                    rounded-md
+                    px-2
+                    py-1.5
+                    transition-colors
+                    hover:bg-gray-50
+                "
+            >
+                {/* =================================================
+                    PROFILE IMAGE / FALLBACK ICON
+                ================================================== */}
+                <div
+                    className="
+                        flex
+                        h-10
+                        w-10
+                        items-center
+                        justify-center
+                        overflow-hidden
+                        rounded-full
+                        bg-gray-100
+                    "
                 >
-                    <Bell size={20} />
-
-                    <span className="absolute right-1.5 top-1.5 h-2 w-2 rounded-full bg-badge" />
-                </button>
-
-                {/* User */}
-                <div className="hidden items-center gap-3 sm:flex">
-                    <div className="flex h-9 w-9 items-center justify-center rounded-full bg-primary text-sm font-semibold text-primary-foreground">
-                        M
-                    </div>
-
-                    <div className="hidden md:block">
-                        <p className="text-sm font-semibold text-foreground">
-                            My Account
-                        </p>
-
-                        <p className="text-xs text-muted-foreground">
-                            Customer
-                        </p>
-                    </div>
+                    {mounted && user?.image ? (
+                        <Image
+                            src={user.image}
+                            alt={user.name || "User profile"}
+                            width={40}
+                            height={40}
+                            className="h-full w-full object-cover"
+                        />
+                    ) : (
+                        <LuUserRound
+                            size={22}
+                            className="text-gray-500"
+                        />
+                    )}
                 </div>
-            </div>
+
+                {/* =================================================
+                    USER INFO
+                ================================================== */}
+                <div className="hidden sm:block">
+                    {showLoading ? (
+                        <>
+                            <p className="text-sm font-semibold text-gray-400">
+                                Loading...
+                            </p>
+
+                            <p className="text-xs text-gray-400">
+                                Account
+                            </p>
+                        </>
+                    ) : isLoggedIn && user ? (
+                        <p className="max-w-40 truncate text-sm font-semibold text-gray-800">
+                            {user.name}
+                        </p>
+                    ) : (
+                        <>
+                            <p className="text-sm font-semibold text-gray-800">
+                                Guest
+                            </p>
+
+                            <p className="text-xs text-gray-500">
+                                Not logged in
+                            </p>
+                        </>
+                    )}
+                </div>
+
+                {/* Dropdown Icon */}
+                <ChevronDown
+                    size={19}
+                    className="text-gray-400"
+                />
+            </Link>
         </header>
     );
 }

@@ -125,8 +125,7 @@ export default function CartSidebar({
             ================================================= */}
 
             <DrawerTrigger>
-                <button
-                    type="button"
+                <div
                     aria-label={`Cart${cartCount > 0
                         ? `, ${cartCount} items`
                         : ""
@@ -148,7 +147,7 @@ export default function CartSidebar({
                     <span className="text-xs font-medium text-foreground">
                         Cart
                     </span>
-                </button>
+                </div>
             </DrawerTrigger>
 
             {/* =================================================

@@ -1,31 +1,42 @@
-import { ReactNode } from "react";
+"use client";
+
+import { useState } from "react";
 import DashboardSidebar from "./DashboardSidebar";
+import DashboardHeader from "./DashboardHeader";
+
+interface DashboardLayoutProps {
+    children: React.ReactNode;
+}
 
 export default function DashboardLayout({
     children,
-}: {
-    children: ReactNode;
-}) {
+}: DashboardLayoutProps) {
+    const [sidebarOpen, setSidebarOpen] = useState(false);
+
     return (
-        <div className="min-h-screen bg-background">
-            <div className="flex min-h-screen">
-                {/* Sidebar */}
-                <DashboardSidebar />
+        <div className="h-screen overflow-hidden bg-gray-50">
+            {/* ================= SIDEBAR ================= */}
+            <DashboardSidebar
+                open={sidebarOpen}
+                onClose={() => setSidebarOpen(false)}
+            />
 
-                {/* Main Area */}
-                <div className="flex min-w-0 flex-1 flex-col">
-                    {/* Dashboard Header */}
-                    <header className="flex h-16 shrink-0 items-center border-b border-gray-200 bg-white px-4 sm:px-6">
-                        <h2 className="text-lg font-semibold text-foreground">
-                            My Account
-                        </h2>
-                    </header>
-
-                    {/* Page Content */}
-                    <main className="flex-1 p-4 sm:p-6">
-                        {children}
-                    </main>
+            {/* ================= MAIN AREA ================= */}
+            <div className="lg:ml-64 h-full">
+                
+                {/* ================= HEADER ================= */}
+                <div className="fixed top-0 right-0 left-0 z-40 lg:left-64">
+                    <DashboardHeader
+                        onMenuClick={() => setSidebarOpen(true)}
+                    />
                 </div>
+
+                {/* ================= CONTENT ================= */}
+                <main className="h-full overflow-y-auto pt-16">
+                    <div className="p-4 sm:p-6">
+                        {children}
+                    </div>
+                </main>
             </div>
         </div>
     );

@@ -11,6 +11,8 @@ import Link from "next/link";
 import { useEffect, useState } from "react";
 import { FaCartPlus } from "react-icons/fa6";
 
+import { addToCart } from "@/lib/cart";
+
 interface ProductCardProps {
     product: Product;
 }
@@ -27,7 +29,31 @@ export default function ProductCard({ product }: ProductCardProps) {
         slug,
     } = product;
 
+const handleAddToCart = (
+    event: React.MouseEvent<HTMLButtonElement>,
+) => {
+    event.preventDefault();
+    event.stopPropagation();
 
+    const cartItem = {
+    productId: product.id,
+    name: product.name,
+    image:
+        typeof product.images[0] === "string"
+            ? product.images[0]
+            : product.images[0].src,
+    price:
+        product.salePrice ??
+        product.regularPrice,
+    quantity: 1,
+    size: "",
+    color: "",
+};
+
+    addToCart(cartItem);
+
+    alert("Product added to cart.");
+};
 
     const [isWishlisted, setIsWishlisted] =
         useState(false);
@@ -152,6 +178,7 @@ export default function ProductCard({ product }: ProductCardProps) {
                     {/* Add To Cart */}
                     <button
                         type="button"
+                        onClick={handleAddToCart}
                         className="mt-auto flex w-full items-center justify-center gap-2 rounded-md bg-primary p-2 text-white transition-opacity hover:opacity-90"
                     >
                         <FaCartPlus size={24} />
