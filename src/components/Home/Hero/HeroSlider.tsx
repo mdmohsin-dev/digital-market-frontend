@@ -104,7 +104,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
       >
         {slides.map((slide) => (
           <SwiperSlide key={slide.id}>
-            <div className="relative min-h-[520px] w-full overflow-hidden sm:min-h-[600px] lg:min-h-[650px]">
+            <div className="relative min-h-[300px] w-full overflow-hidden sm:min-h-[600px] lg:min-h-[650px]">
 
               {/* Background Image */}
               <div className="absolute inset-0">
@@ -123,12 +123,12 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
               <div className="absolute inset-0 bg-white/10" />
 
               {/* Main Content */}
-              <div className="relative z-10 mx-auto flex h-full min-h-[520px] max-w-350 items-center px-5 sm:min-h-[600px] sm:px-8 lg:min-h-[650px] lg:px-10">
+              <div className="relative z-10 mx-auto flex h-full min-h-[300px] max-w-350 items-center px-5 sm:min-h-[600px] sm:px-8 lg:min-h-[650px] lg:px-10">
 
                 {/* Left: Text */}
-                <div className="flex w-full flex-col items-start justify-center gap-4 pb-72 sm:max-w-xl sm:pb-80 lg:w-1/2 lg:max-w-2xl lg:pb-0">
+                <div className="flex w-full flex-col items-start justify-center gap-2 md:gap-5 pb-52 sm:max-w-xl sm:pb-80 lg:w-1/2 lg:max-w-2xl lg:pb-0">
 
-                  <h1 className="max-w-xl lg:mt-0 mt-10 text-3xl font-bold leading-tight text-black sm:text-4xl md:text-5xl lg:text-6xl">
+                  <h1 className="max-w-xl font-lora lg:mt-0 mt-5 text-3xl font-semibold leading-tight text-black sm:text-4xl md:text-5xl lg:text-6xl">
                     {slide.heading}
                   </h1>
 
@@ -138,14 +138,14 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
 
                   <Link
                     href={slide.ctaLink}
-                    className="mt-2 inline-flex items-center rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-gray-800 sm:px-7 sm:py-3.5 sm:text-base"
+                    className="mt-2 inline-flex items-center rounded-full bg-gray-900 px-6 py-3 text-sm font-semibold text-white transition-all duration-300 hover:bg-primary sm:px-7 sm:py-3.5 sm:text-base"
                   >
                     {slide.ctaText}
                   </Link>
                 </div>
 
                 {/* Right: Main Image */}
-                <div className="absolute bottom-0 right-0 z-10 h-[360px] w-[75%] sm:h-[440px] sm:w-[65%] lg:right-0 lg:h-full lg:w-1/2">
+                <div className="absolute bottom-0 right-0 z-10 h-[260px] w-[75%] sm:h-[440px] sm:w-[65%] lg:right-0 lg:h-full lg:w-1/2">
 
                   {/* Desktop Image */}
                   <div className="absolute inset-0 hidden lg:block">
@@ -182,7 +182,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
       <button
         type="button"
         aria-label="Previous slide"
-        className="hero-swiper-prev absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-primary bg-primary text-white hover:text-primary p-2.5 shadow-sm backdrop-blur-sm transition-all hover:bg-transparent  focus-visible:opacity-100 sm:left-5"
+        className="hero-swiper-prev hidden md:flex absolute left-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-primary bg-primary text-white hover:text-primary p-2.5 shadow-sm backdrop-blur-sm transition-all hover:bg-transparent  focus-visible:opacity-100 sm:left-5"
       >
         
         <IoIosArrowBack size={25}/>
@@ -192,7 +192,7 @@ export default function HeroSlider({ slides }: HeroSliderProps) {
       <button
         type="button"
         aria-label="Next slide"
-        className="hero-swiper-next absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-primary bg-primary hover:bg-transparent hover:text-primary p-2.5 text-white shadow-sm backdrop-blur-sm transition-all  focus-visible:opacity-100 sm:right-5">
+        className="hero-swiper-next hidden md:flex absolute right-3 top-1/2 z-20 -translate-y-1/2 rounded-full border border-primary bg-primary hover:bg-transparent hover:text-primary p-2.5 text-white shadow-sm backdrop-blur-sm transition-all  focus-visible:opacity-100 sm:right-5">
         <IoIosArrowForward size={25}/>
       </button>
 

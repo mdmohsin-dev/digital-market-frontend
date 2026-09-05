@@ -25,8 +25,8 @@ export default function CategoryCard({ category }: CategoryCardProps) {
         <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 rounded-2xl" />
       </div>
 
-      <div className="absolute bottom-0 flex w-full items-center justify-between p-4 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-        <h3 className="text-xl font-semibold text-white">
+      <div className="absolute bottom-0 flex w-full items-center justify-between p-4 md:opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+        <h3 className="md:text-xl text-lg font-semibold text-white">
           {category.name}
         </h3>
         <FaArrowRight className="text-white text-lg" />

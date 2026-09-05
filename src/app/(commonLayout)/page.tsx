@@ -5,7 +5,6 @@ import CustomerReviewsSection from "@/components/Home/CustomerReviewsSection";
 import FlashSaleSection from "@/components/Home/Flash-sale/FlashSaleSection";
 import Hero from "@/components/Home/Hero/Hero";
 import NewArrivalsSection from "@/components/Home/NewArrivalsSection";
-import NewsletterSection from "@/components/Home/NewsLetterSection";
 import { flashSales } from "@/Data/flashSales";
 import { products } from "@/Data/products";
 
@@ -28,7 +27,6 @@ export default function Home() {
       <CampaignSection />
       <BestSellingSection />
       <CustomerReviewsSection />
-      <NewsletterSection />
     </>
   );
 }

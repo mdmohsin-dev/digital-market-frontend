@@ -3,6 +3,7 @@
 import { Heart, Menu, Search, ShoppingCart, Tag, User, X } from "lucide-react";
 
 import Link from "next/link";
+import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
 import { useCartCount } from "@/hooks/useCartCount";
@@ -41,12 +42,19 @@ export default function PublicNavbar() {
     const [cartOpen, setCartOpen] = useState(false);
     const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
 
+    const pathname = usePathname();
 
     const cartCount = useCartCount();
 
     const { wishlistCount, isLoaded, } = useWishlist();
 
     const { isLoggedIn, isPending, } = useUserSession();
+
+    // "/" only matches exactly; every other href matches itself or any nested route under it
+    const isActive = (href:any) =>
+        href === "/"
+            ? pathname === "/"
+            : pathname === href || pathname?.startsWith(`${href}/`);
 
 
     useEffect(() => {
@@ -176,21 +184,38 @@ export default function PublicNavbar() {
                                     ? "/dashboard"
                                     : "/login"
                             }
-                            className="
+                            className={`
                                 hidden
                                 shrink-0
                                 flex-col
                                 items-center
                                 gap-1
                                 sm:flex
-                            "
+                                ${isActive(isLoggedIn ? "/dashboard" : "/login")
+                                    ? "text-primary"
+                                    : ""
+                                }
+                            `}
                         >
                             <LuUserRound
                                 size={28}
-                                className="text-muted-foreground"
+                                className={
+                                    isActive(isLoggedIn ? "/dashboard" : "/login")
+                                        ? "text-primary"
+                                        : "text-muted-foreground"
+                                }
                             />
 
-                            <span className="text-xs font-semibold text-foreground">
+                            <span
+                                className={`
+                                    text-xs
+                                    font-semibold
+                                    ${isActive(isLoggedIn ? "/dashboard" : "/login")
+                                        ? "text-primary"
+                                        : "text-foreground"
+                                    }
+                                `}
+                            >
                                 {isPending
                                     ? "Account"
                                     : isLoggedIn
@@ -211,7 +236,14 @@ export default function PublicNavbar() {
                                     gap-1
                                 "
                             >
-                                <Heart size={28} />
+                                <Heart
+                                    size={28}
+                                    className={
+                                        isActive("/wishlist")
+                                            ? "text-primary"
+                                            : ""
+                                    }
+                                />
 
                                 {isLoaded &&
                                     wishlistCount > 0 && (
@@ -239,7 +271,16 @@ export default function PublicNavbar() {
                                         </span>
                                     )}
 
-                                <span className="text-xs font-semibold text-foreground">
+                                <span
+                                    className={`
+                                        text-xs
+                                        font-semibold
+                                        ${isActive("/wishlist")
+                                            ? "text-primary"
+                                            : "text-foreground"
+                                        }
+                                    `}
+                                >
                                     Wishlist
                                 </span>
                             </Link>
@@ -276,29 +317,27 @@ export default function PublicNavbar() {
 
 
                 <div className="sticky top-10">
-                    <div
-                        className="
+                    <div className="
                             relative
                             z-20
                             hidden
                             border-t
                             border-gray-300
+                            bg-[#041F1E]
+                            text-white
                             lg:block
                         "
                     >
-                        <nav
-                            className="
+                        <nav className="
                                 mx-auto
                                 flex
                                 max-w-350
                                 items-center
                                 gap-16
                                 px-4
-                                py-3
-                            "
-                        >
-                            <ul
-                                className="
+                                py-3">
+
+                            <ul className="
                                     flex
                                     w-full
                                     items-center
@@ -312,44 +351,31 @@ export default function PublicNavbar() {
                                     >
                                         <Link
                                             href={item.href}
-                                            className="
+                                            aria-current={
+                                                isActive(item.href)
+                                                    ? "page"
+                                                    : undefined
+                                            }
+                                            className={`
                                                 flex
                                                 items-center
                                                 gap-1
                                                 whitespace-nowrap
                                                 text-sm
                                                 font-medium
-                                                text-foreground
                                                 transition-colors
-                                                hover:text-brand
-                                            "
+                                                hover:text-primary
+                                                ${isActive(item.href)
+                                                    ? "text-primary"
+                                                    : "text-foreground"
+                                                }
+                                            `}
                                         >
                                             {item.label}
                                         </Link>
                                     </li>
                                 ))}
                             </ul>
-
-                            <div
-                                className="
-                                    ml-auto
-                                    flex
-                                    shrink-0
-                                    items-center
-                                    gap-2
-                                    whitespace-nowrap
-                                    text-sm
-                                    font-semibold
-                                    text-foreground
-                                "
-                            >
-                                <Tag
-                                    size={16}
-                                    className="text-badge"
-                                />
-
-                                $20 Off Your First Order
-                            </div>
                         </nav>
                     </div>
                 </div>
@@ -524,15 +550,25 @@ export default function PublicNavbar() {
                                         onClick={() =>
                                             setOpen(false)
                                         }
-                                        className="
+                                        aria-current={
+                                            isActive(item.href)
+                                                ? "page"
+                                                : undefined
+                                        }
+                                        className={`
                                             flex
                                             items-center
                                             justify-between
                                             py-3
                                             text-sm
                                             font-medium
-                                            text-foreground
-                                        "
+                                            transition-colors
+                                            hover:text-primary
+                                            ${isActive(item.href)
+                                                ? "text-primary"
+                                                : "text-foreground"
+                                            }
+                                        `}
                                     >
                                         {item.label}
                                     </Link>
@@ -580,7 +616,8 @@ export default function PublicNavbar() {
 
                 <Link
                     href="/"
-                    className="
+                    aria-current={isActive("/") ? "page" : undefined}
+                    className={`
                         flex
                         h-full
                         flex-1
@@ -588,7 +625,13 @@ export default function PublicNavbar() {
                         items-center
                         justify-center
                         gap-0.5
-                        text-white">
+                        text-white
+                        ${isActive("/")
+                            ? "font-bold underline underline-offset-4"
+                            : "opacity-80"
+                        }
+                    `}
+                >
                     <span className="text-lg leading-none">
                         ⌂
                     </span>
@@ -602,7 +645,23 @@ export default function PublicNavbar() {
 
                 <Link
                     href="/wishlist"
-                    className=" relative flex h-full flex-1 flex-col items-center justify-center gap-0.5 text-white">
+                    aria-current={isActive("/wishlist") ? "page" : undefined}
+                    className={`
+                        relative
+                        flex
+                        h-full
+                        flex-1
+                        flex-col
+                        items-center
+                        justify-center
+                        gap-0.5
+                        text-white
+                        ${isActive("/wishlist")
+                            ? "font-bold underline underline-offset-4"
+                            : "opacity-80"
+                        }
+                    `}
+                >
                     <Heart size={20} />
 
                     {isLoaded &&
@@ -660,7 +719,21 @@ export default function PublicNavbar() {
                 <button
                     type="button"
                     onClick={openMobileSearch}
-                    className="flex h-full flex-1 flex-col items-center justify-center gap-0.5 text-white">
+                    className={`
+                        flex
+                        h-full
+                        flex-1
+                        flex-col
+                        items-center
+                        justify-center
+                        gap-0.5
+                        text-white
+                        ${mobileSearchOpen
+                            ? "font-bold underline underline-offset-4"
+                            : "opacity-80"
+                        }
+                    `}
+                >
                     <Search size={20} />
 
                     <span className="text-[10px] font-semibold uppercase">
@@ -675,8 +748,26 @@ export default function PublicNavbar() {
                         isLoggedIn
                             ? "/dashboard"
                             : "/login"}
-
-                    className="flex h-full flex-1 flex-col items-center justify-center gap-0.5 text-white">
+                    aria-current={
+                        isActive(isLoggedIn ? "/dashboard" : "/login")
+                            ? "page"
+                            : undefined
+                    }
+                    className={`
+                        flex
+                        h-full
+                        flex-1
+                        flex-col
+                        items-center
+                        justify-center
+                        gap-0.5
+                        text-white
+                        ${isActive(isLoggedIn ? "/dashboard" : "/login")
+                            ? "font-bold underline underline-offset-4"
+                            : "opacity-80"
+                        }
+                    `}
+                >
                     <User size={20} />
 
                     <span className="text-[10px] font-semibold uppercase">

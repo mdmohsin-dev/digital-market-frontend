@@ -14,7 +14,7 @@ export default function CampaignCard({ campaign }: CampaignCardProps) {
 
   return (
     <div
-      className="relative flex h-72 flex-col overflow-hidden rounded-xl border border-white/10 bg-cover bg-center bg-no-repeat sm:h-80"
+      className="relative flex md:h-72 flex-col overflow-hidden rounded-xl border border-white/10 bg-cover bg-center bg-no-repeat sm:h-80"
       style={{
         backgroundImage: `url(${typeof image === "string" ? image : image.src
           })`,
@@ -25,17 +25,16 @@ export default function CampaignCard({ campaign }: CampaignCardProps) {
 
       {/* Content sits above the overlay, anchored to the bottom of the card */}
       <div className="relative z-10 mt-auto flex flex-col gap-2 p-5 md:p-6">
-        <h3 className="text-lg font-bold text-white drop-shadow-sm md:text-2xl">
+        <h3 className="text-lg font-bold font-lora text-white drop-shadow-sm text-xl md:text-3xl">
           {title}
         </h3>
-        <p className="text-sm max-w-sm text-neutral-200 drop-shadow-sm">{description}</p>
+        <p className="text-sm max-w-sm text-slate-300 drop-shadow-sm">{description}</p>
 
         <Link
           href={destinationUrl}
           target={isExternal ? "_blank" : undefined}
           rel={isExternal ? "noopener noreferrer" : undefined}
-          className="mt-2 inline-block w-fit rounded-lg bg-primary px-4 py-2 text-sm font-medium text-white transition-colors"
-        >
+          className="mt-2 inline-block w-fit rounded-lg bg-primary hover:bg-neutral-900 duration-500 px-4 py-2 text-sm font-medium text-white transition-colors">
           {buttonText}
         </Link>
       </div>

@@ -56,8 +56,7 @@ export default function FlashSaleSection({
     return (
         <section
             aria-labelledby="flash-sale-title"
-            className="mt-32"
-        >
+            className="md:mt-32 mt-16">
             <div className="mx-auto max-w-350 px-4 sm:px-6 lg:px-8">
                 {/* Header */}
                 <div className="mb-6 flex flex-col gap-4 sm:flex-row sm:items-end sm:justify-between">
@@ -65,7 +64,7 @@ export default function FlashSaleSection({
                         <div className="flex flex-wrap items-center gap-4">
                             <h2
                                 id="flash-sale-title"
-                                className="text-2xl font-semibold tracking-tight sm:text-3xl"
+                                className="text-2xl font-semibold font-lora tracking-tight sm:text-3xl"
                             >
                                 {flashSale.title}
                             </h2>

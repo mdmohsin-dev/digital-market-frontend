@@ -144,7 +144,8 @@ export default function ProductCard({ product }: ProductCardProps) {
 
                     <Link
                         href={`/shop/${slug}`}
-                        className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-primary p-2 text-white transition-opacity hover:opacity-90">View Details
+                        className="mt-4 flex w-full items-center justify-center gap-2 rounded-md bg-primary p-2 text-white hover:bg-neutral-900 duration-500">
+                        View Details
                     </Link>
                 </div>
             </div>

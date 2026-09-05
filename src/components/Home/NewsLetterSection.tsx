@@ -9,7 +9,7 @@ export default function NewsletterSection() {
   return (
     <section
       aria-label="Newsletter"
-      className=" bg-[#f9f7f4] max-w-350 mx-auto px-8 rounded-xl mt-32 -mb-36 relative z-10"
+      className=" bg-[#f9f7f4] max-w-350 mx-auto px-8 rounded-xl md:mt-32 mt-18 -mb-36 relative z-10"
       style={{
         backgroundImage: `url(${newsletterbg.src})`,
         backgroundSize: "cover",
@@ -37,7 +37,7 @@ export default function NewsletterSection() {
                 <span>Stay Updated</span>
               </div>
 
-              <h2 className="mt-4 text-3xl font-medium leading-tight text-neutral-900 sm:text-4xl md:text-5xl">
+              <h2 className="mt-4 text-3xl font-lora font-medium leading-tight text-neutral-900 sm:text-4xl md:text-5xl">
                 Stay in the style loop
               </h2>
 
@@ -64,7 +64,7 @@ export default function NewsletterSection() {
 
                   <button
                     type="submit"
-                    className="rounded-md bg-neutral-900 px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-neutral-800 focus:outline-none focus:ring-2 focus:ring-neutral-900 focus:ring-offset-2"
+                    className="rounded-md bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
                   >
                     Subscribe
                   </button>

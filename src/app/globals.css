@@ -1,6 +1,6 @@
 @import "tailwindcss";
 
-@custom-variant dark (&:is(.dark *));
+@custom-variant dark (&:is(.dark));
 
 /* :root {
   --background: #ffffff;
@@ -15,9 +15,9 @@
 } */
 
 :root {
-  --primary: oklch(0.53 0.24 265);
+  --primary: #F48721;
   --primary-foreground: oklch(0.99 0 0);
-  --badge: oklch(0.6 0.23 27);
+  --badge: #F48721;
   --badge-foreground: oklch(0.99 0 0);
   --secondary: oklch(0.6 0.23 27);
   --secondary-foreground: oklch(0.99 0 0);
@@ -51,14 +51,15 @@
   --color-warning: #b86e00;
   --color-warning-foreground: #ffffff;
 }
-@theme inline {
- --color-primary: var(--primary);
-  --color-primary-foreground: var(--primary-foreground);
 
+@theme inline {
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
   --color-secondary: var(--secondary);
   --color-secondary-foreground: var(--secondary-foreground);
   --color-badge: var(--badge);
   --color-badge-foreground: var(--badge-foreground);
+
   --color-color-warning-foreground: var(--color-warning-foreground);
   --color-color-warning: var(--color-warning);
   --color-color-surface-2: var(--color-surface-2);
@@ -88,12 +89,16 @@
   --color-color-accent-hover: var(--color-accent-hover);
   --color-color-accent-fg: var(--color-accent-fg);
   --color-color-accent: var(--color-accent);
+
+  --font-sans: var(--font-inter);
+  --font-mono: var(--font-inter);
+  --font-lora: var(--font-lora);
 }
 
 body {
-  background: var(--background);
   color: var(--foreground);
-  font-family: Arial, Helvetica, sans-serif;
+  font-family: var(--font-inter);
+  background: #faf9f7 !important;
 }
 
 .dark {

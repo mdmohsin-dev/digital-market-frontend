@@ -192,10 +192,10 @@ export function ShopFilter({
   );
 
   return (
-    <div>
+    <div className="sticky top-10 ">
       {/* Desktop */}
       <aside className="hidden lg:block lg:w-80">
-        <div className="sticky top-8 max-h-[calc(100vh-4rem)] overflow-y-auto pr-1">
+        <div className="max-h-[calc(100vh-4rem)] overflow-y-auto pr-1">
           {filterPanel}
         </div>
       </aside>

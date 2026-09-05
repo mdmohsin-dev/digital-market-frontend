@@ -19,14 +19,14 @@ export default function CustomerReviewsSection() {
     }
 
     return (
-        <section className="mx-auto mt-32 max-w-350 px-4 sm:px-6 lg:px-8">
+        <section className="mx-auto md:mt-32 mt-18 max-w-350 px-4 sm:px-6 lg:px-8">
             {/* Header */}
-            <div className="mb-8 text-center sm:mb-10">
+            <div className="mb-6 text-center sm:mb-10">
                 <p className="mb-2 text-sm font-medium uppercase tracking-widest text-gray-500">
                     Customer Feedback
                 </p>
 
-                <h2 className="text-2xl font-semibold sm:text-4xl">
+                <h2 className="text-2xl font-lora font-semibold sm:text-4xl">
                     What Our Customers Say
                 </h2>
             </div>
