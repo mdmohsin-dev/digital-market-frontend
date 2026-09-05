@@ -12,7 +12,9 @@ import {
     User,
 } from "lucide-react";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
+import { authClient } from "@/lib/auth-client";
 
 type RegisterFormData = {
     name: string;
@@ -22,8 +24,14 @@ type RegisterFormData = {
 };
 
 export default function RegisterPage() {
+    const router = useRouter();
+
     const [showPassword, setShowPassword] = useState(false);
-    const [showConfirmPassword, setShowConfirmPassword] = useState(false);
+    const [showConfirmPassword, setShowConfirmPassword] =
+        useState(false);
+
+    const [registerError, setRegisterError] = useState("");
+    const [isRegistering, setIsRegistering] = useState(false);
 
     const {
         register,
@@ -41,16 +49,42 @@ export default function RegisterPage() {
 
     const password = watch("password");
 
-    const onSubmit = (data: RegisterFormData) => {
-        console.log("Register Data:", data);
+    const onSubmit = async (data: RegisterFormData) => {
+        setRegisterError("");
+        setIsRegistering(true);
 
-        // Later Better Auth registration logic will go here.
+        try {
+            const { error } = await authClient.signUp.email({
+                name: data.name.trim(),
+                email: data.email.trim().toLowerCase(),
+                password: data.password,
+                callbackURL: "/dashboard",
+            });
+
+            if (error) {
+                setRegisterError(
+                    error.message || "Unable to create account."
+                );
+                setIsRegistering(false);
+                return;
+            }
+
+            router.push("/login");
+        } catch (error) {
+            console.error("Registration error:", error);
+
+            setRegisterError(
+                "Something went wrong. Please try again."
+            );
+
+            setIsRegistering(false);
+        }
     };
 
     return (
         <main className="relative flex min-h-screen items-center justify-center bg-white px-4 py-10">
-
             {/* Back Button */}
+
             <Link
                 href="/"
                 className="absolute left-5 top-5 inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-black sm:left-8 sm:top-8"
@@ -60,9 +94,10 @@ export default function RegisterPage() {
             </Link>
 
             {/* Register Card */}
-            <div className="w-full max-w-[610px] rounded-2xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(0,0,0,0.08)] sm:px-12 sm:py-12">
 
+            <div className="w-full max-w-[610px] rounded-2xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(0,0,0,0.08)] sm:px-12 sm:py-12">
                 {/* Icon */}
+
                 <div className="flex justify-center">
                     <div className="flex h-20 w-20 items-center justify-center rounded-full border border-gray-200 bg-gray-50">
                         <ShoppingCart
@@ -74,6 +109,7 @@ export default function RegisterPage() {
                 </div>
 
                 {/* Heading */}
+
                 <div className="mt-6 text-center">
                     <h1 className="text-3xl font-bold tracking-tight text-black">
                         Create Account
@@ -85,18 +121,20 @@ export default function RegisterPage() {
                 </div>
 
                 {/* Form */}
+
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     className="mt-9 space-y-5"
                 >
-
                     {/* Name */}
+
                     <div>
                         <div
-                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${errors.name
+                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${
+                                errors.name
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                }`}
+                            }`}
                         >
                             <User
                                 size={21}
@@ -109,7 +147,9 @@ export default function RegisterPage() {
                                 autoComplete="name"
                                 className="h-full min-w-0 flex-1 bg-transparent px-3 text-base text-black outline-none placeholder:text-gray-500"
                                 {...register("name", {
-                                    required: "Full name is required",
+                                    required:
+                                        "Full name is required",
+
                                     minLength: {
                                         value: 2,
                                         message:
@@ -127,12 +167,14 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Email */}
+
                     <div>
                         <div
-                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${errors.email
+                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${
+                                errors.email
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                }`}
+                            }`}
                         >
                             <Mail
                                 size={21}
@@ -145,10 +187,11 @@ export default function RegisterPage() {
                                 autoComplete="email"
                                 className="h-full min-w-0 flex-1 bg-transparent px-3 text-base text-black outline-none placeholder:text-gray-500"
                                 {...register("email", {
-                                    required: "Email address is required",
+                                    required:
+                                        "Email address is required",
+
                                     pattern: {
-                                        value:
-                                            /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                        value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                                         message:
                                             "Please enter a valid email address",
                                     },
@@ -164,12 +207,14 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Password */}
+
                     <div>
                         <div
-                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${errors.password
+                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${
+                                errors.password
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                }`}
+                            }`}
                         >
                             <LockKeyhole
                                 size={21}
@@ -186,7 +231,9 @@ export default function RegisterPage() {
                                 autoComplete="new-password"
                                 className="h-full min-w-0 flex-1 bg-transparent px-3 text-base text-black outline-none placeholder:text-gray-500"
                                 {...register("password", {
-                                    required: "Password is required",
+                                    required:
+                                        "Password is required",
+
                                     minLength: {
                                         value: 8,
                                         message:
@@ -198,7 +245,9 @@ export default function RegisterPage() {
                             <button
                                 type="button"
                                 onClick={() =>
-                                    setShowPassword((prev) => !prev)
+                                    setShowPassword(
+                                        (prev) => !prev
+                                    )
                                 }
                                 aria-label={
                                     showPassword
@@ -223,12 +272,14 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Confirm Password */}
+
                     <div>
                         <div
-                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${errors.confirmPassword
+                            className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${
+                                errors.confirmPassword
                                     ? "border-red-500"
                                     : "border-gray-300"
-                                }`}
+                            }`}
                         >
                             <LockKeyhole
                                 size={21}
@@ -244,13 +295,17 @@ export default function RegisterPage() {
                                 placeholder="Confirm password"
                                 autoComplete="new-password"
                                 className="h-full min-w-0 flex-1 bg-transparent px-3 text-base text-black outline-none placeholder:text-gray-500"
-                                {...register("confirmPassword", {
-                                    required:
-                                        "Please confirm your password",
-                                    validate: (value) =>
-                                        value === password ||
-                                        "Passwords do not match",
-                                })}
+                                {...register(
+                                    "confirmPassword",
+                                    {
+                                        required:
+                                            "Please confirm your password",
+
+                                        validate: (value) =>
+                                            value === password ||
+                                            "Passwords do not match",
+                                    }
+                                )}
                             />
 
                             <button
@@ -282,7 +337,16 @@ export default function RegisterPage() {
                         )}
                     </div>
 
+                    {/* Registration Error */}
+
+                    {registerError && (
+                        <p className="text-sm text-red-500">
+                            {registerError}
+                        </p>
+                    )}
+
                     {/* Terms */}
+
                     <div className="flex items-start gap-3 pt-1">
                         <input
                             type="checkbox"
@@ -314,15 +378,20 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Register Button */}
+
                     <button
                         type="submit"
-                        className="flex h-13 w-full items-center justify-center rounded-lg bg-black text-base font-semibold text-white transition-opacity hover:opacity-90"
+                        disabled={isRegistering}
+                        className="flex h-13 w-full items-center justify-center rounded-lg bg-black text-base font-semibold text-white transition-opacity hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-70"
                     >
-                        Create Account
+                        {isRegistering
+                            ? "Creating Account..."
+                            : "Create Account"}
                     </button>
                 </form>
 
                 {/* Divider */}
+
                 <div className="my-8 flex items-center gap-4">
                     <div className="h-px flex-1 bg-gray-200" />
 
@@ -333,13 +402,14 @@ export default function RegisterPage() {
                     <div className="h-px flex-1 bg-gray-200" />
                 </div>
 
-                {/* Social Buttons */}
-                <div className="w-full flex justify-center">
-                    {/* Google */}
+                {/* Google */}
+
+                <div className="flex w-full justify-center">
                     <GoogleLoginButton />
                 </div>
 
-                {/* Login Link */}
+                {/* Login */}
+
                 <p className="mt-8 text-center text-base text-gray-600">
                     Already have an account?{" "}
                     <Link

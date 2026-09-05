@@ -3,6 +3,7 @@
 import { useState } from "react";
 import DashboardSidebar from "./DashboardSidebar";
 import DashboardHeader from "./DashboardHeader";
+import RoleSync from "@/components/auth/RoleSync";
 
 interface DashboardLayoutProps {
     children: React.ReactNode;
@@ -35,6 +36,7 @@ export default function DashboardLayout({
                 <main className="h-full overflow-y-auto pt-16">
                     <div className="p-4 sm:p-6">
                         {children}
+                        <RoleSync/>
                     </div>
                 </main>
             </div>

@@ -2,24 +2,63 @@
 
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-
 import {
     LayoutDashboard,
     ShoppingBag,
-    Settings,
     X,
+    Package,
+    Users,
+    Tags,
 } from "lucide-react";
+import { useEffect, useState } from "react";
 
-const sidebarItems = [
+import LogoutButton from "@/components/auth/LogoutButton";
+
+type UserRole = "admin" | "customer";
+
+interface SidebarItem {
+    label: string;
+    href: string;
+    icon: typeof LayoutDashboard;
+    roles: UserRole[];
+}
+
+const sidebarItems: SidebarItem[] = [
     {
         label: "Dashboard",
         href: "/dashboard",
         icon: LayoutDashboard,
+        roles: ["admin", "customer"],
+    },
+    {
+        label: "Products",
+        href: "/dashboard/products",
+        icon: Package,
+        roles: ["admin"],
+    },
+    {
+        label: "Orders",
+        href: "/dashboard/orders",
+        icon: ShoppingBag,
+        roles: ["admin"],
     },
     {
         label: "My Orders",
-        href: "/dashboard/orders",
+        href: "/dashboard/my-orders",
         icon: ShoppingBag,
+        roles: ["customer"],
+    },
+    {
+        label: "Customers",
+        href: "/dashboard/customers",
+        icon: Users,
+        roles: ["admin"],
+    },
+    {
+        label: "Categories",
+        href: "/dashboard/categories",
+        icon: Tags,
+        roles: ["admin"],
     },
 ];
 
@@ -34,11 +73,41 @@ export default function DashboardSidebar({
 }: DashboardSidebarProps) {
     const pathname = usePathname();
 
+    const [role, setRole] = useState<UserRole | null>(
+        null
+    );
+
+    /*
+     * Get logged-in user's role
+     */
+
+    useEffect(() => {
+        const storedRole =
+            localStorage.getItem("user-role");
+
+        if (
+            storedRole === "admin" ||
+            storedRole === "customer"
+        ) {
+            setRole(storedRole);
+        }
+    }, []);
+
     const isItemActive = (href: string) => {
         return href === "/dashboard"
             ? pathname === "/dashboard"
             : pathname.startsWith(href);
     };
+
+    /*
+     * Show only items allowed for current role
+     */
+
+    const visibleSidebarItems = sidebarItems.filter(
+        (item) =>
+            role !== null &&
+            item.roles.includes(role)
+    );
 
     return (
         <aside
@@ -60,10 +129,8 @@ export default function DashboardSidebar({
                 transition-transform
                 duration-300
                 ease-in-out
-
                 lg:translate-x-0
                 lg:shadow-none
-
                 ${
                     open
                         ? "translate-x-0"
@@ -74,6 +141,7 @@ export default function DashboardSidebar({
             {/* =====================================================
                 SIDEBAR HEADER
             ====================================================== */}
+
             <div
                 className="
                     flex
@@ -95,6 +163,7 @@ export default function DashboardSidebar({
                 </Link>
 
                 {/* Mobile / Tablet Close Button */}
+
                 <button
                     type="button"
                     onClick={onClose}
@@ -120,11 +189,14 @@ export default function DashboardSidebar({
             {/* =====================================================
                 NAVIGATION
             ====================================================== */}
+
             <nav className="flex-1 overflow-y-auto px-4 py-6">
                 <ul className="space-y-2">
-                    {sidebarItems.map((item) => {
+                    {visibleSidebarItems.map((item) => {
                         const Icon = item.icon;
-                        const isActive = isItemActive(item.href);
+
+                        const isActive =
+                            isItemActive(item.href);
 
                         return (
                             <li key={item.href}>
@@ -141,7 +213,6 @@ export default function DashboardSidebar({
                                         text-sm
                                         font-medium
                                         transition-colors
-
                                         ${
                                             isActive
                                                 ? "bg-primary text-white"
@@ -161,37 +232,10 @@ export default function DashboardSidebar({
                 </ul>
             </nav>
 
-            {/* =====================================================
-                SETTINGS
-            ====================================================== */}
+            {/*LOGOUT*/}
+
             <div className="shrink-0 border-t border-gray-800 p-4">
-                <Link
-                    href="/dashboard/settings"
-                    onClick={onClose}
-                    className={`
-                        flex
-                        items-center
-                        gap-3
-                        rounded-lg
-                        px-4
-                        py-3
-                        text-sm
-                        font-medium
-                        transition-colors
-
-                        ${
-                            pathname.startsWith(
-                                "/dashboard/settings",
-                            )
-                                ? "bg-primary text-white"
-                                : "text-gray-400 hover:bg-white/5 hover:text-white"
-                        }
-                    `}
-                >
-                    <Settings size={19} />
-
-                    <span>Settings</span>
-                </Link>
+                <LogoutButton />
             </div>
         </aside>
     );

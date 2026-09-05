@@ -14,16 +14,15 @@ import {
 import { BsArrowLeft } from "react-icons/bs";
 
 import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
-import DemoAccountSelector from "@/components/auth/DemoAccountSelector";
-import { demoAccounts } from "@/config/demo-auth";
+import DemoAdminButton from "@/components/auth/DemoAdminButton";
+
+import { authClient } from "@/lib/auth-client";
 
 type LoginFormData = {
     email: string;
     password: string;
     rememberMe: boolean;
 };
-
-type DemoRole = "admin" | "customer";
 
 export default function LoginPage() {
     const router = useRouter();
@@ -34,13 +33,12 @@ export default function LoginPage() {
     const [loginError, setLoginError] =
         useState("");
 
-    const [selectedRole, setSelectedRole] =
-        useState<DemoRole | null>(null);
+    const [isLoggingIn, setIsLoggingIn] =
+        useState(false);
 
     const {
         register,
         handleSubmit,
-        setValue,
         formState: { errors },
     } = useForm<LoginFormData>({
         defaultValues: {
@@ -50,116 +48,45 @@ export default function LoginPage() {
         },
     });
 
-    /*
-     * Demo account selection
-     */
-
-    const handleDemoAccountSelect = (
-        role: DemoRole,
-        email: string,
-        password: string
-    ) => {
-        setSelectedRole(role);
-
-        setValue("email", email, {
-            shouldValidate: true,
-        });
-
-        setValue("password", password, {
-            shouldValidate: true,
-        });
-
+    const onSubmit = async (data: LoginFormData) => {
         setLoginError("");
-    };
+        setIsLoggingIn(true);
 
-    /*
-     * Login
-     */
+        try {
+            const { error } =
+                await authClient.signIn.email({
+                    email: data.email.trim().toLowerCase(),
+                    password: data.password,
+                    rememberMe: data.rememberMe,
+                    callbackURL: "/dashboard",
+                });
 
-    const onSubmit = (data: LoginFormData) => {
-        setLoginError("");
+            if (error) {
+                setLoginError(
+                    error.message ||
+                        "Invalid email or password."
+                );
 
-        const adminAccount = demoAccounts.admin;
-        const customerAccount = demoAccounts.customer;
+                setIsLoggingIn(false);
+                return;
+            }
 
-        let loggedInAccount = null;
+            router.push("/dashboard");
+        } catch (error) {
+            console.error("Login error:", error);
 
-        /*
-         * Admin credentials
-         */
-
-        if (
-            data.email === adminAccount.email &&
-            data.password === adminAccount.password
-        ) {
-            loggedInAccount = adminAccount;
-        }
-
-        /*
-         * Customer credentials
-         */
-
-        else if (
-            data.email === customerAccount.email &&
-            data.password === customerAccount.password
-        ) {
-            loggedInAccount = customerAccount;
-        }
-
-        /*
-         * Invalid credentials
-         */
-
-        if (!loggedInAccount) {
             setLoginError(
-                "Invalid email or password. Please check your credentials."
+                "Something went wrong. Please try again."
             );
 
-            return;
+            setIsLoggingIn(false);
         }
-
-        /*
-         * User data
-         */
-
-        const userData = {
-            name: loggedInAccount.name,
-            email: loggedInAccount.email,
-            role: loggedInAccount.role,
-        };
-
-        /*
-         * Remember me
-         */
-
-        const storage = data.rememberMe
-            ? localStorage
-            : sessionStorage;
-
-        storage.setItem(
-            "auth-user",
-            JSON.stringify(userData)
-        );
-
-        /*
-         * Save role
-         */
-
-        localStorage.setItem(
-            "user-role",
-            loggedInAccount.role
-        );
-
-        /*
-         * Both Admin and Customer
-         * go to the same Dashboard
-         */
-
-        router.push("/dashboard");
     };
 
     return (
         <main className="min-h-screen bg-white px-4 py-10 sm:px-6 lg:px-8">
+            {/* Back */}
+
             <Link
                 href="/"
                 className="absolute left-5 top-5 inline-flex items-center gap-2 text-md font-medium text-gray-600 transition-colors hover:text-gray-950 sm:left-8 sm:top-8"
@@ -170,8 +97,8 @@ export default function LoginPage() {
 
             <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center">
                 <div className="w-full max-w-[550px] rounded-2xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(0,0,0,0.08)] sm:px-10 sm:py-12 md:px-12">
-
                     {/* Icon */}
+
                     <div className="flex justify-center">
                         <div className="flex h-20 w-20 items-center justify-center rounded-full border border-gray-200 bg-gray-50">
                             <ShoppingCart
@@ -183,7 +110,8 @@ export default function LoginPage() {
                     </div>
 
                     {/* Heading */}
-                    <div className="mt-4 text-center">
+
+                    <div className="mt-7 text-center">
                         <h1 className="text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
                             Welcome Back!
                         </h1>
@@ -192,24 +120,22 @@ export default function LoginPage() {
                             Sign in to continue your journey
                         </p>
                     </div>
-                    {/* Demo Account Selector */}
-                        <DemoAccountSelector
-                            selectedRole={selectedRole}
-                            onSelect={handleDemoAccountSelect}
-                        />
 
-                    {/* Login Form */}
+                    {/* Form */}
+
                     <form
                         onSubmit={handleSubmit(onSubmit)}
                         className="mt-10 space-y-5"
                     >
                         {/* Email */}
+
                         <div>
                             <div
-                                className={`flex h-14 items-center rounded-lg border bg-white px-4 transition-colors ${errors.email
+                                className={`flex h-14 items-center rounded-lg border bg-white px-4 transition-colors ${
+                                    errors.email
                                         ? "border-red-500"
                                         : "border-gray-300 focus-within:border-gray-500"
-                                    }`}
+                                }`}
                             >
                                 <Mail
                                     size={22}
@@ -225,13 +151,11 @@ export default function LoginPage() {
                                     {...register("email", {
                                         required:
                                             "Email is required",
+
                                         pattern: {
                                             value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                                             message:
                                                 "Please enter a valid email",
-                                        },
-                                        onChange: () => {
-                                            setSelectedRole(null);
                                         },
                                     })}
                                 />
@@ -245,12 +169,14 @@ export default function LoginPage() {
                         </div>
 
                         {/* Password */}
+
                         <div>
                             <div
-                                className={`flex h-14 items-center rounded-lg border bg-white px-4 transition-colors ${errors.password
+                                className={`flex h-14 items-center rounded-lg border bg-white px-4 transition-colors ${
+                                    errors.password
                                         ? "border-red-500"
                                         : "border-gray-300 focus-within:border-gray-500"
-                                    }`}
+                                }`}
                             >
                                 <Lock
                                     size={22}
@@ -270,10 +196,11 @@ export default function LoginPage() {
                                     {...register("password", {
                                         required:
                                             "Password is required",
+
                                         minLength: {
-                                            value: 6,
+                                            value: 8,
                                             message:
-                                                "Password must be at least 6 characters",
+                                                "Password must be at least 8 characters",
                                         },
                                     })}
                                 />
@@ -282,7 +209,7 @@ export default function LoginPage() {
                                     type="button"
                                     onClick={() =>
                                         setShowPassword(
-                                            (value) => !value
+                                            (prev) => !prev
                                         )
                                     }
                                     aria-label={
@@ -307,9 +234,12 @@ export default function LoginPage() {
                             )}
                         </div>
 
-                        
+                        {/* Demo Admin */}
+
+                        <DemoAdminButton />
 
                         {/* Login Error */}
+
                         {loginError && (
                             <p className="text-sm text-red-500">
                                 {loginError}
@@ -317,6 +247,7 @@ export default function LoginPage() {
                         )}
 
                         {/* Remember + Forgot */}
+
                         <div className="flex items-center justify-between gap-4 pt-1">
                             <label className="flex cursor-pointer items-center gap-2.5">
                                 <input
@@ -341,15 +272,20 @@ export default function LoginPage() {
                         </div>
 
                         {/* Sign In */}
+
                         <button
                             type="submit"
-                            className="flex h-14 w-full items-center justify-center rounded-lg bg-primary text-base font-semibold text-white transition-colors hover:bg-[#041F1E] duration-500"
+                            disabled={isLoggingIn}
+                            className="flex h-14 w-full items-center justify-center rounded-lg bg-gray-950 text-base font-semibold text-white transition-colors hover:bg-gray-800 disabled:cursor-not-allowed disabled:opacity-70"
                         >
-                            Sign In
+                            {isLoggingIn
+                                ? "Signing In..."
+                                : "Sign In"}
                         </button>
                     </form>
 
                     {/* Divider */}
+
                     <div className="my-8 flex items-center gap-3">
                         <div className="h-px flex-1 bg-gray-200" />
 
@@ -360,13 +296,15 @@ export default function LoginPage() {
                         <div className="h-px flex-1 bg-gray-200" />
                     </div>
 
-                    {/* Social Login */}
+                    {/* Google */}
+
                     <div className="flex w-full justify-center">
                         <GoogleLoginButton />
                     </div>
 
                     {/* Register */}
-                    <p className="mt-4 text-center text-sm text-gray-700 sm:text-base">
+
+                    <p className="mt-8 text-center text-sm text-gray-700 sm:text-base">
                         Don't have an account?{" "}
                         <Link
                             href="/register"
