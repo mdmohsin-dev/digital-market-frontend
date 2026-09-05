@@ -18,7 +18,7 @@ export default function ProductSort({
     onChange,
 }: ProductSortProps) {
     return (
-        <div className=" flex items-center justify-end">
+        <div className="flex items-center justify-end">
             <div className="flex items-center gap-2">
                 <ArrowDownUp
                     size={17}

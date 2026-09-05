@@ -2,18 +2,47 @@
 
 import Link from "next/link";
 import { useState } from "react";
+import { useRouter } from "next/navigation";
 import { useForm } from "react-hook-form";
-import { Eye, EyeOff, Lock, Mail, ShoppingCart, } from "lucide-react";
+import {
+    Eye,
+    EyeOff,
+    Lock,
+    Mail,
+    ShoppingCart,
+} from "lucide-react";
 import { BsArrowLeft } from "react-icons/bs";
-import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
 
-type LoginFormData = { email: string; password: string; rememberMe: boolean; };
+import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
+import DemoAccountSelector from "@/components/auth/DemoAccountSelector";
+import { demoAccounts } from "@/config/demo-auth";
+
+type LoginFormData = {
+    email: string;
+    password: string;
+    rememberMe: boolean;
+};
+
+type DemoRole = "admin" | "customer";
 
 export default function LoginPage() {
+    const router = useRouter();
 
-    const [showPassword, setShowPassword] = useState(false);
+    const [showPassword, setShowPassword] =
+        useState(false);
 
-    const { register, handleSubmit, formState: { errors }, } = useForm<LoginFormData>({
+    const [loginError, setLoginError] =
+        useState("");
+
+    const [selectedRole, setSelectedRole] =
+        useState<DemoRole | null>(null);
+
+    const {
+        register,
+        handleSubmit,
+        setValue,
+        formState: { errors },
+    } = useForm<LoginFormData>({
         defaultValues: {
             email: "",
             password: "",
@@ -21,11 +50,112 @@ export default function LoginPage() {
         },
     });
 
-    const onSubmit = (data: LoginFormData) => {
-        console.log("Login Form Data:", data);
+    /*
+     * Demo account selection
+     */
 
-        // Later:
-        // Better Auth login logic will be added here.
+    const handleDemoAccountSelect = (
+        role: DemoRole,
+        email: string,
+        password: string
+    ) => {
+        setSelectedRole(role);
+
+        setValue("email", email, {
+            shouldValidate: true,
+        });
+
+        setValue("password", password, {
+            shouldValidate: true,
+        });
+
+        setLoginError("");
+    };
+
+    /*
+     * Login
+     */
+
+    const onSubmit = (data: LoginFormData) => {
+        setLoginError("");
+
+        const adminAccount = demoAccounts.admin;
+        const customerAccount = demoAccounts.customer;
+
+        let loggedInAccount = null;
+
+        /*
+         * Admin credentials
+         */
+
+        if (
+            data.email === adminAccount.email &&
+            data.password === adminAccount.password
+        ) {
+            loggedInAccount = adminAccount;
+        }
+
+        /*
+         * Customer credentials
+         */
+
+        else if (
+            data.email === customerAccount.email &&
+            data.password === customerAccount.password
+        ) {
+            loggedInAccount = customerAccount;
+        }
+
+        /*
+         * Invalid credentials
+         */
+
+        if (!loggedInAccount) {
+            setLoginError(
+                "Invalid email or password. Please check your credentials."
+            );
+
+            return;
+        }
+
+        /*
+         * User data
+         */
+
+        const userData = {
+            name: loggedInAccount.name,
+            email: loggedInAccount.email,
+            role: loggedInAccount.role,
+        };
+
+        /*
+         * Remember me
+         */
+
+        const storage = data.rememberMe
+            ? localStorage
+            : sessionStorage;
+
+        storage.setItem(
+            "auth-user",
+            JSON.stringify(userData)
+        );
+
+        /*
+         * Save role
+         */
+
+        localStorage.setItem(
+            "user-role",
+            loggedInAccount.role
+        );
+
+        /*
+         * Both Admin and Customer
+         * go to the same Dashboard
+         */
+
+        router.push("/dashboard");
     };
 
     return (
@@ -37,8 +167,10 @@ export default function LoginPage() {
                 <BsArrowLeft size={25} />
                 Back
             </Link>
+
             <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center">
                 <div className="w-full max-w-[550px] rounded-2xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(0,0,0,0.08)] sm:px-10 sm:py-12 md:px-12">
+
                     {/* Icon */}
                     <div className="flex justify-center">
                         <div className="flex h-20 w-20 items-center justify-center rounded-full border border-gray-200 bg-gray-50">
@@ -51,7 +183,7 @@ export default function LoginPage() {
                     </div>
 
                     {/* Heading */}
-                    <div className="mt-7 text-center">
+                    <div className="mt-4 text-center">
                         <h1 className="text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
                             Welcome Back!
                         </h1>
@@ -60,6 +192,11 @@ export default function LoginPage() {
                             Sign in to continue your journey
                         </p>
                     </div>
+                    {/* Demo Account Selector */}
+                        <DemoAccountSelector
+                            selectedRole={selectedRole}
+                            onSelect={handleDemoAccountSelect}
+                        />
 
                     {/* Login Form */}
                     <form
@@ -70,8 +207,8 @@ export default function LoginPage() {
                         <div>
                             <div
                                 className={`flex h-14 items-center rounded-lg border bg-white px-4 transition-colors ${errors.email
-                                    ? "border-red-500"
-                                    : "border-gray-300 focus-within:border-gray-500"
+                                        ? "border-red-500"
+                                        : "border-gray-300 focus-within:border-gray-500"
                                     }`}
                             >
                                 <Mail
@@ -86,11 +223,15 @@ export default function LoginPage() {
                                     autoComplete="email"
                                     className="ml-3 h-full min-w-0 flex-1 bg-transparent text-base text-gray-900 outline-none placeholder:text-gray-500"
                                     {...register("email", {
-                                        required: "Email is required",
+                                        required:
+                                            "Email is required",
                                         pattern: {
                                             value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                                             message:
                                                 "Please enter a valid email",
+                                        },
+                                        onChange: () => {
+                                            setSelectedRole(null);
                                         },
                                     })}
                                 />
@@ -107,8 +248,8 @@ export default function LoginPage() {
                         <div>
                             <div
                                 className={`flex h-14 items-center rounded-lg border bg-white px-4 transition-colors ${errors.password
-                                    ? "border-red-500"
-                                    : "border-gray-300 focus-within:border-gray-500"
+                                        ? "border-red-500"
+                                        : "border-gray-300 focus-within:border-gray-500"
                                     }`}
                             >
                                 <Lock
@@ -119,13 +260,16 @@ export default function LoginPage() {
 
                                 <input
                                     type={
-                                        showPassword ? "text" : "password"
+                                        showPassword
+                                            ? "text"
+                                            : "password"
                                     }
                                     placeholder="Password"
                                     autoComplete="current-password"
                                     className="ml-3 h-full min-w-0 flex-1 bg-transparent text-base text-gray-900 outline-none placeholder:text-gray-500"
                                     {...register("password", {
-                                        required: "Password is required",
+                                        required:
+                                            "Password is required",
                                         minLength: {
                                             value: 6,
                                             message:
@@ -137,7 +281,9 @@ export default function LoginPage() {
                                 <button
                                     type="button"
                                     onClick={() =>
-                                        setShowPassword((value) => !value)
+                                        setShowPassword(
+                                            (value) => !value
+                                        )
                                     }
                                     aria-label={
                                         showPassword
@@ -161,13 +307,24 @@ export default function LoginPage() {
                             )}
                         </div>
 
+                        
+
+                        {/* Login Error */}
+                        {loginError && (
+                            <p className="text-sm text-red-500">
+                                {loginError}
+                            </p>
+                        )}
+
                         {/* Remember + Forgot */}
                         <div className="flex items-center justify-between gap-4 pt-1">
                             <label className="flex cursor-pointer items-center gap-2.5">
                                 <input
                                     type="checkbox"
                                     className="h-5 w-5 cursor-pointer rounded border-gray-300 accent-black"
-                                    {...register("rememberMe")}
+                                    {...register(
+                                        "rememberMe"
+                                    )}
                                 />
 
                                 <span className="text-sm text-gray-600 sm:text-base">
@@ -186,7 +343,7 @@ export default function LoginPage() {
                         {/* Sign In */}
                         <button
                             type="submit"
-                            className="flex h-14 w-full items-center justify-center rounded-lg bg-gray-950 text-base font-semibold text-white transition-colors hover:bg-gray-800"
+                            className="flex h-14 w-full items-center justify-center rounded-lg bg-primary text-base font-semibold text-white transition-colors hover:bg-[#041F1E] duration-500"
                         >
                             Sign In
                         </button>
@@ -204,13 +361,12 @@ export default function LoginPage() {
                     </div>
 
                     {/* Social Login */}
-                    <div className="w-full flex justify-center">
-                        {/* Google */}
+                    <div className="flex w-full justify-center">
                         <GoogleLoginButton />
                     </div>
 
                     {/* Register */}
-                    <p className="mt-8 text-center text-sm text-gray-700 sm:text-base">
+                    <p className="mt-4 text-center text-sm text-gray-700 sm:text-base">
                         Don't have an account?{" "}
                         <Link
                             href="/register"

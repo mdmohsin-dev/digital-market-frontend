@@ -512,7 +512,7 @@ function ShopContent() {
                     SORT + VIEW TOGGLE
                 ================================================= */}
 
-        <div className="flex items-center justify-between">
+        <div className="bg-white rounded-md p-3 flex items-center justify-between">
           {/* Sort - Left */}
           <div>
             <ProductSort

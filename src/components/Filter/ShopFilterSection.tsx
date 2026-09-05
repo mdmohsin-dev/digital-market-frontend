@@ -102,7 +102,7 @@ export function ShopFilter({
   const filterPanel = (
     <div
       className={cn(
-        "border border-gray-300 bg-gray-100",
+        "border border-gray-200 bg-white",
         className
       )}
     >
@@ -217,7 +217,7 @@ export function ShopFilter({
 
           <SheetContent
             side="left"
-            className="w-[86%] max-w-[340px] bg-background p-0"
+            className="w-[86%] max-w-[340px] p-0"
           >
             <div className="max-h-[calc(100vh-2rem)] overflow-y-auto py-4 pl-4 pr-2">
               {filterPanel}
