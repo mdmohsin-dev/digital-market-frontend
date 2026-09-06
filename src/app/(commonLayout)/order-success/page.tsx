@@ -58,7 +58,7 @@ export default async function OrderSuccessPage({ searchParams, }: OrderSuccessPa
 
                     {orderId && (
                         <Link
-                            href={`/orders/${orderId}`}
+                            href={`/dashboard/orders/${orderId}`}
                             className="inline-flex h-11 items-center justify-center rounded-md border border-gray-300 px-6 text-sm font-medium transition hover:bg-gray-50"
                         >
                             View Order
