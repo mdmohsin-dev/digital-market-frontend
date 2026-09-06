@@ -31,33 +31,15 @@ const sidebarItems: SidebarItem[] = [
         roles: ["admin", "customer"],
     },
     {
-        label: "Products",
-        href: "/dashboard/products",
-        icon: Package,
-        roles: ["admin"],
-    },
-    {
         label: "Orders",
         href: "/dashboard/orders",
         icon: ShoppingBag,
-        roles: ["admin"],
-    },
-    {
-        label: "My Orders",
-        href: "/dashboard/my-orders",
-        icon: ShoppingBag,
-        roles: ["customer"],
+        roles: ["admin", "customer"],
     },
     {
         label: "Customers",
         href: "/dashboard/customers",
         icon: Users,
-        roles: ["admin"],
-    },
-    {
-        label: "Categories",
-        href: "/dashboard/categories",
-        icon: Tags,
         roles: ["admin"],
     },
 ];

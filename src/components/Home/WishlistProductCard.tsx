@@ -5,6 +5,7 @@ import { Trash2 } from "lucide-react";
 import type { Product } from "@/types/product";
 import { useCallback, useState } from "react";
 import { toggleWishlist } from "@/lib/wishlist";
+import Link from "next/link";
 
 interface ProductCardProps {
   product: Product;
@@ -50,13 +51,13 @@ export function WishlistProductCard({
 
     {/* Actions */}
     <div className="flex shrink-0 items-center gap-2">
-      <button
-        type="button"
+      <Link
+      href={`/shop/${product.slug}`}
         onClick={() => onAddToCart?.(product)}
         className="rounded-lg bg-primary text-white bg-card px-5 py-2.5 text-sm font-medium  transition-colors hover:bg-muted"
       >
-        Add to Cart
-      </button>
+        View Details
+      </Link>
 
       <button
         type="button"
