@@ -1,19 +1,6 @@
 "use client";
 
-import {
-    ArrowLeft,
-    Check,
-    CreditCard,
-    Lock,
-    MapPin,
-    Minus,
-    Plus,
-    ShieldCheck,
-    ShoppingBag,
-    Tag,
-    Trash2,
-    User,
-} from "lucide-react";
+import { ArrowLeft, Check, CreditCard, Lock, MapPin, Minus, Plus, ShieldCheck, ShoppingBag, Tag, Trash2, User, } from "lucide-react";
 import Image from "next/image";
 import Link from "next/link";
 import {
@@ -25,55 +12,62 @@ import {
 } from "@/lib/cart";
 import { useEffect, useMemo, useState } from "react";
 
+import { clearCart } from "@/lib/cart";
+import {
+    generateOrderId,
+    saveOrder,
+    type Order,
+    type PaymentMethod,
+} from "@/lib/orders";
+import { useRouter } from "next/navigation";
+
 import bkashLogo from "@/assets/Images/bkashLogo.png";
 import rocketLogo from "@/assets/Images/rocketLogo.jpg";
 import nagadLogo from "@/assets/Images/nagad-logo-png_seeklogo-411803.png";
 import cardLogo from "@/assets/Images/cardLogo.png";
 import handCashLogo from "@/assets/Images/cash-in-hand.jpg";
 
+const paymentMethods: {
+    id: PaymentMethod;
+    name: string;
+    icon: string;
+    row: number;
+}[] = [
+        {
+            id: "cod",
+            name: "Cash on Delivery",
+            icon: "cash",
+            row: 1,
+        },
+        {
+            id: "card",
+            name: "Card Payment",
+            icon: "card",
+            row: 1,
+        },
+        {
+            id: "rocket",
+            name: "Rocket",
+            icon: "rocket",
+            row: 2,
+        },
+        {
+            id: "bkash",
+            name: "bKash",
+            icon: "bkash",
+            row: 2,
+        },
+        {
+            id: "nagad",
+            name: "Nagad",
+            icon: "nagad",
+            row: 2,
+        },
+    ];
 
-const paymentMethods = [
-    {
-        id: "cod",
-        name: "Cash on Delivery",
-        icon: "cash",
-        row: 1,
-    },
-    {
-        id: "card",
-        name: "Card Payment",
-        icon: "card",
-        row: 1,
-    },
-    {
-        id: "rocket",
-        name: "Rocket",
-        icon: "rocket",
-        row: 2,
-    },
-    {
-        id: "bkash",
-        name: "bKash",
-        icon: "bkash",
-        row: 2,
-    },
-    {
-        id: "nagad",
-        name: "Nagad",
-        icon: "nagad",
-        row: 2,
-    },
-];
+/*PAYMENT ICON */
 
-/* =========================================================
-   PAYMENT ICON
-========================================================= */
-
-function PaymentIcon({
-    type,
-}: {
-    type: string;
-}) {
+function PaymentIcon({ type, }: { type: string; }) {
     if (type === "cash") {
         return (
             <div className="relative flex h-10 w-12 shrink-0 items-center justify-center overflow-hidden rounded-md ">
@@ -147,15 +141,12 @@ function PaymentIcon({
         <div className="flex h-10 w-12 shrink-0 items-center justify-center rounded-md">
             <CreditCard
                 size={23}
-                className="text-gray-600"
-            />
+                className="text-gray-600" />
         </div>
     );
 }
 
-/* =========================================================
-   CHECKOUT CLIENT
-========================================================= */
+/* CHECKOUT CLIENT*/
 
 export default function CheckoutClient() {
     /* =====================================================
@@ -163,6 +154,9 @@ export default function CheckoutClient() {
     ===================================================== */
 
     const [cart, setCart] = useState<CartItem[]>([]);
+    const router = useRouter();
+    const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
+    const [saveAddress, setSaveAddress] = useState(false);
 
     /* =====================================================
        FORM
@@ -174,13 +168,6 @@ export default function CheckoutClient() {
     const [address, setAddress] = useState("");
     const [city, setCity] = useState("");
     const [postalCode, setPostalCode] = useState("");
-
-    /* =====================================================
-       PAYMENT
-    ===================================================== */
-
-    const [paymentMethod, setPaymentMethod] =
-        useState("cod");
 
     /* =====================================================
        PROMO
@@ -222,6 +209,33 @@ export default function CheckoutClient() {
                 loadCart,
             );
         };
+    }, []);
+
+
+
+    useEffect(() => {
+        const savedAddress = localStorage.getItem(
+            "saved_delivery_info",
+        );
+
+        if (!savedAddress) {
+            return;
+        }
+
+        try {
+            const data = JSON.parse(savedAddress);
+
+            setFullName(data.fullName ?? "");
+            setEmail(data.email ?? "");
+            setPhone(data.phone ?? "");
+            setAddress(data.address ?? "");
+            setCity(data.city ?? "");
+            setPostalCode(data.postalCode ?? "");
+
+            setSaveAddress(true);
+        } catch {
+            localStorage.removeItem("saved_delivery_info");
+        }
     }, []);
 
     /* =====================================================
@@ -337,9 +351,7 @@ export default function CheckoutClient() {
         }
 
         if (!address.trim()) {
-            alert(
-                "Please enter your shipping address.",
-            );
+            alert("Please enter your shipping address.");
             return;
         }
 
@@ -353,9 +365,76 @@ export default function CheckoutClient() {
             return;
         }
 
-        alert(
-            `Order ready to place using ${paymentMethod}.`,
-        );
+        const order = {
+            id: generateOrderId(),
+
+            items: cart.map((item) => ({
+                productId: item.productId,
+                name: item.name,
+                image: item.image,
+                price: item.price,
+                quantity: item.quantity,
+                size: item.size,
+                color: item.color,
+            })),
+
+            deliveryInfo: {
+                fullName: fullName.trim(),
+                email: email.trim(),
+                phone: phone.trim(),
+                address: address.trim(),
+                city: city.trim(),
+                postalCode: postalCode.trim(),
+                country: "Bangladesh",
+            },
+
+            paymentMethod,
+
+            subtotal,
+            shipping,
+            discount,
+            total,
+
+            status: "pending" as const,
+
+            createdAt: new Date().toISOString(),
+        };
+
+        /*
+         * Save order
+         */
+        saveOrder(order);
+
+        /*
+         * Save delivery information if user selected
+         * "Save this address for next time"
+         */
+        if (saveAddress) {
+            const deliveryInfo = {
+                fullName: fullName.trim(),
+                email: email.trim(),
+                phone: phone.trim(),
+                address: address.trim(),
+                city: city.trim(),
+                postalCode: postalCode.trim(),
+                country: "Bangladesh",
+            };
+
+            localStorage.setItem(
+                "saved_delivery_info",
+                JSON.stringify(deliveryInfo),
+            );
+        }
+
+        /*
+         * Clear cart after successful order
+         */
+        clearCart();
+
+        /*
+         * Go to order success page
+         */
+        router.push(`/order-success?orderId=${order.id}`);
     };
 
     /* =====================================================
@@ -631,6 +710,10 @@ export default function CheckoutClient() {
                         <label className="mt-5 flex cursor-pointer items-center gap-3 text-sm text-gray-600">
                             <input
                                 type="checkbox"
+                                checked={saveAddress}
+                                onChange={(event) =>
+                                    setSaveAddress(event.target.checked)
+                                }
                                 className="h-4 w-4 accent-primary"
                             />
 
@@ -688,20 +771,18 @@ export default function CheckoutClient() {
                                                     method.id,
                                                 )
                                             }
-                                            className={`flex min-h-20 items-center gap-4 rounded-md border p-4 text-left transition ${
-                                                selected
-                                                    ? "border-primary bg-primary/5"
-                                                    : "border-gray-200 hover:border-gray-400"
-                                            }`}
+                                            className={`flex min-h-20 items-center gap-4 rounded-md border p-4 text-left transition ${selected
+                                                ? "border-primary bg-primary/5"
+                                                : "border-gray-200 hover:border-gray-400"
+                                                }`}
                                         >
                                             {/* Radio */}
 
                                             <span
-                                                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
-                                                    selected
-                                                        ? "border-primary"
-                                                        : "border-gray-300"
-                                                }`}
+                                                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${selected
+                                                    ? "border-primary"
+                                                    : "border-gray-300"
+                                                    }`}
                                             >
                                                 {selected && (
                                                     <span className="h-2.5 w-2.5 rounded-full bg-primary" />
@@ -755,20 +836,18 @@ export default function CheckoutClient() {
                                                     method.id,
                                                 )
                                             }
-                                            className={`flex min-h-20 items-center gap-3 rounded-md border p-4 text-left transition ${
-                                                selected
-                                                    ? "border-primary bg-primary/5"
-                                                    : "border-gray-200 hover:border-gray-400"
-                                            }`}
+                                            className={`flex min-h-20 items-center gap-3 rounded-md border p-4 text-left transition ${selected
+                                                ? "border-primary bg-primary/5"
+                                                : "border-gray-200 hover:border-gray-400"
+                                                }`}
                                         >
                                             {/* Radio */}
 
                                             <span
-                                                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${
-                                                    selected
-                                                        ? "border-primary"
-                                                        : "border-gray-300"
-                                                }`}
+                                                className={`flex h-5 w-5 shrink-0 items-center justify-center rounded-full border ${selected
+                                                    ? "border-primary"
+                                                    : "border-gray-300"
+                                                    }`}
                                             >
                                                 {selected && (
                                                     <span className="h-2.5 w-2.5 rounded-full bg-primary" />
@@ -779,7 +858,7 @@ export default function CheckoutClient() {
                                             <PaymentIcon type={method.icon} />
 
                                             {/* Text */}
-                                             <span className="min-w-0">
+                                            <span className="min-w-0">
                                                 <span className="block text-sm font-medium">
                                                     {
                                                         method.name
@@ -897,18 +976,18 @@ export default function CheckoutClient() {
 
                                         {(item.size ||
                                             item.color) && (
-                                            <p className="mt-1 text-xs text-gray-500">
-                                                {item.size &&
-                                                    `Size: ${item.size}`}
+                                                <p className="mt-1 text-xs text-gray-500">
+                                                    {item.size &&
+                                                        `Size: ${item.size}`}
 
-                                                {item.size &&
-                                                    item.color &&
-                                                    "  •  "}
+                                                    {item.size &&
+                                                        item.color &&
+                                                        "  •  "}
 
-                                                {item.color &&
-                                                    `Color: ${item.color}`}
-                                            </p>
-                                        )}
+                                                    {item.color &&
+                                                        `Color: ${item.color}`}
+                                                </p>
+                                            )}
 
                                         {/* Quantity */}
 

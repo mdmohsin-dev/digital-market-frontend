@@ -139,6 +139,16 @@ export const updateCartItemQuantity = (
     notifyCartUpdated();
 };
 
+export const clearCart = (): void => {
+    if (typeof window === "undefined") {
+        return;
+    }
+
+    localStorage.removeItem(CART_STORAGE_KEY);
+
+    window.dispatchEvent(new Event(CART_UPDATED_EVENT));
+};
+
 export const getCartCount = (): number => {
     return getCart().length;
 };
