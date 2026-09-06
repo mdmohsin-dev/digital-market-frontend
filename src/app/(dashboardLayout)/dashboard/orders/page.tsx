@@ -18,7 +18,6 @@ export default function OrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
     const [userRole, setUserRole] = useState<string | null>(null);
-    const role = localStorage.getItem('user-role')
 
     /**
      * Get user role from localStorage

@@ -79,8 +79,8 @@ export function ShopFilter({
   const toggleSubcategory = (id: string) => {
     const next = selectedSubcategories.includes(id)
       ? selectedSubcategories.filter(
-          (subcategoryId) => subcategoryId !== id
-        )
+        (subcategoryId) => subcategoryId !== id
+      )
       : [...selectedSubcategories, id];
 
     onSubcategoryChange(next);
@@ -101,11 +101,7 @@ export function ShopFilter({
 
   const filterPanel = (
     <div
-      className={cn(
-        "border border-gray-200 bg-white",
-        className
-      )}
-    >
+      className={cn("border border-gray-200 bg-white", className)}>
       {/* Header */}
       <div className="flex items-center justify-between border-b border-gray-300 px-5 py-4">
         <span className="font-mono text-[11px] uppercase tracking-[0.25em] text-neutral-700">
@@ -115,8 +111,7 @@ export function ShopFilter({
         <button
           type="button"
           onClick={handleReset}
-          className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary transition-opacity hover:opacity-70"
-        >
+          className="font-mono text-[10px] uppercase tracking-[0.2em] text-primary transition-opacity hover:opacity-70">
           Reset
         </button>
       </div>
@@ -217,7 +212,7 @@ export function ShopFilter({
 
           <SheetContent
             side="left"
-            className="w-[86%] max-w-[340px] p-0"
+            className="data-[side=left]:w-full data-[side=left]:max-w-full data-[side=left]:border-r-0 p-0"
           >
             <div className="max-h-[calc(100vh-2rem)] overflow-y-auto py-4 pl-4 pr-2">
               {filterPanel}

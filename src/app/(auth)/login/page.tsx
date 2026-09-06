@@ -73,7 +73,6 @@ export default function LoginPage() {
 
             router.push("/dashboard");
         } catch (error) {
-            console.error("Login error:", error);
 
             setLoginError(
                 "Something went wrong. Please try again."

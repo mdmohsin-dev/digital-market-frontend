@@ -13,6 +13,7 @@ import {
     useMemo,
     useState,
 } from "react";
+import { toast } from "react-toastify";
 
 import type { Product } from "@/types/product";
 
@@ -46,9 +47,9 @@ export default function ProductDetails({
     const [isWishlisted, setIsWishlisted] =
         useState(false);
 
-    // =========================================================
+
     // WISHLIST
-    // =========================================================
+
 
     useEffect(() => {
         setIsWishlisted(
@@ -65,23 +66,30 @@ export default function ProductDetails({
         const updatedWishlist =
             toggleWishlist(product.id);
 
-        setIsWishlisted(
+        const nowWishlisted =
             updatedWishlist.includes(
                 product.id,
-            ),
+            );
+
+        setIsWishlisted(nowWishlisted);
+
+        toast[nowWishlisted ? "success" : "info"](
+            nowWishlisted
+                ? "Added to wishlist."
+                : "Removed from wishlist.",
         );
     };
 
-    // =========================================================
+
     // VARIATIONS
-    // =========================================================
+
 
     const variations =
         product.variations ?? [];
 
-    // =========================================================
+
     // AVAILABLE COLORS
-    // =========================================================
+
 
     const colors = useMemo(() => {
         return Array.from(
@@ -101,9 +109,9 @@ export default function ProductDetails({
         );
     }, [variations]);
 
-    // =========================================================
+
     // AVAILABLE SIZES
-    // =========================================================
+
 
     const sizes = useMemo(() => {
         return Array.from(
@@ -123,9 +131,7 @@ export default function ProductDetails({
         );
     }, [variations]);
 
-    // =========================================================
     // COLOR COMPATIBILITY
-    // =========================================================
 
     const isColorCompatible = (
         color: string,
@@ -142,9 +148,9 @@ export default function ProductDetails({
         );
     };
 
-    // =========================================================
+
     // SIZE COMPATIBILITY
-    // =========================================================
+
 
     const isSizeCompatible = (
         _size: string,
@@ -152,9 +158,9 @@ export default function ProductDetails({
         return true;
     };
 
-    // =========================================================
+
     // SELECTED VARIATION
-    // =========================================================
+
 
     const selectedVariation = useMemo(() => {
         if (
@@ -177,9 +183,9 @@ export default function ProductDetails({
         selectedColor,
     ]);
 
-    // =========================================================
+
     // CURRENT PRICE
-    // =========================================================
+
 
     const currentPrice =
         selectedVariation?.salePrice ??
@@ -187,24 +193,24 @@ export default function ProductDetails({
         product.salePrice ??
         product.regularPrice;
 
-    // =========================================================
+
     // CURRENT REGULAR PRICE
-    // =========================================================
+
 
     const currentRegularPrice =
         selectedVariation?.price ??
         product.regularPrice;
 
-    // =========================================================
+
     // CURRENT STOCK
-    // =========================================================
+
 
     const currentStock =
         selectedVariation?.stock ?? 0;
 
-    // =========================================================
+
     // COLOR CHANGE
-    // =========================================================
+
 
     const handleColorChange = (
         color: string,
@@ -220,9 +226,9 @@ export default function ProductDetails({
         setQuantity(1);
     };
 
-    // =========================================================
+
     // SIZE CHANGE
-    // =========================================================
+
 
     const handleSizeChange = (
         size: string,
@@ -244,9 +250,9 @@ export default function ProductDetails({
         }
     };
 
-    // =========================================================
+
     // QUANTITY
-    // =========================================================
+
 
     const increaseQuantity = () => {
         if (
@@ -269,9 +275,9 @@ export default function ProductDetails({
         }
     };
 
-    // =========================================================
+
     // VALIDATE ADD TO CART
-    // =========================================================
+
 
     const validateAddToCartSelection =
         () => {
@@ -282,7 +288,7 @@ export default function ProductDetails({
 
             // Size missing
             if (!selectedSize) {
-                alert(
+                toast.error(
                     "Please select a size.",
                 );
 
@@ -291,7 +297,7 @@ export default function ProductDetails({
 
             // Color missing
             if (!selectedColor) {
-                alert(
+                toast.error(
                     "Please select an available color for the selected size.",
                 );
 
@@ -300,7 +306,7 @@ export default function ProductDetails({
 
             // Invalid combination
             if (!selectedVariation) {
-                alert(
+                toast.error(
                     "This size and color combination is unavailable.",
                 );
 
@@ -309,7 +315,7 @@ export default function ProductDetails({
 
             // Out of stock
             if (currentStock <= 0) {
-                alert(
+                toast.error(
                     "This product variation is out of stock.",
                 );
 
@@ -319,9 +325,9 @@ export default function ProductDetails({
             return true;
         };
 
-    // =========================================================
+
     // ADD TO CART
-    // =========================================================
+
 
     const handleAddToCart = () => {
         if (
@@ -354,14 +360,14 @@ export default function ProductDetails({
 
         addToCart(cartItem);
 
-        alert(
+        toast.success(
             "Product added to cart.",
         );
     };
 
-    // =========================================================
+
     // BUY NOW
-    // =========================================================
+
 
     const handleBuyNow = () => {
         const isValid =
@@ -375,9 +381,9 @@ export default function ProductDetails({
         // Checkout flow পরের step-এ হবে।
     };
 
-    // =========================================================
+
     // RENDER
-    // =========================================================
+
 
     return (
         <main className="mx-auto max-w-350 px-4 py-8 sm:px-6 lg:px-8">
@@ -789,13 +795,10 @@ export default function ProductDetails({
                 </div>
             </section>
 
-            {/* =================================================
-                PRODUCT TABS
-            ================================================= */}
+            {/*  PRODUCT TABS*/}
 
             <ProductTabs
-                product={product}
-            />
+                product={product}/>
         </main>
     );
 }

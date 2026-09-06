@@ -48,16 +48,16 @@ function ShopContent() {
   const searchParams =
     useSearchParams();
 
-  /* =====================================================
+  /* 
      VIEW MODE
-  ===================================================== */
+   */
 
   const [viewMode, setViewMode] =
     useState<"grid" | "list">("grid");
 
-  /* =====================================================
+  /* 
      SELECTED CATEGORY
-  ===================================================== */
+   */
 
   const selectedCategories =
     useMemo(() => {
@@ -73,9 +73,9 @@ function ShopContent() {
         : [];
     }, [searchParams]);
 
-  /* =====================================================
+  /* 
      SELECTED SUBCATEGORY
-  ===================================================== */
+   */
 
   const selectedSubcategories =
     useMemo(() => {
@@ -91,18 +91,18 @@ function ShopContent() {
         : [];
     }, [searchParams]);
 
-  /* =====================================================
+  /* 
      SORT
-  ===================================================== */
+   */
 
   const sortOption =
     (searchParams.get(
       "sort"
     ) as SortOption) || "default";
 
-  /* =====================================================
+  /* 
      PAGINATION
-  ===================================================== */
+   */
 
   const currentPage = Math.max(
     1,
@@ -113,9 +113,9 @@ function ShopContent() {
 
   const productsPerPage = 9;
 
-  /* =====================================================
+  /* 
      UPDATE URL
-  ===================================================== */
+   */
 
   const updateUrl = (
     categoryIds: string[],
@@ -167,9 +167,9 @@ function ShopContent() {
     );
   };
 
-  /* =====================================================
+  /* 
      CATEGORY CHANGE
-  ===================================================== */
+   */
 
   const handleCategoryChange = (
     categoryIds: string[]
@@ -180,9 +180,9 @@ function ShopContent() {
     );
   };
 
-  /* =====================================================
+  /* 
      SUBCATEGORY CHANGE
-  ===================================================== */
+   */
 
   const handleSubcategoryChange = (
     subcategoryIds: string[]
@@ -193,9 +193,9 @@ function ShopContent() {
     );
   };
 
-  /* =====================================================
+  /* 
      SORT CHANGE
-  ===================================================== */
+   */
 
   const handleSortChange = (
     value: SortOption
@@ -230,9 +230,9 @@ function ShopContent() {
     );
   };
 
-  /* =====================================================
+  /* 
      PRODUCT FILTERING
-  ===================================================== */
+   */
 
   const filteredProducts =
     useMemo(() => {
@@ -353,9 +353,9 @@ function ShopContent() {
       selectedSubcategories,
     ]);
 
-  /* =====================================================
+  /* 
      PRODUCT SORTING
-  ===================================================== */
+   */
 
   const sortedProducts =
     useMemo(() => {
@@ -398,9 +398,9 @@ function ShopContent() {
       sortOption,
     ]);
 
-  /* =====================================================
+  /* 
      PAGINATION CALCULATION
-  ===================================================== */
+   */
 
   const totalPages =
     Math.ceil(
@@ -430,9 +430,9 @@ function ShopContent() {
       endIndex
     );
 
-  /* =====================================================
+  /* 
      PAGE CHANGE
-  ===================================================== */
+   */
 
   const handlePageChange = (
     page: number
@@ -466,9 +466,9 @@ function ShopContent() {
     );
   };
 
-  /* =====================================================
+  /* 
      PAGE NUMBERS
-  ===================================================== */
+   */
 
   const pageNumbers =
     Array.from(
@@ -477,15 +477,15 @@ function ShopContent() {
         index + 1
     );
 
-  /* =====================================================
+  /* 
      RENDER
-  ===================================================== */
+   */
 
   return (
-    <div className="mx-auto mt-20 flex max-w-350 items-start gap-8">
-      {/* =================================================
+    <div className="px-4 mx-auto md:mt-20 mt-9 flex flex-col md:flex-row max-w-350 items-start gap-8">
+      {/*
                 FILTER
-            ================================================= */}
+           */}
 
       <ShopFilter
         categories={categories}
@@ -499,18 +499,11 @@ function ShopContent() {
           handleCategoryChange
         }
         onSubcategoryChange={
-          handleSubcategoryChange
-        }
-      />
+          handleSubcategoryChange}/>
 
-      {/* =================================================
-                PRODUCTS
-            ================================================= */}
 
-      <div className="flex-1">
-        {/* =================================================
-                    SORT + VIEW TOGGLE
-                ================================================= */}
+      <div className="w-full">
+        {/* SORT + VIEW TOGGLE */}
 
         <div className="bg-white rounded-md p-3 flex items-center justify-between">
           {/* Sort - Left */}
@@ -522,15 +515,15 @@ function ShopContent() {
           </div>
 
           {/* View Toggle - Right */}
-          <div className="flex h-11 shrink-0 items-center rounded-md border border-gray-300 bg-white p-1">
+          <div className="md:flex hidden h-11 shrink-0 items-center rounded-md border border-gray-300 bg-white p-1">
             {/* Grid View */}
             <button
               type="button"
               onClick={() => setViewMode("grid")}
               aria-label="Grid view"
               className={`flex h-9 w-9 items-center justify-center rounded transition ${viewMode === "grid"
-                  ? "bg-primary text-white"
-                  : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                ? "bg-primary text-white"
+                : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
                 }`}
             >
               <Grid2X2 size={19} />
@@ -542,8 +535,8 @@ function ShopContent() {
               onClick={() => setViewMode("list")}
               aria-label="List view"
               className={`flex h-9 w-9 items-center justify-center rounded transition ${viewMode === "list"
-                  ? "bg-primary text-white"
-                  : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
+                ? "bg-primary text-white"
+                : "text-gray-500 hover:bg-gray-100 hover:text-gray-900"
                 }`}
             >
               <List size={20} />
@@ -551,9 +544,7 @@ function ShopContent() {
           </div>
         </div>
 
-        {/* =================================================
-                    PRODUCT DISPLAY
-                ================================================= */}
+        {/* PRODUCT DISPLAY */}
 
         {viewMode ===
           "grid" ? (
@@ -561,7 +552,7 @@ function ShopContent() {
              GRID VIEW
           ================================= */
 
-          <div className="mt-6 grid grid-cols-2 gap-6 md:grid-cols-3">
+          <div className="mt-6 grid grid-cols-2 gap-3 md:gap-6 md:grid-cols-2 xl:grid-cols-3">
             {paginatedProducts.map(
               (product) => (
                 <ProductCard
@@ -596,9 +587,9 @@ function ShopContent() {
           </div>
         )}
 
-        {/* =================================================
+        {/*
                     PAGINATION
-                ================================================= */}
+               */}
 
         {totalPages > 1 && (
           <div className="mt-10 flex items-center justify-center gap-2">
@@ -641,8 +632,8 @@ function ShopContent() {
                       )
                     }
                     className={`flex h-10 min-w-10 items-center justify-center rounded-md border px-3 text-sm font-medium transition ${isActive
-                        ? "border-primary bg-primary text-white"
-                        : "border-gray-300 text-gray-600 hover:border-primary hover:text-primary"
+                      ? "border-primary bg-primary text-white"
+                      : "border-gray-300 text-gray-600 hover:border-primary hover:text-primary"
                       }`}
                   >
                     {page}

@@ -10,9 +10,8 @@ import "swiper/css";
 import { products } from "@/Data/products";
 
 export default function CustomerReviewsSection() {
-    // Get all reviews from all products
+    
     const customerReviews = products.flatMap( (product) => product.reviews).slice(0,5);
-    console.log(customerReviews)
 
     if (customerReviews.length === 0) {
         return null;

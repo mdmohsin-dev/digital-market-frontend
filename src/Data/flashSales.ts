@@ -10,8 +10,8 @@ export const flashSales: FlashSale[] = [
     {
         id: "flash_001",
         title: "Summer Flash Sale",
-        startAt: "2026-08-31T10:00:00",
-        endAt: "2026-09-05T23:59:59",
+        startAt: "2026-09-06T00:00:00+06:00",
+        endAt: "2026-09-14T00:00:00+06:00",
         productIds: [
             "prod_001",
             "prod_002",

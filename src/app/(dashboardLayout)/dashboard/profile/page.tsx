@@ -14,7 +14,6 @@ import { useUserSession } from "@/hooks/useUserSession";
 
 export default function ProfilePage() {
     const { user, isLoggedIn, isPending } = useUserSession();
-    console.log(useUserSession)
 
     if (isPending) {
         return (
