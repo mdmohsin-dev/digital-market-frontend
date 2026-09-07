@@ -1,7 +1,7 @@
 import {
-    Mail,
-    MapPin,
-    Phone,
+  Mail,
+  MapPin,
+  Phone,
 } from "lucide-react";
 import Link from "next/link";
 import { BsInstagram } from "react-icons/bs";
@@ -13,9 +13,7 @@ import Image from "next/image";
 const quickLinks = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
-  { label: "Categories", href: "/categories" },
-  { label: "About Us", href: "/about" },
-  { label: "Contact Us", href: "/contact" },
+  { label: "Flash Sale", href: '/flash-sale' },
 ];
 
 const supportLinks = [
@@ -48,8 +46,8 @@ const socialLinks = [
 
 export default function Footer() {
   return (
-   <footer className="bg-[#0B0B0A] text-[#EDEDEA] relative">
-     <div className="mx-auto max-w-350 px-4 pb-12 md:pt-56 pt-44 sm:px-6 lg:px-8">
+    <footer className="bg-[#0B0B0A] text-[#EDEDEA] relative">
+      <div className="mx-auto max-w-350 px-4 pb-12 md:pt-56 pt-44 sm:px-6 lg:px-8">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
           {/* Brand */}
           <div className="space-y-4">
@@ -59,11 +57,11 @@ export default function Footer() {
               aria-label="Kalni home"
             >
               <Image
-                            width={160}
-                            height={160}
-                            alt="kalni"
-                            src={logo}
-                        />
+                width={160}
+                height={160}
+                alt="kalni"
+                src={logo}
+              />
             </Link>
             <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
               Discover modern fashion, timeless essentials, and everyday styles

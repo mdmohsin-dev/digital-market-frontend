@@ -1,8 +1,15 @@
 "use client";
 
-import { Heart, Menu, Search, ShoppingCart,  User, X } from "lucide-react";
-
+import {
+    Heart,
+    Menu,
+    Search,
+    ShoppingCart,
+    User,
+    X,
+} from "lucide-react";
 import Link from "next/link";
+import Image from "next/image";
 import { usePathname } from "next/navigation";
 import { useEffect, useState } from "react";
 
@@ -12,10 +19,6 @@ import { useWishlist } from "@/hooks/useWishlist";
 
 import brandLogo from "@/assets/Images/brandLogo.png";
 
-import Image from "next/image";
-
-import { LuUserRound } from "react-icons/lu";
-import CartSidebar from "../CartSidebar";
 import ProductSearch from "../ProductSearch";
 
 const navItems = [
@@ -30,35 +33,44 @@ const navItems = [
     {
         label: "Flash Sale",
         href: "/flash-sale",
-    },
-    {
-        label: "Contact Us",
-        href: "/contact",
-    },
+    }
 ];
 
 export default function PublicNavbar() {
     const [open, setOpen] = useState(false);
-    const [cartOpen, setCartOpen] = useState(false);
-    const [mobileSearchOpen, setMobileSearchOpen] = useState(false);
+    const [mobileSearchOpen, setMobileSearchOpen] =
+        useState(false);
 
     const pathname = usePathname();
 
     const cartCount = useCartCount();
 
-    const { wishlistCount, isLoaded, } = useWishlist();
+    const {
+        wishlistCount,
+        isLoaded,
+    } = useWishlist();
 
-    const { isLoggedIn, isPending, } = useUserSession();
+    const {
+        isLoggedIn,
+        isPending,
+    } = useUserSession();
 
-    // "/" only matches exactly; every other href matches itself or any nested route under it
-    const isActive = (href:any) =>
+    // =========================================================
+    // ACTIVE NAV ITEM
+    // =========================================================
+
+    const isActive = (href: string) =>
         href === "/"
             ? pathname === "/"
-            : pathname === href || pathname?.startsWith(`${href}/`);
+            : pathname === href ||
+            pathname?.startsWith(`${href}/`);
 
+    // =========================================================
+    // BODY SCROLL LOCK
+    // =========================================================
 
     useEffect(() => {
-        if (mobileSearchOpen) {
+        if (mobileSearchOpen || open) {
             document.body.style.overflow = "hidden";
         } else {
             document.body.style.overflow = "";
@@ -67,21 +79,11 @@ export default function PublicNavbar() {
         return () => {
             document.body.style.overflow = "";
         };
-    }, [mobileSearchOpen]);
+    }, [mobileSearchOpen, open]);
 
-
-    useEffect(() => {
-        if (open) {
-            document.body.style.overflow = "hidden";
-        } else {
-            document.body.style.overflow = "";
-        }
-
-        return () => {
-            document.body.style.overflow = "";
-        };
-    }, [open]);
-
+    // =========================================================
+    // CLOSE MOBILE MENU / SEARCH ON DESKTOP
+    // =========================================================
 
     useEffect(() => {
         const handleResize = () => {
@@ -96,16 +98,23 @@ export default function PublicNavbar() {
         return () => {
             window.removeEventListener(
                 "resize",
-                handleResize
+                handleResize,
             );
         };
     }, []);
 
+    // =========================================================
+    // MENU
+    // =========================================================
 
     const toggleMenu = () => {
         setMobileSearchOpen(false);
         setOpen((value) => !value);
     };
+
+    // =========================================================
+    // MOBILE SEARCH
+    // =========================================================
 
     const openMobileSearch = () => {
         setOpen(false);
@@ -114,8 +123,11 @@ export default function PublicNavbar() {
 
     return (
         <>
-            <header className="relative isolate z-30 mt-8 w-full bg-white">
+            {/* =====================================================
+                HEADER
+            ===================================================== */}
 
+            <header className="relative isolate z-30 mt-8 w-full bg-white">
                 <div
                     className="
                         mx-auto grid max-w-350
@@ -129,7 +141,9 @@ export default function PublicNavbar() {
                         lg:py-4
                     "
                 >
-
+                    {/* =================================================
+                        LOGO
+                    ================================================= */}
 
                     <Link
                         href="/"
@@ -143,6 +157,10 @@ export default function PublicNavbar() {
                         />
                     </Link>
 
+                    {/* =================================================
+                        TABLET SEARCH
+                        sm -> md
+                    ================================================= */}
 
                     <ProductSearch
                         className="
@@ -156,6 +174,9 @@ export default function PublicNavbar() {
                         "
                     />
 
+                    {/* =================================================
+                        DESKTOP SEARCH
+                    ================================================= */}
 
                     <ProductSearch
                         className="
@@ -165,6 +186,9 @@ export default function PublicNavbar() {
                         "
                     />
 
+                    {/* =================================================
+                        RIGHT ACTIONS
+                    ================================================= */}
 
                     <div
                         className="
@@ -176,7 +200,9 @@ export default function PublicNavbar() {
                             sm:gap-6
                         "
                     >
-
+                        {/* =================================================
+                            ACCOUNT
+                        ================================================= */}
 
                         <Link
                             href={
@@ -191,16 +217,24 @@ export default function PublicNavbar() {
                                 items-center
                                 gap-1
                                 sm:flex
-                                ${isActive(isLoggedIn ? "/dashboard" : "/login")
+                                ${isActive(
+                                isLoggedIn
+                                    ? "/dashboard"
+                                    : "/login",
+                            )
                                     ? "text-primary"
                                     : ""
                                 }
                             `}
                         >
-                            <LuUserRound
+                            <User
                                 size={28}
                                 className={
-                                    isActive(isLoggedIn ? "/dashboard" : "/login")
+                                    isActive(
+                                        isLoggedIn
+                                            ? "/dashboard"
+                                            : "/login",
+                                    )
                                         ? "text-primary"
                                         : "text-muted-foreground"
                                 }
@@ -210,7 +244,11 @@ export default function PublicNavbar() {
                                 className={`
                                     text-xs
                                     font-semibold
-                                    ${isActive(isLoggedIn ? "/dashboard" : "/login")
+                                    ${isActive(
+                                    isLoggedIn
+                                        ? "/dashboard"
+                                        : "/login",
+                                )
                                         ? "text-primary"
                                         : "text-foreground"
                                     }
@@ -224,6 +262,9 @@ export default function PublicNavbar() {
                             </span>
                         </Link>
 
+                        {/* =================================================
+                            WISHLIST
+                        ================================================= */}
 
                         <div className="hidden items-center gap-6 sm:flex">
                             <Link
@@ -239,7 +280,9 @@ export default function PublicNavbar() {
                                 <Heart
                                     size={28}
                                     className={
-                                        isActive("/wishlist")
+                                        isActive(
+                                            "/wishlist",
+                                        )
                                             ? "text-primary"
                                             : ""
                                     }
@@ -265,7 +308,8 @@ export default function PublicNavbar() {
                                                 text-badge-foreground
                                             "
                                         >
-                                            {wishlistCount > 99
+                                            {wishlistCount >
+                                                99
                                                 ? "99+"
                                                 : wishlistCount}
                                         </span>
@@ -275,7 +319,9 @@ export default function PublicNavbar() {
                                     className={`
                                         text-xs
                                         font-semibold
-                                        ${isActive("/wishlist")
+                                        ${isActive(
+                                        "/wishlist",
+                                    )
                                             ? "text-primary"
                                             : "text-foreground"
                                         }
@@ -286,14 +332,76 @@ export default function PublicNavbar() {
                             </Link>
                         </div>
 
-                        <div className="hidden md:block">
-                            <CartSidebar
-                                open={cartOpen}
-                                onOpenChange={setCartOpen}
-                                cartCount={cartCount}
-                            />
-                        </div>
+                        {/* =================================================
+                            CART
+                            Only icon + count
+                        ================================================= */}
 
+                        <Link
+                            href="/cart"
+                            aria-label={`Cart${cartCount > 0
+                                    ? `, ${cartCount} items`
+                                    : ""
+                                }`}
+                            className={`
+                                hidden
+                                shrink-0
+                                flex-col
+                                items-center
+                                gap-1
+                                md:flex
+                                ${isActive("/cart")
+                                    ? "text-primary"
+                                    : "text-foreground"
+                                }
+                            `}
+                        >
+                            <div className="relative">
+                                <ShoppingCart
+                                    size={28}
+                                    className={
+                                        isActive(
+                                            "/cart",
+                                        )
+                                            ? "text-primary"
+                                            : ""
+                                    }
+                                />
+
+                                {cartCount > 0 && (
+                                    <span
+                                        className="
+                                            absolute
+                                            -right-2
+                                            -top-2
+                                            flex
+                                            h-4
+                                            min-w-4
+                                            items-center
+                                            justify-center
+                                            rounded-full
+                                            bg-badge
+                                            px-1
+                                            text-[10px]
+                                            font-semibold
+                                            text-badge-foreground
+                                        "
+                                    >
+                                        {cartCount > 99
+                                            ? "99+"
+                                            : cartCount}
+                                    </span>
+                                )}
+                            </div>
+
+                            <span className="text-xs font-semibold">
+                                Cart
+                            </span>
+                        </Link>
+
+                        {/* =================================================
+                            MOBILE MENU BUTTON
+                        ================================================= */}
 
                         <button
                             type="button"
@@ -315,9 +423,13 @@ export default function PublicNavbar() {
                     </div>
                 </div>
 
+                {/* =====================================================
+                    DESKTOP NAVIGATION
+                ===================================================== */}
 
                 <div className="sticky top-10">
-                    <div className="
+                    <div
+                        className="
                             relative
                             z-20
                             hidden
@@ -328,16 +440,19 @@ export default function PublicNavbar() {
                             lg:block
                         "
                     >
-                        <nav className="
+                        <nav
+                            className="
                                 mx-auto
                                 flex
                                 max-w-350
                                 items-center
                                 gap-16
                                 px-4
-                                py-3">
-
-                            <ul className="
+                                py-3
+                            "
+                        >
+                            <ul
+                                className="
                                     flex
                                     w-full
                                     items-center
@@ -352,7 +467,9 @@ export default function PublicNavbar() {
                                         <Link
                                             href={item.href}
                                             aria-current={
-                                                isActive(item.href)
+                                                isActive(
+                                                    item.href,
+                                                )
                                                     ? "page"
                                                     : undefined
                                             }
@@ -365,7 +482,9 @@ export default function PublicNavbar() {
                                                 font-medium
                                                 transition-colors
                                                 hover:text-primary
-                                                ${isActive(item.href)
+                                                ${isActive(
+                                                item.href,
+                                            )
                                                     ? "text-primary"
                                                     : "text-foreground"
                                                 }
@@ -381,6 +500,9 @@ export default function PublicNavbar() {
                 </div>
             </header>
 
+            {/* =========================================================
+                MOBILE SEARCH PANEL
+            ========================================================= */}
 
             <div
                 className={`
@@ -455,8 +577,14 @@ export default function PublicNavbar() {
                 </div>
             </div>
 
+            {/* =========================================================
+                MOBILE SEARCH BACKDROP
+            ========================================================= */}
+
             <div
-                onClick={() => setMobileSearchOpen(false)}
+                onClick={() =>
+                    setMobileSearchOpen(false)
+                }
                 className={`
                     fixed
                     inset-0
@@ -473,6 +601,9 @@ export default function PublicNavbar() {
                 `}
             />
 
+            {/* =========================================================
+                MOBILE MENU PANEL
+            ========================================================= */}
 
             <div
                 className={`
@@ -506,6 +637,8 @@ export default function PublicNavbar() {
                             py-3
                         "
                     >
+                        {/* MENU HEADER */}
+
                         <div
                             className="
                                 mb-2
@@ -523,7 +656,9 @@ export default function PublicNavbar() {
 
                             <button
                                 type="button"
-                                onClick={() => setOpen(false)}
+                                onClick={() =>
+                                    setOpen(false)
+                                }
                                 aria-label="Close menu"
                                 className="
                                     flex
@@ -542,6 +677,8 @@ export default function PublicNavbar() {
                             </button>
                         </div>
 
+                        {/* MENU ITEMS */}
+
                         <ul>
                             {navItems.map((item) => (
                                 <li key={item.label}>
@@ -551,7 +688,9 @@ export default function PublicNavbar() {
                                             setOpen(false)
                                         }
                                         aria-current={
-                                            isActive(item.href)
+                                            isActive(
+                                                item.href,
+                                            )
                                                 ? "page"
                                                 : undefined
                                         }
@@ -564,7 +703,9 @@ export default function PublicNavbar() {
                                             font-medium
                                             transition-colors
                                             hover:text-primary
-                                            ${isActive(item.href)
+                                            ${isActive(
+                                            item.href,
+                                        )
                                                 ? "text-primary"
                                                 : "text-foreground"
                                             }
@@ -578,6 +719,10 @@ export default function PublicNavbar() {
                     </nav>
                 </div>
             </div>
+
+            {/* =========================================================
+                MOBILE MENU BACKDROP
+            ========================================================= */}
 
             <div
                 onClick={() => setOpen(false)}
@@ -597,8 +742,12 @@ export default function PublicNavbar() {
                 `}
             />
 
+            {/* =========================================================
+                MOBILE BOTTOM NAVIGATION
+            ========================================================= */}
 
-            <nav className="
+            <nav
+                className="
                     fixed
                     bottom-0
                     left-0
@@ -612,11 +761,15 @@ export default function PublicNavbar() {
                     md:hidden
                 "
             >
-                {/* HOME */}
+                {/* =====================================================
+                    HOME
+                ===================================================== */}
 
                 <Link
                     href="/"
-                    aria-current={isActive("/") ? "page" : undefined}
+                    aria-current={
+                        isActive("/") ? "page" : undefined
+                    }
                     className={`
                         flex
                         h-full
@@ -641,11 +794,17 @@ export default function PublicNavbar() {
                     </span>
                 </Link>
 
-                {/* WISHLIST */}
+                {/* =====================================================
+                    WISHLIST
+                ===================================================== */}
 
                 <Link
                     href="/wishlist"
-                    aria-current={isActive("/wishlist") ? "page" : undefined}
+                    aria-current={
+                        isActive("/wishlist")
+                            ? "page"
+                            : undefined
+                    }
                     className={`
                         relative
                         flex
@@ -667,7 +826,24 @@ export default function PublicNavbar() {
                     {isLoaded &&
                         wishlistCount > 0 && (
                             <span
-                                className="absolute top-1 left-1/2 ml-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-black px-1 text-[9px] font-semibold text-white ">
+                                className="
+                                    absolute
+                                    left-1/2
+                                    top-1
+                                    ml-2
+                                    flex
+                                    h-4
+                                    min-w-4
+                                    items-center
+                                    justify-center
+                                    rounded-full
+                                    bg-black
+                                    px-1
+                                    text-[9px]
+                                    font-semibold
+                                    text-white
+                                "
+                            >
                                 {wishlistCount > 99
                                     ? "99+"
                                     : wishlistCount}
@@ -679,14 +855,18 @@ export default function PublicNavbar() {
                     </span>
                 </Link>
 
-                {/* CART */}
+                {/* =====================================================
+                    CART
+                ===================================================== */}
 
-                <button
-                    type="button"
-                    onClick={() =>
-                        setCartOpen(true)
+                <Link
+                    href="/cart"
+                    aria-current={
+                        isActive("/cart")
+                            ? "page"
+                            : undefined
                     }
-                    className="
+                    className={`
                         relative
                         flex
                         h-full
@@ -696,13 +876,34 @@ export default function PublicNavbar() {
                         justify-center
                         gap-0.5
                         text-white
-                    "
+                        ${isActive("/cart")
+                            ? "font-bold underline underline-offset-4"
+                            : "opacity-80"
+                        }
+                    `}
                 >
                     <ShoppingCart size={20} />
 
                     {cartCount > 0 && (
                         <span
-                            className="absolute top-1 left-1/2 ml-2 flex h-4 min-w-4 items-center justify-center rounded-full bg-black px-1 text-[9px] font-semibold text-white">
+                            className="
+                                absolute
+                                left-1/2
+                                top-1
+                                ml-2
+                                flex
+                                h-4
+                                min-w-4
+                                items-center
+                                justify-center
+                                rounded-full
+                                bg-black
+                                px-1
+                                text-[9px]
+                                font-semibold
+                                text-white
+                            "
+                        >
                             {cartCount > 99
                                 ? "99+"
                                 : cartCount}
@@ -712,9 +913,11 @@ export default function PublicNavbar() {
                     <span className="text-[10px] font-semibold uppercase">
                         Cart
                     </span>
-                </button>
+                </Link>
 
-                {/* SEARCH */}
+                {/* =====================================================
+                    SEARCH
+                ===================================================== */}
 
                 <button
                     type="button"
@@ -741,15 +944,22 @@ export default function PublicNavbar() {
                     </span>
                 </button>
 
-                {/* ACCOUNT */}
+                {/* =====================================================
+                    ACCOUNT
+                ===================================================== */}
 
                 <Link
                     href={
                         isLoggedIn
                             ? "/dashboard"
-                            : "/login"}
+                            : "/login"
+                    }
                     aria-current={
-                        isActive(isLoggedIn ? "/dashboard" : "/login")
+                        isActive(
+                            isLoggedIn
+                                ? "/dashboard"
+                                : "/login",
+                        )
                             ? "page"
                             : undefined
                     }
@@ -762,7 +972,11 @@ export default function PublicNavbar() {
                         justify-center
                         gap-0.5
                         text-white
-                        ${isActive(isLoggedIn ? "/dashboard" : "/login")
+                        ${isActive(
+                        isLoggedIn
+                            ? "/dashboard"
+                            : "/login",
+                    )
                             ? "font-bold underline underline-offset-4"
                             : "opacity-80"
                         }

@@ -4,12 +4,33 @@ import newsletterbg from "@/assets/Images/newsletterbg.png";
 import newsLetterImage from "@/assets/Images/newsLetterImage.png";
 import { Mail } from "lucide-react";
 import Image from "next/image";
+import { useForm } from "react-hook-form";
+import { toast } from "react-toastify";
+
+interface NewsletterFormData {
+  email: string;
+}
 
 export default function NewsletterSection() {
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<NewsletterFormData>();
+
+  const onSubmit = (data: NewsletterFormData) => {
+    console.log("Subscribed email:", data.email);
+
+    toast.success("Successfully subscribed to our newsletter!");
+
+    reset();
+  };
+
   return (
     <section
       aria-label="Newsletter"
-      className=" bg-[#f9f7f4] max-w-350 mx-auto px-8 rounded-xl md:mt-32 mt-18 -mb-36 relative z-10"
+      className="bg-[#f9f7f4] max-w-350 mx-auto px-8 rounded-xl md:mt-32 mt-18 -mb-36 relative z-10"
       style={{
         backgroundImage: `url(${newsletterbg.src})`,
         backgroundSize: "cover",
@@ -48,27 +69,44 @@ export default function NewsletterSection() {
 
               <form
                 className="mt-8"
-                onSubmit={(e) => e.preventDefault()}
-                aria-label="Newsletter subscription">
-                <div className="flex flex-col gap-2 sm:flex-row max-w-md">
-                  
-                  <input
-                    id="newsletter-email"
-                    type="email"
-                    name="email"
-                    autoComplete="email"
-                    placeholder="Enter your email address"
-                    required
-                    className="w-full flex-1 rounded-md border border-neutral-300 bg-white/90 px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:border-neutral-500 focus:outline-none focus:ring-1 focus:ring-neutral-500"
-                  />
+                onSubmit={handleSubmit(onSubmit)}
+                aria-label="Newsletter subscription"
+              >
+               <div className="flex flex-col gap-2 sm:flex-row max-w-md items-start">
+  <div className="w-full">
+    <input
+      id="newsletter-email"
+      type="email"
+      autoComplete="email"
+      placeholder="Enter your email address"
+      {...register("email", {
+        required: "Email address is required",
+        pattern: {
+          value: /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,}$/i,
+          message: "Please enter a valid email address",
+        },
+      })}
+      className={`w-full rounded-md border bg-white/90 px-4 py-3 text-sm text-neutral-900 placeholder:text-neutral-400 focus:outline-none focus:ring-1 ${
+        errors.email
+          ? "border-red-500 focus:border-red-500 focus:ring-red-500"
+          : "border-neutral-300 focus:border-neutral-500 focus:ring-neutral-500"
+      }`}
+    />
 
-                  <button
-                    type="submit"
-                    className="rounded-md bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
-                  >
-                    Subscribe
-                  </button>
-                </div>
+    {errors.email && (
+      <p className="mt-1.5 text-xs font-medium text-red-500">
+        {errors.email.message}
+      </p>
+    )}
+  </div>
+
+  <button
+    type="submit"
+    className="h-[46px] shrink-0 rounded-md bg-primary px-6 py-3 text-sm font-medium text-white transition-colors hover:bg-primary-dark focus:outline-none focus:ring-2 focus:ring-primary focus:ring-offset-2"
+  >
+    Subscribe
+  </button>
+</div>
               </form>
 
               <p className="mt-4 text-xs text-primary font-semibold">

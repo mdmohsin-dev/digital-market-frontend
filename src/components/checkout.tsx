@@ -11,6 +11,7 @@ import {
     CART_UPDATED_EVENT,
 } from "@/lib/cart";
 import { useEffect, useMemo, useState } from "react";
+import { useForm, type SubmitHandler } from "react-hook-form";
 
 import { clearCart } from "@/lib/cart";
 import {
@@ -146,6 +147,20 @@ function PaymentIcon({ type, }: { type: string; }) {
     );
 }
 
+/* =====================================================
+   FORM DATA TYPE
+===================================================== */
+
+interface CheckoutFormData {
+    fullName: string;
+    email: string;
+    phone: string;
+    address: string;
+    city: string;
+    postalCode: string;
+    saveAddress: boolean;
+}
+
 /* CHECKOUT CLIENT*/
 
 export default function CheckoutClient() {
@@ -156,18 +171,28 @@ export default function CheckoutClient() {
     const [cart, setCart] = useState<CartItem[]>([]);
     const router = useRouter();
     const [paymentMethod, setPaymentMethod] = useState<PaymentMethod>("cod");
-    const [saveAddress, setSaveAddress] = useState(false);
 
     /* =====================================================
-       FORM
+       REACT HOOK FORM
     ===================================================== */
 
-    const [fullName, setFullName] = useState("");
-    const [email, setEmail] = useState("");
-    const [phone, setPhone] = useState("");
-    const [address, setAddress] = useState("");
-    const [city, setCity] = useState("");
-    const [postalCode, setPostalCode] = useState("");
+    const {
+        register,
+        handleSubmit,
+        reset,
+        watch,
+        formState: { errors },
+    } = useForm<CheckoutFormData>({
+        defaultValues: {
+            fullName: "",
+            email: "",
+            phone: "",
+            address: "",
+            city: "",
+            postalCode: "",
+            saveAddress: false,
+        },
+    });
 
     /* =====================================================
        PROMO
@@ -211,7 +236,9 @@ export default function CheckoutClient() {
         };
     }, []);
 
-
+    /* =====================================================
+       LOAD SAVED ADDRESS
+    ===================================================== */
 
     useEffect(() => {
         const savedAddress = localStorage.getItem(
@@ -225,18 +252,19 @@ export default function CheckoutClient() {
         try {
             const data = JSON.parse(savedAddress);
 
-            setFullName(data.fullName ?? "");
-            setEmail(data.email ?? "");
-            setPhone(data.phone ?? "");
-            setAddress(data.address ?? "");
-            setCity(data.city ?? "");
-            setPostalCode(data.postalCode ?? "");
-
-            setSaveAddress(true);
+            reset({
+                fullName: data.fullName ?? "",
+                email: data.email ?? "",
+                phone: data.phone ?? "",
+                address: data.address ?? "",
+                city: data.city ?? "",
+                postalCode: data.postalCode ?? "",
+                saveAddress: true,
+            });
         } catch {
             localStorage.removeItem("saved_delivery_info");
         }
-    }, []);
+    }, [reset]);
 
     /* =====================================================
        SUBTOTAL
@@ -326,42 +354,14 @@ export default function CheckoutClient() {
     };
 
     /* =====================================================
-       PLACE ORDER
+       PLACE ORDER (react-hook-form submit handler)
     ===================================================== */
 
-    const handlePlaceOrder = () => {
+    const onPlaceOrder: SubmitHandler<CheckoutFormData> = (
+        data,
+    ) => {
         if (cart.length === 0) {
             alert("Your cart is empty.");
-            return;
-        }
-
-        if (!fullName.trim()) {
-            alert("Please enter your full name.");
-            return;
-        }
-
-        if (!email.trim()) {
-            alert("Please enter your email.");
-            return;
-        }
-
-        if (!phone.trim()) {
-            alert("Please enter your phone number.");
-            return;
-        }
-
-        if (!address.trim()) {
-            alert("Please enter your shipping address.");
-            return;
-        }
-
-        if (!city.trim()) {
-            alert("Please enter your city.");
-            return;
-        }
-
-        if (!postalCode.trim()) {
-            alert("Please enter your postal code.");
             return;
         }
 
@@ -379,12 +379,12 @@ export default function CheckoutClient() {
             })),
 
             deliveryInfo: {
-                fullName: fullName.trim(),
-                email: email.trim(),
-                phone: phone.trim(),
-                address: address.trim(),
-                city: city.trim(),
-                postalCode: postalCode.trim(),
+                fullName: data.fullName.trim(),
+                email: data.email.trim(),
+                phone: data.phone.trim(),
+                address: data.address.trim(),
+                city: data.city.trim(),
+                postalCode: data.postalCode.trim(),
                 country: "Bangladesh",
             },
 
@@ -409,14 +409,14 @@ export default function CheckoutClient() {
          * Save delivery information if user selected
          * "Save this address for next time"
          */
-        if (saveAddress) {
+        if (data.saveAddress) {
             const deliveryInfo = {
-                fullName: fullName.trim(),
-                email: email.trim(),
-                phone: phone.trim(),
-                address: address.trim(),
-                city: city.trim(),
-                postalCode: postalCode.trim(),
+                fullName: data.fullName.trim(),
+                email: data.email.trim(),
+                phone: data.phone.trim(),
+                address: data.address.trim(),
+                city: data.city.trim(),
+                postalCode: data.postalCode.trim(),
                 country: "Bangladesh",
             };
 
@@ -424,6 +424,8 @@ export default function CheckoutClient() {
                 "saved_delivery_info",
                 JSON.stringify(deliveryInfo),
             );
+        } else {
+            localStorage.removeItem("saved_delivery_info");
         }
 
         /*
@@ -496,7 +498,11 @@ export default function CheckoutClient() {
                     LEFT
                 ================================================= */}
 
-                <div className="overflow-hidden rounded-xl ">
+                <form
+                    onSubmit={handleSubmit(onPlaceOrder)}
+                    noValidate
+                    className="overflow-hidden rounded-xl "
+                >
                     {/* CONTACT INFORMATION */}
 
                     <section className="p-6 sm:p-7">
@@ -530,16 +536,26 @@ export default function CheckoutClient() {
                                 </label>
 
                                 <input
-                                    value={fullName}
-                                    onChange={(event) =>
-                                        setFullName(
-                                            event.target.value,
-                                        )
-                                    }
+                                    {...register("fullName", {
+                                        required:
+                                            "Full name is required",
+                                    })}
                                     type="text"
                                     placeholder="Your full name"
-                                    className="h-12 w-full rounded-md border border-gray-300 px-4 text-sm outline-none transition focus:border-primary"
+                                    className={`h-12 w-full rounded-md border px-4 text-sm outline-none transition focus:border-primary ${errors.fullName
+                                        ? "border-red-400"
+                                        : "border-gray-300"
+                                        }`}
                                 />
+
+                                {errors.fullName && (
+                                    <p className="mt-1 text-xs text-red-500">
+                                        {
+                                            errors.fullName
+                                                .message
+                                        }
+                                    </p>
+                                )}
                             </div>
 
                             {/* Email */}
@@ -553,16 +569,31 @@ export default function CheckoutClient() {
                                 </label>
 
                                 <input
-                                    value={email}
-                                    onChange={(event) =>
-                                        setEmail(
-                                            event.target.value,
-                                        )
-                                    }
+                                    {...register("email", {
+                                        required:
+                                            "Email is required",
+                                        pattern: {
+                                            value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
+                                            message:
+                                                "Enter a valid email address",
+                                        },
+                                    })}
                                     type="email"
                                     placeholder="you@example.com"
-                                    className="h-12 w-full rounded-md border border-gray-300 px-4 text-sm outline-none transition focus:border-primary"
+                                    className={`h-12 w-full rounded-md border px-4 text-sm outline-none transition focus:border-primary ${errors.email
+                                        ? "border-red-400"
+                                        : "border-gray-300"
+                                        }`}
                                 />
+
+                                {errors.email && (
+                                    <p className="mt-1 text-xs text-red-500">
+                                        {
+                                            errors.email
+                                                .message
+                                        }
+                                    </p>
+                                )}
                             </div>
 
                             {/* Phone */}
@@ -576,16 +607,26 @@ export default function CheckoutClient() {
                                 </label>
 
                                 <input
-                                    value={phone}
-                                    onChange={(event) =>
-                                        setPhone(
-                                            event.target.value,
-                                        )
-                                    }
+                                    {...register("phone", {
+                                        required:
+                                            "Phone number is required",
+                                    })}
                                     type="tel"
                                     placeholder="+880 1XXXXXXXXX"
-                                    className="h-12 w-full rounded-md border border-gray-300 px-4 text-sm outline-none transition focus:border-primary"
+                                    className={`h-12 w-full rounded-md border px-4 text-sm outline-none transition focus:border-primary ${errors.phone
+                                        ? "border-red-400"
+                                        : "border-gray-300"
+                                        }`}
                                 />
+
+                                {errors.phone && (
+                                    <p className="mt-1 text-xs text-red-500">
+                                        {
+                                            errors.phone
+                                                .message
+                                        }
+                                    </p>
+                                )}
                             </div>
                         </div>
                     </section>
@@ -623,16 +664,26 @@ export default function CheckoutClient() {
                             </label>
 
                             <input
-                                value={address}
-                                onChange={(event) =>
-                                    setAddress(
-                                        event.target.value,
-                                    )
-                                }
+                                {...register("address", {
+                                    required:
+                                        "Address is required",
+                                })}
                                 type="text"
                                 placeholder="House, Road, Area"
-                                className="h-12 w-full rounded-md border border-gray-300 px-4 text-sm outline-none transition focus:border-primary"
+                                className={`h-12 w-full rounded-md border px-4 text-sm outline-none transition focus:border-primary ${errors.address
+                                    ? "border-red-400"
+                                    : "border-gray-300"
+                                    }`}
                             />
+
+                            {errors.address && (
+                                <p className="mt-1 text-xs text-red-500">
+                                    {
+                                        errors.address
+                                            .message
+                                    }
+                                </p>
+                            )}
                         </div>
 
                         {/* City / Postal / Country */}
@@ -649,16 +700,26 @@ export default function CheckoutClient() {
                                 </label>
 
                                 <input
-                                    value={city}
-                                    onChange={(event) =>
-                                        setCity(
-                                            event.target.value,
-                                        )
-                                    }
+                                    {...register("city", {
+                                        required:
+                                            "City is required",
+                                    })}
                                     type="text"
                                     placeholder="Dhaka"
-                                    className="h-12 w-full rounded-md border border-gray-300 px-4 text-sm outline-none transition focus:border-primary"
+                                    className={`h-12 w-full rounded-md border px-4 text-sm outline-none transition focus:border-primary ${errors.city
+                                        ? "border-red-400"
+                                        : "border-gray-300"
+                                        }`}
                                 />
+
+                                {errors.city && (
+                                    <p className="mt-1 text-xs text-red-500">
+                                        {
+                                            errors.city
+                                                .message
+                                        }
+                                    </p>
+                                )}
                             </div>
 
                             {/* Postal */}
@@ -672,16 +733,30 @@ export default function CheckoutClient() {
                                 </label>
 
                                 <input
-                                    value={postalCode}
-                                    onChange={(event) =>
-                                        setPostalCode(
-                                            event.target.value,
-                                        )
-                                    }
+                                    {...register(
+                                        "postalCode",
+                                        {
+                                            required:
+                                                "Postal code is required",
+                                        },
+                                    )}
                                     type="text"
                                     placeholder="1205"
-                                    className="h-12 w-full rounded-md border border-gray-300 px-4 text-sm outline-none transition focus:border-primary"
+                                    className={`h-12 w-full rounded-md border px-4 text-sm outline-none transition focus:border-primary ${errors.postalCode
+                                        ? "border-red-400"
+                                        : "border-gray-300"
+                                        }`}
                                 />
+
+                                {errors.postalCode && (
+                                    <p className="mt-1 text-xs text-red-500">
+                                        {
+                                            errors
+                                                .postalCode
+                                                .message
+                                        }
+                                    </p>
+                                )}
                             </div>
 
                             {/* Country */}
@@ -710,10 +785,7 @@ export default function CheckoutClient() {
                         <label className="mt-5 flex cursor-pointer items-center gap-3 text-sm text-gray-600">
                             <input
                                 type="checkbox"
-                                checked={saveAddress}
-                                onChange={(event) =>
-                                    setSaveAddress(event.target.checked)
-                                }
+                                {...register("saveAddress")}
                                 className="h-4 w-4 accent-primary"
                             />
 
@@ -873,8 +945,7 @@ export default function CheckoutClient() {
                         {/* PLACE ORDER */}
 
                         <button
-                            type="button"
-                            onClick={handlePlaceOrder}
+                            type="submit"
                             className="mt-6 flex h-13 w-full items-center justify-center gap-3 rounded-md bg-primary px-6 text-base font-semibold text-white transition hover:opacity-90"
                         >
                             <Lock size={18} />
@@ -894,7 +965,7 @@ export default function CheckoutClient() {
                             and secure
                         </p>
                     </section>
-                </div>
+                </form>
 
                 {/* =================================================
                     RIGHT — ORDER SUMMARY
