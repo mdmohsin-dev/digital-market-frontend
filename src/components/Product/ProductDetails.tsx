@@ -813,9 +813,7 @@ export default function ProductDetails({
 
             {/* PRODUCT TABS */}
 
-            <ProductTabs
-                product={product}
-            />
+            <ProductTabs product={product}/>
         </main>
     );
 }

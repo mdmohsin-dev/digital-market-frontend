@@ -1,5 +1,3 @@
-import type { CartItem } from "@/lib/cart";
-
 export type OrderStatus =
     | "pending"
     | "confirmed"
