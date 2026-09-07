@@ -1,12 +1,14 @@
-export interface CartItem {
-    productId: string;
-    name: string;
-    image: string;
-    price: number;
-    quantity: number;
-    size: string;
-    color: string;
-}
+// export interface CartItem {
+//     productId: string;
+//     name: string;
+//     image: string;
+//     price: number;
+//     quantity: number;
+//     size: string;
+//     color: string;
+// }
+
+import { CartItem } from "@/types/cart";
 
 export const CART_STORAGE_KEY = "cart";
 export const CART_UPDATED_EVENT = "cartUpdated";

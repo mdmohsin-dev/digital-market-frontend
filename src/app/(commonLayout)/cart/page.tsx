@@ -1,7 +1,6 @@
 "use client";
 
 import Link from "next/link";
-import Image from "next/image";
 import { useEffect, useMemo, useState } from "react";
 import { AnimatePresence, motion } from "motion/react";
 import {
@@ -9,7 +8,6 @@ import {
     ArrowRight,
     Minus,
     Plus,
-    ShieldCheck,
     ShoppingCart,
     Trash2,
 } from "lucide-react";
@@ -19,10 +17,10 @@ import {
     getCart,
     removeFromCart,
     updateCartItemQuantity,
-    type CartItem,
 } from "@/lib/cart";
 
 import { products } from "@/Data/products";
+import { CartItem } from "@/types/cart";
 
 export default function CartPage() {
     const [cart, setCart] = useState<CartItem[]>([]);
@@ -81,9 +79,7 @@ export default function CartPage() {
         loadCart();
     };
 
-    // =========================================================
     // REMOVE
-    // =========================================================
 
     const handleRemove = (item: CartItem): void => {
         removeFromCart(
@@ -95,9 +91,7 @@ export default function CartPage() {
         loadCart();
     };
 
-    // =========================================================
     // CART CALCULATIONS
-    // =========================================================
 
     const itemCount: number = cart.reduce<number>(
         (total: number, item: CartItem): number => {
@@ -118,9 +112,7 @@ export default function CartPage() {
 
     const total: number = subtotal - discount;
 
-    // =========================================================
     // RECOMMENDED PRODUCTS
-    // =========================================================
 
     const recommendedProducts = useMemo(() => {
         const cartProductIds = new Set<string>(
@@ -137,23 +129,12 @@ export default function CartPage() {
             .slice(0, 4);
     }, [cart]);
 
-    // =========================================================
     // EMPTY CART
-    // =========================================================
 
     if (cart.length === 0) {
         return (
-            <main className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+            <main className="bg-gray-50 px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
                 <div className="mx-auto max-w-7xl">
-                    {/* BACK TO SHOP */}
-
-                    <Link
-                        href="/shop"
-                        className="inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-primary"
-                    >
-                        <ArrowLeft size={17} />
-                        Continue Shopping
-                    </Link>
 
                     {/* EMPTY CART */}
 
@@ -203,8 +184,7 @@ export default function CartPage() {
                                     stiffness: 180,
                                     damping: 15,
                                 }}
-                                className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100"
-                            >
+                                className="mx-auto mb-6 flex h-20 w-20 items-center justify-center rounded-full bg-gray-100">
                                 <ShoppingCart
                                     size={34}
                                     className="text-gray-400"
@@ -240,16 +220,12 @@ export default function CartPage() {
         );
     }
 
-    // =========================================================
     // CART PAGE
-    // =========================================================
 
     return (
-        <main className="min-h-screen bg-gray-50 px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
+        <main className="bg-gray-50 px-4 py-8 sm:px-6 sm:py-10 lg:px-8">
             <div className="mx-auto max-w-7xl">
-                {/* =================================================
-                    BACK TO SHOP
-                ================================================= */}
+
 
                 <motion.div
                     initial={{
@@ -266,16 +242,15 @@ export default function CartPage() {
                 >
                     <Link
                         href="/shop"
-                        className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-primary"
-                    >
+                        className="mb-5 inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition hover:text-primary">
                         <ArrowLeft size={17} />
                         Continue Shopping
                     </Link>
                 </motion.div>
 
-                {/* =================================================
+                {/* 
                     HEADING
-                ================================================= */}
+                 */}
 
                 <motion.div
                     initial={{
@@ -319,14 +294,14 @@ export default function CartPage() {
                     </motion.p>
                 </motion.div>
 
-                {/* =================================================
+                {/* 
                     MAIN CONTENT
-                ================================================= */}
+                 */}
 
                 <div className="grid items-start gap-6 lg:grid-cols-[minmax(0,1fr)_380px] xl:gap-7">
-                    {/* =================================================
+                    {/* 
                         CART ITEMS
-                    ================================================= */}
+                     */}
 
                     <motion.section
                         initial={{
@@ -365,9 +340,9 @@ export default function CartPage() {
                             <span />
                         </div>
 
-                        {/* =================================================
+                        {/* 
                             PRODUCTS
-                        ================================================= */}
+                         */}
 
                         <div className="px-4 md:px-5">
                             <AnimatePresence
@@ -418,15 +393,14 @@ export default function CartPage() {
                                                         duration: 0.3,
                                                     },
                                                 }}
-                                                className={`py-5 ${
-                                                    index !== 0
-                                                        ? "border-t border-gray-100"
-                                                        : ""
-                                                }`}
+                                                className={`py-5 ${index !== 0
+                                                    ? "border-t border-gray-100"
+                                                    : ""
+                                                    }`}
                                             >
-                                                {/* =================================================
+                                                {/* 
                                                     DESKTOP PRODUCT
-                                                ================================================= */}
+                                                 */}
 
                                                 <div className="hidden md:grid md:grid-cols-[minmax(0,1fr)_90px_140px_90px_35px] md:items-center md:gap-4">
                                                     {/* PRODUCT */}
@@ -507,14 +481,14 @@ export default function CartPage() {
                                                                 handleQuantityChange(
                                                                     item,
                                                                     item.quantity -
-                                                                        1,
+                                                                    1,
                                                                 )
                                                             }
                                                             onIncrease={() =>
                                                                 handleQuantityChange(
                                                                     item,
                                                                     item.quantity +
-                                                                        1,
+                                                                    1,
                                                                 )
                                                             }
                                                         />
@@ -548,9 +522,9 @@ export default function CartPage() {
                                                     />
                                                 </div>
 
-                                                {/* =================================================
+                                                {/* 
                                                     MOBILE PRODUCT
-                                                ================================================= */}
+                                                 */}
 
                                                 <div className="flex gap-3 md:hidden">
                                                     {/* IMAGE */}
@@ -645,14 +619,14 @@ export default function CartPage() {
                                                                     handleQuantityChange(
                                                                         item,
                                                                         item.quantity -
-                                                                            1,
+                                                                        1,
                                                                     )
                                                                 }
                                                                 onIncrease={() =>
                                                                     handleQuantityChange(
                                                                         item,
                                                                         item.quantity +
-                                                                            1,
+                                                                        1,
                                                                     )
                                                                 }
                                                             />
@@ -689,9 +663,9 @@ export default function CartPage() {
                         </div>
                     </motion.section>
 
-                    {/* =================================================
+                    {/* 
                         ORDER SUMMARY
-                    ================================================= */}
+                     */}
 
                     <motion.aside
                         initial={{
@@ -706,7 +680,7 @@ export default function CartPage() {
                             duration: 0.4,
                             delay: 0.15,
                         }}
-                        className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 lg:sticky lg:top-24"
+                        className="rounded-2xl border border-gray-200 bg-white p-5 sm:p-6 lg:sticky lg:top-12"
                     >
                         <h2 className="text-xl font-bold text-gray-900">
                             Order Summary
@@ -799,114 +773,14 @@ export default function CartPage() {
                                 className="ml-2"
                             />
                         </Link>
-
-                        {/* SECURE CHECKOUT */}
-
-                        <div className="mt-5 flex items-center justify-center gap-2 text-xs text-gray-400">
-                            <ShieldCheck size={16} />
-
-                            <span>
-                                Secure and safe checkout
-                            </span>
-                        </div>
                     </motion.aside>
                 </div>
 
-                {/* =================================================
-                    RECOMMENDED PRODUCTS
-                ================================================= */}
-
-                {recommendedProducts.length > 0 && (
-                    <motion.section
-                        initial={{
-                            opacity: 0,
-                            y: 20,
-                        }}
-                        animate={{
-                            opacity: 1,
-                            y: 0,
-                        }}
-                        transition={{
-                            duration: 0.4,
-                            delay: 0.2,
-                        }}
-                        className="mt-10"
-                    >
-                        <h2 className="text-xl font-bold text-gray-900">
-                            You May Also Like
-                        </h2>
-
-                        <div className="mt-5 grid grid-cols-2 gap-4 sm:grid-cols-3 lg:grid-cols-4">
-                            {recommendedProducts.map(
-                                (product, index) => (
-                                    <motion.div
-                                        key={product.id}
-                                        initial={{
-                                            opacity: 0,
-                                            y: 15,
-                                        }}
-                                        animate={{
-                                            opacity: 1,
-                                            y: 0,
-                                        }}
-                                        transition={{
-                                            duration: 0.3,
-                                            delay:
-                                                0.25 +
-                                                index * 0.06,
-                                        }}
-                                        whileHover={{
-                                            y: -4,
-                                        }}
-                                        className="overflow-hidden rounded-xl border border-gray-200 bg-white"
-                                    >
-                                        <Link
-                                            href={`/shop/${product.slug}`}
-                                        >
-                                            <div className="aspect-square overflow-hidden bg-gray-100">
-                                                <Image
-                                                    src={
-                                                        product.images[0]
-                                                    }
-                                                    alt={
-                                                        product.name
-                                                    }
-                                                    width={500}
-                                                    height={500}
-                                                    className="h-full w-full object-cover transition duration-500 hover:scale-105"
-                                                />
-                                            </div>
-
-                                            <div className="p-3">
-                                                <h3 className="line-clamp-2 text-sm font-semibold text-gray-900">
-                                                    {
-                                                        product.name
-                                                    }
-                                                </h3>
-
-                                                <p className="mt-2 text-sm font-bold text-gray-900">
-                                                    ৳
-                                                    {(
-                                                        product.salePrice ??
-                                                        product.regularPrice
-                                                    ).toLocaleString()}
-                                                </p>
-                                            </div>
-                                        </Link>
-                                    </motion.div>
-                                ),
-                            )}
-                        </div>
-                    </motion.section>
-                )}
             </div>
         </main>
     );
 }
-
-// =============================================================
-// REMOVE BUTTON
-// =============================================================
+// REMOVE BUTTO====
 
 interface RemoveButtonProps {
     item: CartItem;
@@ -937,10 +811,7 @@ function RemoveButton({
         </motion.button>
     );
 }
-
-// =============================================================
-// QUANTITY CONTROL
-// =============================================================
+// QUANTITY CONTRO====
 
 interface QuantityControlProps {
     quantity: number;

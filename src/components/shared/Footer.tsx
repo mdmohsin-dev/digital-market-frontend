@@ -6,23 +6,19 @@ import {
 import Link from "next/link";
 import { BsInstagram } from "react-icons/bs";
 import { FaFacebook, FaWhatsapp } from "react-icons/fa6";
-
-import logo from "@/assets/Images/brandLogo.png"
+import logo from "@/assets/Images/brandLogo.png";
 import Image from "next/image";
 
 const quickLinks = [
   { label: "Home", href: "/" },
   { label: "Shop", href: "/shop" },
-  { label: "Flash Sale", href: '/flash-sale' },
+  { label: "Flash Sale", href: "/flash-sale" },
 ];
 
 const supportLinks = [
-  { label: "My Account", href: "/account" },
-  { label: "My Orders", href: "/orders" },
+  { label: "My Account", href: "/dashboard/profile" },
+  { label: "My Orders", href: "/dashboard/orders" },
   { label: "Wishlist", href: "/wishlist" },
-  { label: "Shipping Information", href: "/shipping" },
-  { label: "Returns & Refunds", href: "/returns" },
-  { label: "FAQ", href: "/faq" },
 ];
 
 const socialLinks = [
@@ -43,26 +39,27 @@ const socialLinks = [
   },
 ];
 
-
 export default function Footer() {
   return (
-    <footer className="bg-[#0B0B0A] text-[#EDEDEA] relative">
-      <div className="mx-auto max-w-350 px-4 pb-12 md:pt-56 pt-44 sm:px-6 lg:px-8">
+    <footer className="relative bg-[#0B0B0A] text-[#EDEDEA]">
+      <div className="mx-auto max-w-350 px-4 pb-12 pt-44 sm:px-6 md:pt-56 lg:px-8">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
+
           {/* Brand */}
           <div className="space-y-4">
             <Link
               href="/"
-              className="inline-block text-2xl font-semibold tracking-tight text-foreground"
+              className="inline-block"
               aria-label="Kalni home"
             >
               <Image
                 width={160}
                 height={160}
-                alt="kalni"
+                alt="Kalni"
                 src={logo}
               />
             </Link>
+
             <p className="max-w-xs text-sm leading-relaxed text-muted-foreground">
               Discover modern fashion, timeless essentials, and everyday styles
               curated for you.
@@ -74,6 +71,7 @@ export default function Footer() {
             <h3 className="text-sm font-semibold uppercase tracking-wider text-foreground">
               Quick Links
             </h3>
+
             <ul className="space-y-3">
               {quickLinks.map((link) => (
                 <li key={link.label}>
@@ -93,6 +91,7 @@ export default function Footer() {
             <h3 className="text-sm font-semibold uppercase tracking-wider text-foreground">
               Customer Support
             </h3>
+
             <ul className="space-y-3">
               {supportLinks.map((link) => (
                 <li key={link.label}>
@@ -112,24 +111,60 @@ export default function Footer() {
             <h3 className="text-sm font-semibold uppercase tracking-wider text-foreground">
               Contact
             </h3>
+
             <ul className="space-y-3">
-              <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                <Mail className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-                <span>support@kalni.com</span>
+
+              {/* Email */}
+              <li>
+                <a
+                  href="mailto:support@kalni.com"
+                  className="flex items-start gap-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <Mail
+                    className="mt-0.5 h-4 w-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>support@kalni.com</span>
+                </a>
               </li>
-              <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                <Phone className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-                <span>+1 (000) 000-0000</span>
+
+              {/* Phone */}
+              <li>
+                <a
+                  href="tel:+10000000000"
+                  className="flex items-start gap-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <Phone
+                    className="mt-0.5 h-4 w-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>+1 (000) 000-0000</span>
+                </a>
               </li>
-              <li className="flex items-start gap-3 text-sm text-muted-foreground">
-                <MapPin className="mt-0.5 h-4 w-4 shrink-0" aria-hidden="true" />
-                <span>123 Fashion Ave, Style City</span>
+
+              {/* Address */}
+              <li>
+                <a
+                  href="https://www.google.com/maps/search/?api=1&query=123+Fashion+Ave+Style+City"
+                  target="_blank"
+                  rel="noopener noreferrer"
+                  className="flex items-start gap-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                >
+                  <MapPin
+                    className="mt-0.5 h-4 w-4 shrink-0"
+                    aria-hidden="true"
+                  />
+                  <span>123 Fashion Ave, Style City</span>
+                </a>
               </li>
+
             </ul>
 
+            {/* Social Links */}
             <div className="flex items-center gap-3 pt-2">
               {socialLinks.map((social) => {
                 const Icon = social.icon;
+
                 return (
                   <a
                     key={social.label}
@@ -150,10 +185,12 @@ export default function Footer() {
 
       {/* Footer Bottom */}
       <div className="border-t border-border">
-        <div className="mx-auto flex max-w-350 flex-col items-center justify-between gap-4 pt-4 md:pb-4 pb-20 sm:flex-row sm:px-6 lg:px-8">
+        <div className="mx-auto flex max-w-350 flex-col items-center justify-between gap-4 pb-20 pt-4 sm:flex-row sm:px-6 md:pb-4 lg:px-8">
+
           <p className="text-xs text-muted-foreground">
             &copy; 2026 Kalni. All rights reserved.
           </p>
+
           <div className="flex flex-wrap items-center justify-center gap-6">
             <Link
               href="/privacy"
@@ -161,6 +198,7 @@ export default function Footer() {
             >
               Privacy Policy
             </Link>
+
             <Link
               href="/terms"
               className="text-xs text-muted-foreground transition-colors hover:text-foreground"
@@ -168,6 +206,7 @@ export default function Footer() {
               Terms & Conditions
             </Link>
           </div>
+
         </div>
       </div>
     </footer>

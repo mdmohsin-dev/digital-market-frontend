@@ -1,13 +1,27 @@
+"use client";
+
+import { useMemo, useState } from "react";
 import Link from "next/link";
 import { ArrowLeft } from "lucide-react";
 
 import type { Product } from "@/types/product";
 import { flashSales } from "@/Data/flashSales";
 import { products } from "@/Data/products";
+
 import FlashSaleCountdown from "@/components/Home/Flash-sale/FlashSaleCountdown";
 import FlashSaleCard from "@/components/Home/Flash-sale/FlashSaleCard";
 
+type SortOption =
+    | "featured"
+    | "price-low"
+    | "price-high"
+    | "discount"
+    | "rating";
+
 export default function FlashSalePage() {
+    const [sortBy, setSortBy] =
+        useState<SortOption>("featured");
+
     const now = new Date();
 
     // Find active flash sale
@@ -55,10 +69,6 @@ export default function FlashSalePage() {
 
     /*
      * Find products from productIds.
-     *
-     * products.find() returns Product | undefined,
-     * so we use a type guard in filter() to make
-     * the final result Product[].
      */
     const flashSaleProducts =
         activeFlashSale.productIds
@@ -74,6 +84,88 @@ export default function FlashSalePage() {
                 ): product is Product =>
                     product !== undefined
             );
+
+    /*
+     * Calculate discount for sorting.
+     */
+    const getDiscount = (
+        product: Product
+    ): number => {
+        if (product.discount !== undefined) {
+            return product.discount;
+        }
+
+        if (
+            product.salePrice !== undefined &&
+            product.regularPrice > 0
+        ) {
+            return Math.round(
+                (
+                    (product.regularPrice -
+                        product.salePrice) /
+                    product.regularPrice
+                ) * 100
+            );
+        }
+
+        return 0;
+    };
+
+    /*
+     * Sort flash sale products.
+     */
+    const sortedProducts = useMemo(() => {
+        const sorted = [...flashSaleProducts];
+
+        switch (sortBy) {
+            case "price-low":
+                return sorted.sort(
+                    (a, b) => {
+                        const priceA =
+                            a.salePrice ??
+                            a.regularPrice;
+
+                        const priceB =
+                            b.salePrice ??
+                            b.regularPrice;
+
+                        return priceA - priceB;
+                    }
+                );
+
+            case "price-high":
+                return sorted.sort(
+                    (a, b) => {
+                        const priceA =
+                            a.salePrice ??
+                            a.regularPrice;
+
+                        const priceB =
+                            b.salePrice ??
+                            b.regularPrice;
+
+                        return priceB - priceA;
+                    }
+                );
+
+            case "discount":
+                return sorted.sort(
+                    (a, b) =>
+                        getDiscount(b) -
+                        getDiscount(a)
+                );
+
+            case "rating":
+                return sorted.sort(
+                    (a, b) =>
+                        b.rating - a.rating
+                );
+
+            case "featured":
+            default:
+                return sorted;
+        }
+    }, [flashSaleProducts, sortBy]);
 
     return (
         <main className="min-h-screen">
@@ -130,7 +222,7 @@ export default function FlashSalePage() {
                             Showing{" "}
                             <span className="font-medium text-gray-900">
                                 {
-                                    flashSaleProducts.length
+                                    sortedProducts.length
                                 }
                             </span>{" "}
                             flash sale products
@@ -138,7 +230,13 @@ export default function FlashSalePage() {
 
                         {/* Sort */}
                         <select
-                            defaultValue="featured"
+                            value={sortBy}
+                            onChange={(event) =>
+                                setSortBy(
+                                    event.target
+                                        .value as SortOption
+                                )
+                            }
                             className="h-10 rounded-md border border-gray-300 bg-white px-3 text-sm outline-none focus:border-black"
                             aria-label="Sort flash sale products"
                         >
@@ -157,14 +255,18 @@ export default function FlashSalePage() {
                             <option value="discount">
                                 Highest Discount
                             </option>
+
+                            <option value="rating">
+                                Highest Rated
+                            </option>
                         </select>
                     </div>
 
                     {/* Product Grid */}
-                    {flashSaleProducts.length >
+                    {sortedProducts.length >
                     0 ? (
                         <div className="grid grid-cols-1 gap-5 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-                            {flashSaleProducts.map(
+                            {sortedProducts.map(
                                 (product) => (
                                     <FlashSaleCard
                                         key={

@@ -32,6 +32,18 @@ interface ProductDetailsProps {
     product: Product;
 }
 
+interface BuyNowItem {
+    productId: string;
+    name: string;
+    image: string;
+    price: number;
+    quantity: number;
+    size?: string;
+    color?: string;
+}
+
+const BUY_NOW_KEY = "buy-now";
+
 export default function ProductDetails({
     product,
 }: ProductDetailsProps) {
@@ -47,9 +59,7 @@ export default function ProductDetails({
     const [isWishlisted, setIsWishlisted] =
         useState(false);
 
-
     // WISHLIST
-
 
     useEffect(() => {
         setIsWishlisted(
@@ -73,23 +83,23 @@ export default function ProductDetails({
 
         setIsWishlisted(nowWishlisted);
 
-        toast[nowWishlisted ? "success" : "info"](
+        toast[
+            nowWishlisted
+                ? "success"
+                : "info"
+        ](
             nowWishlisted
                 ? "Added to wishlist."
                 : "Removed from wishlist.",
         );
     };
 
-
     // VARIATIONS
-
 
     const variations =
         product.variations ?? [];
 
-
     // AVAILABLE COLORS
-
 
     const colors = useMemo(() => {
         return Array.from(
@@ -109,9 +119,7 @@ export default function ProductDetails({
         );
     }, [variations]);
 
-
     // AVAILABLE SIZES
-
 
     const sizes = useMemo(() => {
         return Array.from(
@@ -148,9 +156,7 @@ export default function ProductDetails({
         );
     };
 
-
     // SIZE COMPATIBILITY
-
 
     const isSizeCompatible = (
         _size: string,
@@ -158,34 +164,31 @@ export default function ProductDetails({
         return true;
     };
 
-
     // SELECTED VARIATION
 
+    const selectedVariation =
+        useMemo(() => {
+            if (
+                !selectedSize ||
+                !selectedColor
+            ) {
+                return undefined;
+            }
 
-    const selectedVariation = useMemo(() => {
-        if (
-            !selectedSize ||
-            !selectedColor
-        ) {
-            return undefined;
-        }
-
-        return variations.find(
-            (variation) =>
-                variation.size ===
-                selectedSize &&
-                variation.color ===
-                selectedColor,
-        );
-    }, [
-        variations,
-        selectedSize,
-        selectedColor,
-    ]);
-
+            return variations.find(
+                (variation) =>
+                    variation.size ===
+                    selectedSize &&
+                    variation.color ===
+                    selectedColor,
+            );
+        }, [
+            variations,
+            selectedSize,
+            selectedColor,
+        ]);
 
     // CURRENT PRICE
-
 
     const currentPrice =
         selectedVariation?.salePrice ??
@@ -193,24 +196,18 @@ export default function ProductDetails({
         product.salePrice ??
         product.regularPrice;
 
-
     // CURRENT REGULAR PRICE
-
 
     const currentRegularPrice =
         selectedVariation?.price ??
         product.regularPrice;
 
-
     // CURRENT STOCK
-
 
     const currentStock =
         selectedVariation?.stock ?? 0;
 
-
     // COLOR CHANGE
-
 
     const handleColorChange = (
         color: string,
@@ -226,9 +223,7 @@ export default function ProductDetails({
         setQuantity(1);
     };
 
-
     // SIZE CHANGE
-
 
     const handleSizeChange = (
         size: string,
@@ -250,9 +245,7 @@ export default function ProductDetails({
         }
     };
 
-
     // QUANTITY
-
 
     const increaseQuantity = () => {
         if (
@@ -275,9 +268,7 @@ export default function ProductDetails({
         }
     };
 
-
-    // VALIDATE ADD TO CART
-
+    // VALIDATE ADD TO CART SELECTION
 
     const validateAddToCartSelection =
         () => {
@@ -325,9 +316,7 @@ export default function ProductDetails({
             return true;
         };
 
-
     // ADD TO CART
-
 
     const handleAddToCart = () => {
         if (
@@ -336,8 +325,6 @@ export default function ProductDetails({
             return;
         }
 
-        // Variation product হলে
-        // selectedVariation অবশ্যই থাকতে হবে
         if (
             variations.length > 0 &&
             !selectedVariation
@@ -347,14 +334,21 @@ export default function ProductDetails({
 
         const cartItem = {
             productId: product.id,
+
             name: product.name,
+
             image:
-                typeof product.images[0] === "string"
+                typeof product.images[0] ===
+                    "string"
                     ? product.images[0]
                     : product.images[0].src,
+
             price: currentPrice,
+
             quantity,
+
             size: selectedSize!,
+
             color: selectedColor!,
         };
 
@@ -365,9 +359,7 @@ export default function ProductDetails({
         );
     };
 
-
     // BUY NOW
-
 
     const handleBuyNow = () => {
         const isValid =
@@ -377,13 +369,37 @@ export default function ProductDetails({
             return;
         }
 
-        // এখন Buy Now শুধু validation করবে।
-        // Checkout flow পরের step-এ হবে।
+        if (
+            variations.length > 0 &&
+            !selectedVariation
+        ) {
+            return;
+        }
+
+        const buyNowItem: BuyNowItem = {
+            productId: product.id,
+            name: product.name,
+            image:
+                typeof product.images[0] ===
+                    "string"
+                    ? product.images[0]
+                    : product.images[0].src,
+            price: currentPrice,
+            quantity,
+            size: selectedSize ?? undefined,
+            color: selectedColor ?? undefined,
+        };
+
+        localStorage.setItem(
+            BUY_NOW_KEY,
+            JSON.stringify(buyNowItem),
+        );
+
+        window.location.href = "/checkout";
     };
 
 
     // RENDER
-
 
     return (
         <main className="mx-auto max-w-350 px-4 py-8 sm:px-6 lg:px-8">
@@ -795,10 +811,11 @@ export default function ProductDetails({
                 </div>
             </section>
 
-            {/*  PRODUCT TABS*/}
+            {/* PRODUCT TABS */}
 
             <ProductTabs
-                product={product}/>
+                product={product}
+            />
         </main>
     );
 }
