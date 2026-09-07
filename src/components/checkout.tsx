@@ -8,7 +8,6 @@ import {
     MapPin,
     Minus,
     Plus,
-    ShieldCheck,
     ShoppingBag,
     Tag,
     Trash2,
@@ -48,17 +47,11 @@ import cardLogo from "@/assets/Images/cardLogo.png";
 import handCashLogo from "@/assets/Images/cash-in-hand.jpg";
 import { CartItem } from "@/types/cart";
 
-
-// =====================================================
-// BUY NOW
-// =====================================================
+// BUY NO
 
 const BUY_NOW_KEY = "buy-now";
 
-
-// =====================================================
-// PAYMENT METHODS
-// =====================================================
+// PAYMENT METHOD
 
 const paymentMethods: {
     id: PaymentMethod;
@@ -98,10 +91,7 @@ const paymentMethods: {
     },
 ];
 
-
-// =====================================================
-// PAYMENT ICON
-// =====================================================
+// PAYMENT ICO
 
 function PaymentIcon({
     type,
@@ -187,10 +177,7 @@ function PaymentIcon({
     );
 }
 
-
-// =====================================================
-// FORM DATA TYPE
-// =====================================================
+// FORM DATA TYP
 
 interface CheckoutFormData {
     fullName: string;
@@ -202,15 +189,10 @@ interface CheckoutFormData {
     saveAddress: boolean;
 }
 
-
-// =====================================================
-// CHECKOUT CLIENT
-// =====================================================
+// CHECKOUT CLIEN
 
 export default function CheckoutClient() {
-    // =====================================================
     // CART
-    // =====================================================
 
     const [cart, setCart] =
         useState<CartItem[]>([]);
@@ -221,9 +203,7 @@ export default function CheckoutClient() {
         useState<PaymentMethod>("cod");
 
 
-    // =====================================================
     // REACT HOOK FORM
-    // =====================================================
 
     const {
         register,
@@ -243,9 +223,7 @@ export default function CheckoutClient() {
     });
 
 
-    // =====================================================
     // PROMO
-    // =====================================================
 
     const [promoCode, setPromoCode] =
         useState("");
@@ -254,15 +232,13 @@ export default function CheckoutClient() {
         useState(false);
 
 
-    // =====================================================
     // CART LOAD
-    // =====================================================
 
     useEffect(() => {
         const loadCheckoutItems = () => {
-            // -------------------------------------------------
+
             // FIRST CHECK BUY NOW
-            // -------------------------------------------------
+
 
             const storedBuyNow =
                 localStorage.getItem(
@@ -290,9 +266,9 @@ export default function CheckoutClient() {
                 }
             }
 
-            // -------------------------------------------------
+
             // OTHERWISE NORMAL CART
-            // -------------------------------------------------
+
 
             setCart(getCart());
         };
@@ -323,9 +299,7 @@ export default function CheckoutClient() {
     }, []);
 
 
-    // =====================================================
     // LOAD SAVED ADDRESS
-    // =====================================================
 
     useEffect(() => {
         const savedAddress =
@@ -372,9 +346,7 @@ export default function CheckoutClient() {
     }, [reset]);
 
 
-    // =====================================================
     // SUBTOTAL
-    // =====================================================
 
     const subtotal = useMemo(() => {
         return cart.reduce(
@@ -387,9 +359,7 @@ export default function CheckoutClient() {
     }, [cart]);
 
 
-    // =====================================================
     // SHIPPING
-    // =====================================================
 
     const shipping =
         cart.length > 0
@@ -397,16 +367,12 @@ export default function CheckoutClient() {
             : 0;
 
 
-    // =====================================================
     // DISCOUNT
-    // =====================================================
 
     const discount = 0;
 
 
-    // =====================================================
     // TOTAL
-    // =====================================================
 
     const total =
         subtotal +
@@ -414,9 +380,7 @@ export default function CheckoutClient() {
         discount;
 
 
-    // =====================================================
     // UPDATE QUANTITY
-    // =====================================================
 
     const handleIncrease = (
         item: CartItem,
@@ -450,9 +414,7 @@ export default function CheckoutClient() {
     };
 
 
-    // =====================================================
     // REMOVE
-    // =====================================================
 
     const handleRemove = (
         item: CartItem,
@@ -496,9 +458,7 @@ export default function CheckoutClient() {
     };
 
 
-    // =====================================================
     // PROMO
-    // =====================================================
 
     const handlePromo = () => {
         if (!promoCode.trim()) {
@@ -509,9 +469,7 @@ export default function CheckoutClient() {
     };
 
 
-    // =====================================================
     // PLACE ORDER
-    // =====================================================
 
     const onPlaceOrder: SubmitHandler<
         CheckoutFormData
@@ -525,9 +483,7 @@ export default function CheckoutClient() {
         }
 
 
-        // -------------------------------------------------
         // CREATE ORDER
-        // -------------------------------------------------
 
         const order = {
             id: generateOrderId(),
@@ -592,16 +548,12 @@ export default function CheckoutClient() {
         };
 
 
-        // -------------------------------------------------
         // SAVE ORDER
-        // -------------------------------------------------
 
         saveOrder(order);
 
 
-        // -------------------------------------------------
         // SAVE DELIVERY INFORMATION
-        // -------------------------------------------------
 
         if (data.saveAddress) {
             const deliveryInfo = {
@@ -640,25 +592,19 @@ export default function CheckoutClient() {
         }
 
 
-        // -------------------------------------------------
         // CLEAR NORMAL CART
-        // -------------------------------------------------
 
         clearCart();
 
 
-        // -------------------------------------------------
         // CLEAR BUY NOW
-        // -------------------------------------------------
 
         localStorage.removeItem(
             BUY_NOW_KEY,
         );
 
 
-        // -------------------------------------------------
         // GO TO SUCCESS PAGE
-        // -------------------------------------------------
 
         router.push(
             `/order-success?orderId=${order.id}`,
@@ -666,48 +612,7 @@ export default function CheckoutClient() {
     };
 
 
-    // =====================================================
-    // EMPTY CART
-    // =====================================================
-
-    // if (cart.length === 0) {
-    //     return (
-    //         <main className="mx-auto flex min-h-[70vh] max-w-350 items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
-    //             <div className="text-center">
-    //                 <ShoppingBag
-    //                     size={48}
-    //                     className="mx-auto text-gray-300"
-    //                 />
-
-    //                 <h1 className="mt-5 text-2xl font-semibold">
-    //                     Your cart is empty
-    //                 </h1>
-
-    //                 <p className="mt-2 text-sm text-gray-500">
-    //                     Add some products before
-    //                     proceeding to checkout.
-    //                 </p>
-
-    //                 <Link
-    //                     href="/shop"
-    //                     className="mt-6 inline-flex h-11 items-center gap-2 rounded-md bg-primary px-6 text-sm font-medium text-white transition hover:opacity-90"
-    //                 >
-    //                     <ArrowLeft
-    //                         size={17}
-    //                     />
-
-    //                     Continue Shopping
-    //                 </Link>
-    //             </div>
-    //         </main>
-    //     );
-    // }
-
-
-    // =====================================================
-    // RENDER
-    // =====================================================
-
+    
     return (
         <main className="mx-auto max-w-350 px-4 py-8 sm:px-6 lg:px-8">
 
@@ -1063,9 +968,9 @@ export default function CheckoutClient() {
 
                                 <select
                                     defaultValue="Bangladesh"
-                                    className="h-12 w-full rounded-md border border-gray-300 bg-white px-4 text-sm outline-none transition focus:border-primary"
+                                    className="h-12 w-full text-gray-600 rounded-md border border-gray-300 bg-white px-4 text-sm outline-none transition focus:border-primary"
                                 >
-                                    <option>
+                                    <option className="">
                                         Bangladesh
                                     </option>
                                 </select>
@@ -1296,16 +1201,6 @@ export default function CheckoutClient() {
                                 className="rotate-180"
                             />
                         </button>
-
-
-                        <p className="mt-4 flex items-center justify-center gap-2 text-xs text-gray-500">
-                            <ShieldCheck
-                                size={15}
-                            />
-
-                            Your information is safe
-                            and secure
-                        </p>
 
                     </section>
 

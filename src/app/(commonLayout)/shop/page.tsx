@@ -30,6 +30,8 @@ import {
   ShopFilter,
 } from "@/components/Filter/ShopFilterSection";
 
+
+
 export default function ShopPage() {
   return (
     <Suspense
@@ -499,7 +501,7 @@ function ShopContent() {
           handleCategoryChange
         }
         onSubcategoryChange={
-          handleSubcategoryChange}/>
+          handleSubcategoryChange} />
 
 
       <div className="w-full">
