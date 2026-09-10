@@ -8,6 +8,7 @@ import {
     ShoppingCart,
 } from "lucide-react";
 import Link from "next/link";
+
 import {
     useEffect,
     useMemo,
@@ -27,6 +28,7 @@ import {
 } from "@/lib/wishlist";
 
 import { addToCart } from "@/lib/cart";
+import { useRouter } from "next/navigation";
 
 interface ProductDetailsProps {
     product: Product;
@@ -360,6 +362,7 @@ export default function ProductDetails({
     };
 
     // BUY NOW
+    const router = useRouter();
 
     const handleBuyNow = () => {
         const isValid =
@@ -395,7 +398,7 @@ export default function ProductDetails({
             JSON.stringify(buyNowItem),
         );
 
-        window.location.href = "/checkout";
+        router.push("/checkout");
     };
 
 

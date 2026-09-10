@@ -1,8 +1,4 @@
-import {
-  Mail,
-  MapPin,
-  Phone,
-} from "lucide-react";
+import { Mail, MapPin, Phone } from "lucide-react";
 import Link from "next/link";
 import { BsInstagram } from "react-icons/bs";
 import { FaFacebook, FaWhatsapp } from "react-icons/fa6";
@@ -44,7 +40,6 @@ export default function Footer() {
     <footer className="relative bg-[#0B0B0A] text-[#EDEDEA]">
       <div className="mx-auto max-w-350 px-4 pb-12 pt-44 sm:px-6 md:pt-56 lg:px-8">
         <div className="grid grid-cols-1 gap-10 sm:grid-cols-2 lg:grid-cols-4 lg:gap-12">
-
           {/* Brand */}
           <div className="space-y-4">
             <Link
@@ -77,7 +72,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
                   >
                     {link.label}
                   </Link>
@@ -97,7 +92,7 @@ export default function Footer() {
                 <li key={link.label}>
                   <Link
                     href={link.href}
-                    className="text-sm text-muted-foreground transition-colors hover:text-foreground"
+                    className="text-sm text-muted-foreground transition-colors hover:text-primary"
                   >
                     {link.label}
                   </Link>
@@ -113,15 +108,14 @@ export default function Footer() {
             </h3>
 
             <ul className="space-y-3">
-
               {/* Email */}
               <li>
                 <a
                   href="mailto:support@kalni.com"
-                  className="flex items-start gap-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  className="flex items-start gap-3 text-sm text-muted-foreground transition-colors hover:text-primary"
                 >
                   <Mail
-                    className="mt-0.5 h-4 w-4 shrink-0"
+                    className="mt-0.5 h-4 w-4 shrink-0 text-primary"
                     aria-hidden="true"
                   />
                   <span>support@kalni.com</span>
@@ -132,10 +126,10 @@ export default function Footer() {
               <li>
                 <a
                   href="tel:+10000000000"
-                  className="flex items-start gap-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  className="flex items-start gap-3 text-sm text-muted-foreground transition-colors hover:text-primary"
                 >
                   <Phone
-                    className="mt-0.5 h-4 w-4 shrink-0"
+                    className="mt-0.5 h-4 w-4 shrink-0 text-primary"
                     aria-hidden="true"
                   />
                   <span>+1 (000) 000-0000</span>
@@ -148,16 +142,15 @@ export default function Footer() {
                   href="https://www.google.com/maps/search/?api=1&query=123+Fashion+Ave+Style+City"
                   target="_blank"
                   rel="noopener noreferrer"
-                  className="flex items-start gap-3 text-sm text-muted-foreground transition-colors hover:text-foreground"
+                  className="flex items-start gap-3 text-sm text-muted-foreground transition-colors hover:text-primary"
                 >
                   <MapPin
-                    className="mt-0.5 h-4 w-4 shrink-0"
+                    className="mt-0.5 h-4 w-4 shrink-0 text-primary"
                     aria-hidden="true"
                   />
                   <span>123 Fashion Ave, Style City</span>
                 </a>
               </li>
-
             </ul>
 
             {/* Social Links */}
@@ -172,7 +165,7 @@ export default function Footer() {
                     target="_blank"
                     rel="noopener noreferrer"
                     aria-label={`Visit our ${social.label}`}
-                    className="grid h-9 w-9 place-items-center rounded-full border border-border text-muted-foreground transition-colors hover:border-foreground hover:text-foreground"
+                    className="grid h-9 w-9 place-items-center rounded-full border border-primary text-primary transition-colors hover:bg-primary hover:text-primary-foreground"
                   >
                     <Icon className="h-4 w-4" />
                   </a>
@@ -186,7 +179,6 @@ export default function Footer() {
       {/* Footer Bottom */}
       <div className="border-t border-border">
         <div className="mx-auto flex max-w-350 flex-col items-center justify-between gap-4 pb-20 pt-4 sm:flex-row sm:px-6 md:pb-4 lg:px-8">
-
           <p className="text-xs text-muted-foreground">
             &copy; 2026 Kalni. All rights reserved.
           </p>
@@ -194,19 +186,18 @@ export default function Footer() {
           <div className="flex flex-wrap items-center justify-center gap-6">
             <Link
               href="/privacy"
-              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              className="text-xs text-muted-foreground transition-colors hover:text-primary"
             >
               Privacy Policy
             </Link>
 
             <Link
               href="/terms"
-              className="text-xs text-muted-foreground transition-colors hover:text-foreground"
+              className="text-xs text-muted-foreground transition-colors hover:text-primary"
             >
               Terms & Conditions
             </Link>
           </div>
-
         </div>
       </div>
     </footer>
