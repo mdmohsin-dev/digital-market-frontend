@@ -21,6 +21,7 @@ type RegisterFormData = {
     email: string;
     password: string;
     confirmPassword: string;
+    terms: boolean;
 };
 
 export default function RegisterPage() {
@@ -29,7 +30,6 @@ export default function RegisterPage() {
     const [showPassword, setShowPassword] = useState(false);
     const [showConfirmPassword, setShowConfirmPassword] =
         useState(false);
-
     const [registerError, setRegisterError] = useState("");
     const [isRegistering, setIsRegistering] = useState(false);
 
@@ -44,6 +44,7 @@ export default function RegisterPage() {
             email: "",
             password: "",
             confirmPassword: "",
+            terms: false,
         },
     });
 
@@ -58,24 +59,21 @@ export default function RegisterPage() {
                 name: data.name.trim(),
                 email: data.email.trim().toLowerCase(),
                 password: data.password,
-                callbackURL: "/dashboard",
             });
 
             if (error) {
                 setRegisterError(
                     error.message || "Unable to create account."
                 );
-                setIsRegistering(false);
                 return;
             }
 
             router.push("/login");
-        } catch (error) {
-
+        } catch {
             setRegisterError(
                 "Something went wrong. Please try again."
             );
-
+        } finally {
             setIsRegistering(false);
         }
     };
@@ -83,7 +81,6 @@ export default function RegisterPage() {
     return (
         <main className="relative flex min-h-screen items-center justify-center bg-white px-4 py-10">
             {/* Back Button */}
-
             <Link
                 href="/"
                 className="absolute left-5 top-5 inline-flex items-center gap-2 text-sm font-medium text-gray-600 transition-colors hover:text-black sm:left-8 sm:top-8"
@@ -93,10 +90,8 @@ export default function RegisterPage() {
             </Link>
 
             {/* Register Card */}
-
             <div className="w-full max-w-[610px] rounded-2xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(0,0,0,0.08)] sm:px-12 sm:py-12">
                 {/* Icon */}
-
                 <div className="flex justify-center">
                     <div className="flex h-20 w-20 items-center justify-center rounded-full border border-gray-200 bg-gray-50">
                         <ShoppingCart
@@ -108,7 +103,6 @@ export default function RegisterPage() {
                 </div>
 
                 {/* Heading */}
-
                 <div className="mt-6 text-center">
                     <h1 className="text-3xl font-bold tracking-tight text-black">
                         Create Account
@@ -120,13 +114,11 @@ export default function RegisterPage() {
                 </div>
 
                 {/* Form */}
-
                 <form
                     onSubmit={handleSubmit(onSubmit)}
                     className="mt-9 space-y-5"
                 >
                     {/* Name */}
-
                     <div>
                         <div
                             className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${
@@ -148,7 +140,6 @@ export default function RegisterPage() {
                                 {...register("name", {
                                     required:
                                         "Full name is required",
-
                                     minLength: {
                                         value: 2,
                                         message:
@@ -166,7 +157,6 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Email */}
-
                     <div>
                         <div
                             className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${
@@ -188,7 +178,6 @@ export default function RegisterPage() {
                                 {...register("email", {
                                     required:
                                         "Email address is required",
-
                                     pattern: {
                                         value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                                         message:
@@ -206,7 +195,6 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Password */}
-
                     <div>
                         <div
                             className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${
@@ -232,7 +220,6 @@ export default function RegisterPage() {
                                 {...register("password", {
                                     required:
                                         "Password is required",
-
                                     minLength: {
                                         value: 8,
                                         message:
@@ -271,7 +258,6 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Confirm Password */}
-
                     <div>
                         <div
                             className={`flex h-13 items-center rounded-lg border bg-white px-4 transition-colors focus-within:border-black ${
@@ -299,7 +285,6 @@ export default function RegisterPage() {
                                     {
                                         required:
                                             "Please confirm your password",
-
                                         validate: (value) =>
                                             value === password ||
                                             "Passwords do not match",
@@ -337,7 +322,6 @@ export default function RegisterPage() {
                     </div>
 
                     {/* Registration Error */}
-
                     {registerError && (
                         <p className="text-sm text-red-500">
                             {registerError}
@@ -345,20 +329,22 @@ export default function RegisterPage() {
                     )}
 
                     {/* Terms */}
-
                     <div className="flex items-start gap-3 pt-1">
                         <input
                             type="checkbox"
                             id="terms"
-                            required
                             className="mt-0.5 h-4 w-4 rounded border-gray-300 accent-black"
+                            {...register("terms", {
+                                required:
+                                    "You must agree to the Terms & Conditions and Privacy Policy",
+                            })}
                         />
 
                         <label
                             htmlFor="terms"
                             className="text-sm leading-5 text-gray-500"
                         >
-                            I agree to the{" "}
+                            I agree to{" "}
                             <Link
                                 href="/terms"
                                 className="font-medium text-black underline underline-offset-2"
@@ -376,8 +362,13 @@ export default function RegisterPage() {
                         </label>
                     </div>
 
-                    {/* Register Button */}
+                    {errors.terms && (
+                        <p className="text-sm text-red-500">
+                            {errors.terms.message}
+                        </p>
+                    )}
 
+                    {/* Register Button */}
                     <button
                         type="submit"
                         disabled={isRegistering}
@@ -390,7 +381,6 @@ export default function RegisterPage() {
                 </form>
 
                 {/* Divider */}
-
                 <div className="my-8 flex items-center gap-4">
                     <div className="h-px flex-1 bg-gray-200" />
 
@@ -402,13 +392,11 @@ export default function RegisterPage() {
                 </div>
 
                 {/* Google */}
-
                 <div className="flex w-full justify-center">
                     <GoogleLoginButton />
                 </div>
 
                 {/* Login */}
-
                 <p className="mt-8 text-center text-base text-gray-600">
                     Already have an account?{" "}
                     <Link

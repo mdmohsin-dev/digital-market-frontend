@@ -12,10 +12,7 @@ import {
     ShoppingCart,
 } from "lucide-react";
 import { BsArrowLeft } from "react-icons/bs";
-
 import GoogleLoginButton from "@/components/auth/GoogleLoginButton";
-import DemoAdminButton from "@/components/auth/DemoAdminButton";
-
 import { authClient } from "@/lib/auth-client";
 
 type LoginFormData = {
@@ -29,10 +26,8 @@ export default function LoginPage() {
 
     const [showPassword, setShowPassword] =
         useState(false);
-
     const [loginError, setLoginError] =
         useState("");
-
     const [isLoggingIn, setIsLoggingIn] =
         useState(false);
 
@@ -53,12 +48,13 @@ export default function LoginPage() {
         setIsLoggingIn(true);
 
         try {
+            const email = data.email.trim().toLowerCase();
+
             const { error } =
                 await authClient.signIn.email({
-                    email: data.email.trim().toLowerCase(),
+                    email,
                     password: data.password,
                     rememberMe: data.rememberMe,
-                    callbackURL: "/dashboard",
                 });
 
             if (error) {
@@ -66,18 +62,15 @@ export default function LoginPage() {
                     error.message ||
                         "Invalid email or password."
                 );
-
-                setIsLoggingIn(false);
                 return;
             }
 
             router.push("/dashboard");
-        } catch (error) {
-
+        } catch {
             setLoginError(
                 "Something went wrong. Please try again."
             );
-
+        } finally {
             setIsLoggingIn(false);
         }
     };
@@ -85,7 +78,6 @@ export default function LoginPage() {
     return (
         <main className="min-h-screen bg-white px-4 py-10 sm:px-6 lg:px-8">
             {/* Back */}
-
             <Link
                 href="/"
                 className="absolute left-5 top-5 inline-flex items-center gap-2 text-md font-medium text-gray-600 transition-colors hover:text-gray-950 sm:left-8 sm:top-8"
@@ -97,7 +89,6 @@ export default function LoginPage() {
             <div className="flex min-h-[calc(100vh-5rem)] items-center justify-center">
                 <div className="w-full max-w-[550px] rounded-2xl border border-gray-200 bg-white px-6 py-10 shadow-[0_20px_60px_rgba(0,0,0,0.08)] sm:px-10 sm:py-12 md:px-12">
                     {/* Icon */}
-
                     <div className="flex justify-center">
                         <div className="flex h-20 w-20 items-center justify-center rounded-full border border-gray-200 bg-gray-50">
                             <ShoppingCart
@@ -109,7 +100,6 @@ export default function LoginPage() {
                     </div>
 
                     {/* Heading */}
-
                     <div className="mt-7 text-center">
                         <h1 className="text-3xl font-bold tracking-tight text-gray-950 sm:text-4xl">
                             Welcome Back!
@@ -121,13 +111,11 @@ export default function LoginPage() {
                     </div>
 
                     {/* Form */}
-
                     <form
                         onSubmit={handleSubmit(onSubmit)}
                         className="mt-10 space-y-5"
                     >
                         {/* Email */}
-
                         <div>
                             <div
                                 className={`flex h-14 items-center rounded-lg border bg-white px-4 transition-colors ${
@@ -150,7 +138,6 @@ export default function LoginPage() {
                                     {...register("email", {
                                         required:
                                             "Email is required",
-
                                         pattern: {
                                             value: /^[^\s@]+@[^\s@]+\.[^\s@]+$/,
                                             message:
@@ -168,7 +155,6 @@ export default function LoginPage() {
                         </div>
 
                         {/* Password */}
-
                         <div>
                             <div
                                 className={`flex h-14 items-center rounded-lg border bg-white px-4 transition-colors ${
@@ -195,7 +181,6 @@ export default function LoginPage() {
                                     {...register("password", {
                                         required:
                                             "Password is required",
-
                                         minLength: {
                                             value: 8,
                                             message:
@@ -233,12 +218,7 @@ export default function LoginPage() {
                             )}
                         </div>
 
-                        {/* Demo Admin */}
-
-                        <DemoAdminButton />
-
                         {/* Login Error */}
-
                         {loginError && (
                             <p className="text-sm text-red-500">
                                 {loginError}
@@ -246,7 +226,6 @@ export default function LoginPage() {
                         )}
 
                         {/* Remember + Forgot */}
-
                         <div className="flex items-center justify-between gap-4 pt-1">
                             <label className="flex cursor-pointer items-center gap-2.5">
                                 <input
@@ -271,7 +250,6 @@ export default function LoginPage() {
                         </div>
 
                         {/* Sign In */}
-
                         <button
                             type="submit"
                             disabled={isLoggingIn}
@@ -284,7 +262,6 @@ export default function LoginPage() {
                     </form>
 
                     {/* Divider */}
-
                     <div className="my-8 flex items-center gap-3">
                         <div className="h-px flex-1 bg-gray-200" />
 
@@ -296,13 +273,11 @@ export default function LoginPage() {
                     </div>
 
                     {/* Google */}
-
                     <div className="flex w-full justify-center">
                         <GoogleLoginButton />
                     </div>
 
                     {/* Register */}
-
                     <p className="mt-8 text-center text-sm text-gray-700 sm:text-base">
                         Don't have an account?{" "}
                         <Link

@@ -7,6 +7,7 @@ import { Inter, Lora } from "next/font/google";
 import "./globals.css";
 import ScrollToTop from "@/components/shared/ScrollToTop";
 import OfferModal from "@/components/shared/OfferModal";
+import { requireAuth } from "@/lib/auth-guard";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,14 +34,14 @@ export const metadata: Metadata = {
   ],
 };
 
-export default function RootLayout({ children }: LayoutProps<"/">) {
+export default async function RootLayout({ children }: LayoutProps<"/">) {
   return (
     <html
       lang="en"
       className={`${inter.variable} ${lora.variable} h-full antialiased`}>
       <body className="min-h-full flex flex-col">{children}
         <ScrollToTop />
-        <OfferModal/>
+        <OfferModal />
         <ToastContainer position="top-right" theme="dark" />
       </body>
     </html>

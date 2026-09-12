@@ -1,21 +1,3 @@
-export type UserRole =
-    | "admin"
-    | "customer";
+import type { UserRole } from "@/types/user";
 
-export function getUserRole(): UserRole | null {
-    if (typeof window === "undefined") {
-        return null;
-    }
-
-    const role =
-        localStorage.getItem("user-role");
-
-    if (
-        role === "admin" ||
-        role === "customer"
-    ) {
-        return role;
-    }
-
-    return null;
-}
+export const DEFAULT_USER_ROLE: UserRole = "customer";

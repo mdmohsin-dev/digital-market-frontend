@@ -6,43 +6,12 @@ import {
     LayoutDashboard,
     ShoppingBag,
     X,
-    Package,
     Users,
-    Tags,
 } from "lucide-react";
 import { useEffect, useState } from "react";
-
 import LogoutButton from "@/components/auth/LogoutButton";
-
-type UserRole = "admin" | "customer";
-
-interface SidebarItem {
-    label: string;
-    href: string;
-    icon: typeof LayoutDashboard;
-    roles: UserRole[];
-}
-
-const sidebarItems: SidebarItem[] = [
-    {
-        label: "Dashboard",
-        href: "/dashboard",
-        icon: LayoutDashboard,
-        roles: ["admin", "customer"],
-    },
-    {
-        label: "Orders",
-        href: "/dashboard/orders",
-        icon: ShoppingBag,
-        roles: ["admin", "customer"],
-    },
-    {
-        label: "Customers",
-        href: "/dashboard/customers",
-        icon: Users,
-        roles: ["admin"],
-    },
-];
+import { authClient } from "@/lib/auth-client";
+import { createCurrentUser } from "@/lib/current-user";
 
 interface DashboardSidebarProps {
     open: boolean;
@@ -55,41 +24,26 @@ export default function DashboardSidebar({
 }: DashboardSidebarProps) {
     const pathname = usePathname();
 
-    const [role, setRole] = useState<UserRole | null>(
-        null
-    );
+    const { data: session, isPending } =
+        authClient.useSession();
 
-    /*
-     * Get logged-in user's role
-     */
+    const [isAdmin, setIsAdmin] = useState(false);
 
     useEffect(() => {
-        const storedRole =
-            localStorage.getItem("user-role");
-
-        if (
-            storedRole === "admin" ||
-            storedRole === "customer"
-        ) {
-            setRole(storedRole);
+        if (isPending) {
+            return;
         }
-    }, []);
+
+        const user = createCurrentUser(session);
+
+        setIsAdmin(user?.role === "admin");
+    }, [session, isPending]);
 
     const isItemActive = (href: string) => {
         return href === "/dashboard"
             ? pathname === "/dashboard"
             : pathname.startsWith(href);
     };
-
-    /*
-     * Show only items allowed for current role
-     */
-
-    const visibleSidebarItems = sidebarItems.filter(
-        (item) =>
-            role !== null &&
-            item.roles.includes(role)
-    );
 
     return (
         <aside
@@ -120,10 +74,6 @@ export default function DashboardSidebar({
                 }
             `}
         >
-            {/* =====================================================
-                SIDEBAR HEADER
-            ====================================================== */}
-
             <div
                 className="
                     flex
@@ -143,8 +93,6 @@ export default function DashboardSidebar({
                 >
                     Kalni
                 </Link>
-
-                {/* Mobile / Tablet Close Button */}
 
                 <button
                     type="button"
@@ -168,53 +116,91 @@ export default function DashboardSidebar({
                 </button>
             </div>
 
-            {/* =====================================================
-                NAVIGATION
-            ====================================================== */}
-
             <nav className="flex-1 overflow-y-auto px-4 py-6">
                 <ul className="space-y-2">
-                    {visibleSidebarItems.map((item) => {
-                        const Icon = item.icon;
+                    <li>
+                        <Link
+                            href="/dashboard"
+                            onClick={onClose}
+                            className={`
+                                flex
+                                items-center
+                                gap-3
+                                rounded-lg
+                                px-4
+                                py-3
+                                text-sm
+                                font-medium
+                                transition-colors
+                                ${
+                                    isItemActive("/dashboard")
+                                        ? "bg-primary text-white"
+                                        : "text-gray-400 hover:bg-white/5 hover:text-white"
+                                }
+                            `}
+                        >
+                            <LayoutDashboard size={19} />
+                            <span>Dashboard</span>
+                        </Link>
+                    </li>
 
-                        const isActive =
-                            isItemActive(item.href);
+                    <li>
+                        <Link
+                            href="/dashboard/orders"
+                            onClick={onClose}
+                            className={`
+                                flex
+                                items-center
+                                gap-3
+                                rounded-lg
+                                px-4
+                                py-3
+                                text-sm
+                                font-medium
+                                transition-colors
+                                ${
+                                    isItemActive("/dashboard/orders")
+                                        ? "bg-primary text-white"
+                                        : "text-gray-400 hover:bg-white/5 hover:text-white"
+                                }
+                            `}
+                        >
+                            <ShoppingBag size={19} />
+                            <span>Orders</span>
+                        </Link>
+                    </li>
 
-                        return (
-                            <li key={item.href}>
-                                <Link
-                                    href={item.href}
-                                    onClick={onClose}
-                                    className={`
-                                        flex
-                                        items-center
-                                        gap-3
-                                        rounded-lg
-                                        px-4
-                                        py-3
-                                        text-sm
-                                        font-medium
-                                        transition-colors
-                                        ${
-                                            isActive
-                                                ? "bg-primary text-white"
-                                                : "text-gray-400 hover:bg-white/5 hover:text-white"
-                                        }
-                                    `}
-                                >
-                                    <Icon size={19} />
-
-                                    <span>
-                                        {item.label}
-                                    </span>
-                                </Link>
-                            </li>
-                        );
-                    })}
+                    {isAdmin && (
+                        <li>
+                            <Link
+                                href="/dashboard/customers"
+                                onClick={onClose}
+                                className={`
+                                    flex
+                                    items-center
+                                    gap-3
+                                    rounded-lg
+                                    px-4
+                                    py-3
+                                    text-sm
+                                    font-medium
+                                    transition-colors
+                                    ${
+                                        isItemActive(
+                                            "/dashboard/customers"
+                                        )
+                                            ? "bg-primary text-white"
+                                            : "text-gray-400 hover:bg-white/5 hover:text-white"
+                                    }
+                                `}
+                            >
+                                <Users size={19} />
+                                <span>Customers</span>
+                            </Link>
+                        </li>
+                    )}
                 </ul>
             </nav>
-
-            {/*LOGOUT*/}
 
             <div className="shrink-0 border-t border-gray-800 p-4">
                 <LogoutButton />

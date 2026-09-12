@@ -21,78 +21,23 @@ export default function LogoutButton() {
             focusCancel: true,
         });
 
-        /*
-         * User clicked No.
-         */
         if (!result.isConfirmed) {
             return;
         }
 
         try {
-            /*
-             * Always try Better Auth sign out.
-             *
-             * For Demo Admin there may be no
-             * Better Auth session, but that's okay.
-             */
             await authClient.signOut();
 
-            /*
-             * Remove role.
-             */
-            localStorage.removeItem(
-                "user-role"
-            );
-
-            /*
-             * Remove Demo Admin data.
-             */
-            localStorage.removeItem(
-                "demo-auth-user"
-            );
-
-            /*
-             * Remove old demo auth data
-             * if it exists from previous code.
-             */
-            localStorage.removeItem(
-                "auth-user"
-            );
-
-            /*
-             * Clean old sessionStorage data too.
-             */
-            sessionStorage.removeItem(
-                "user-role"
-            );
-
-            sessionStorage.removeItem(
-                "auth-user"
-            );
-
-            /*
-             * Go back to login.
-             */
             router.push("/login");
         } catch (error) {
-            console.error(
-                "Logout failed:",
-                error
-            );
+            console.error("Logout failed:", error);
 
-            /*
-             * Even if Better Auth signOut
-             * fails, remove frontend demo data.
-             */
-            localStorage.removeItem(
-                "user-role"
-            );
-
-            localStorage.removeItem(
-                "demo-auth-user"
-            );
-
-            router.push("/login");
+            Swal.fire({
+                title: "Logout Failed",
+                text: "Something went wrong. Please try again.",
+                icon: "error",
+                confirmButtonText: "OK",
+            });
         }
     };
 
@@ -117,7 +62,6 @@ export default function LogoutButton() {
             "
         >
             <LogOut size={19} />
-
             <span>Logout</span>
         </button>
     );
