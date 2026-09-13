@@ -50,14 +50,6 @@ export default function OrderDetailsPage() {
 
     return (
         <main className="mx-auto max-w-5xl px-4 py-8 sm:px-6 lg:px-8">
-            <Link
-                href="/"
-                className="inline-flex items-center gap-2 text-sm text-gray-500 hover:text-black"
-            >
-                <ArrowLeft size={17} />
-                Back to Home
-            </Link>
-
             <div className="mt-6">
                 <div className="flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
                     <div>

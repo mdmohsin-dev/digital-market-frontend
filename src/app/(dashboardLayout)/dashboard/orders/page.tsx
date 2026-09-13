@@ -2,7 +2,7 @@
 
 import Image from "next/image";
 import Link from "next/link";
-import { useEffect, useState } from "react";
+import { useCallback, useEffect, useState } from "react";
 import {
     ArrowLeft,
     Package,
@@ -10,38 +10,58 @@ import {
 } from "lucide-react";
 
 import { useUserSession } from "@/hooks/useUserSession";
-import { Order, ORDER_STORAGE_KEY } from "@/lib/orders";
+import {
+    Order,
+    ORDER_STORAGE_KEY,
+} from "@/lib/orders";
+import { DEFAULT_USER_ROLE } from "@/lib/user-role";
 
 export default function OrdersPage() {
-    const { session, isPending: sessionLoading, } = useUserSession();
+    const {
+        session,
+        isPending: sessionLoading,
+    } = useUserSession();
 
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
-    const [userRole, setUserRole] = useState<string | null>(null);
 
     /**
-     * Get user role from localStorage
+     * Current user's role
+     *
+     * Role is coming from the centralized role source.
+     *
+     * Frontend stage:
+     * - customer = customer dashboard
+     * - admin = admin dashboard
+     *
+     * Later this value will come from the backend/database.
      */
-    useEffect(() => {
-        if (typeof window === "undefined") return;
+    const userRole = DEFAULT_USER_ROLE;
 
-        const role = localStorage.getItem("user-role");
+    const isAdmin = userRole === "admin";
 
-        setUserRole(role);
-    }, []);
+    /**
+     * Better Auth session email
+     *
+     * Customer orders are matched using the authenticated
+     * Better Auth user's email.
+     */
+    const userEmail =
+        session?.user?.email
+            ?.trim()
+            .toLowerCase() ?? "";
 
     /**
      * Load orders
      *
-     * Admin:
-     * -> Show ALL orders
+     * ADMIN:
+     * Shows all orders.
      *
-     * Customer:
-     * -> Get email from Better Auth session
-     * -> Match with order.deliveryInfo.email
-     * -> Show only that customer's orders
+     * CUSTOMER:
+     * Shows only orders belonging to the
+     * authenticated Better Auth user.
      */
-    const loadOrders = () => {
+    const loadOrders = useCallback(() => {
         if (typeof window === "undefined") {
             return;
         }
@@ -50,28 +70,29 @@ export default function OrdersPage() {
             return;
         }
 
-        /**
-         * Role এখনও load হয়নি
-         */
-        if (userRole === null) {
-            return;
-        }
+        setLoading(true);
 
         try {
-            const storedOrders = localStorage.getItem(
-                ORDER_STORAGE_KEY,
-            );
+            const storedOrders =
+                localStorage.getItem(
+                    ORDER_STORAGE_KEY,
+                );
 
+            /**
+             * No orders available.
+             */
             if (!storedOrders) {
                 setOrders([]);
                 setLoading(false);
                 return;
             }
 
-            const parsedOrders: Order[] = JSON.parse(
-                storedOrders,
-            );
+            const parsedOrders: Order[] =
+                JSON.parse(storedOrders);
 
+            /**
+             * Validate stored data.
+             */
             if (!Array.isArray(parsedOrders)) {
                 setOrders([]);
                 setLoading(false);
@@ -79,72 +100,54 @@ export default function OrdersPage() {
             }
 
             /**
+             * Newest orders first.
+             */
+            const sortedOrders = [...parsedOrders].sort(
+                (a, b) =>
+                    new Date(b.createdAt).getTime() -
+                    new Date(a.createdAt).getTime(),
+            );
+
+            /**
              * ADMIN
              *
-             * Admin হলে সব orders দেখাবে।
+             * Admin can see every order.
              */
-            if (userRole === "admin") {
-                const allOrders = [...parsedOrders].sort(
-                    (a, b) =>
-                        new Date(b.createdAt).getTime() -
-                        new Date(a.createdAt).getTime(),
-                );
-
-                setOrders(allOrders);
+            if (isAdmin) {
+                setOrders(sortedOrders);
                 setLoading(false);
-
                 return;
             }
 
             /**
              * CUSTOMER
              *
-             * Customer হলে Better Auth session
-             * থেকে email নেওয়া হবে।
+             * Customer must have a Better Auth session.
              */
-            if (userRole === "customer") {
-                const userEmail = session?.user?.email
-                    ?.trim()
-                    .toLowerCase();
-
-                /**
-                 * Session এ email না থাকলে
-                 * কোনো order দেখাবে না।
-                 */
-                if (!userEmail) {
-                    setOrders([]);
-                    setLoading(false);
-                    return;
-                }
-
-                /**
-                 * Order email এবং session email match
-                 */
-                const userOrders = parsedOrders
-                    .filter((order) => {
-                        const orderEmail =
-                            order?.deliveryInfo?.email
-                                ?.trim()
-                                .toLowerCase();
-
-                        return orderEmail === userEmail;
-                    })
-                    .sort(
-                        (a, b) =>
-                            new Date(b.createdAt).getTime() -
-                            new Date(a.createdAt).getTime(),
-                    );
-
-                setOrders(userOrders);
+            if (!userEmail) {
+                setOrders([]);
                 setLoading(false);
-
                 return;
             }
 
             /**
-             * Unknown role
+             * Match order email with authenticated
+             * Better Auth user's email.
              */
-            setOrders([]);
+            const customerOrders =
+                sortedOrders.filter((order) => {
+                    const orderEmail =
+                        order?.deliveryInfo?.email
+                            ?.trim()
+                            .toLowerCase() ?? "";
+
+                    return (
+                        orderEmail !== "" &&
+                        orderEmail === userEmail
+                    );
+                });
+
+            setOrders(customerOrders);
             setLoading(false);
         } catch (error) {
             console.error(
@@ -155,17 +158,28 @@ export default function OrdersPage() {
             setOrders([]);
             setLoading(false);
         }
-    };
+    }, [
+        isAdmin,
+        sessionLoading,
+        userEmail,
+    ]);
 
     /**
-     * Load orders when session / role is ready
+     * Load orders when authentication/session
+     * information is ready.
      */
     useEffect(() => {
         loadOrders();
-    }, [session, sessionLoading, userRole]);
+    }, [loadOrders]);
 
     /**
-     * Listen for order changes from another tab
+     * Listen for order updates.
+     *
+     * storage:
+     * Handles changes from another browser tab.
+     *
+     * orders-updated:
+     * Handles changes inside the same tab.
      */
     useEffect(() => {
         if (typeof window === "undefined") {
@@ -175,22 +189,16 @@ export default function OrdersPage() {
         const handleStorageChange = (
             event: StorageEvent,
         ) => {
-            /**
-             * Order change
-             */
             if (
                 event.key === ORDER_STORAGE_KEY ||
                 event.key === null
             ) {
                 loadOrders();
             }
+        };
 
-            /**
-             * Role change
-             */
-            if (event.key === "user-role") {
-                setUserRole(event.newValue);
-            }
+        const handleOrdersUpdated = () => {
+            loadOrders();
         };
 
         window.addEventListener(
@@ -198,22 +206,28 @@ export default function OrdersPage() {
             handleStorageChange,
         );
 
+        window.addEventListener(
+            "orders-updated",
+            handleOrdersUpdated,
+        );
+
         return () => {
             window.removeEventListener(
                 "storage",
                 handleStorageChange,
             );
+
+            window.removeEventListener(
+                "orders-updated",
+                handleOrdersUpdated,
+            );
         };
-    }, [session, sessionLoading, userRole]);
+    }, [loadOrders]);
 
     /**
      * Loading
      */
-    if (
-        sessionLoading ||
-        loading ||
-        userRole === null
-    ) {
+    if (sessionLoading || loading) {
         return (
             <main className="mx-auto flex min-h-[70vh] max-w-350 items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
                 <div className="text-center">
@@ -228,14 +242,9 @@ export default function OrdersPage() {
     }
 
     /**
-     * User not logged in
-     *
-     * Customer হলে session email লাগবে।
-     *
-     * Admin এর ক্ষেত্রে session থাকাটাও
-     * ধরে নিচ্ছি কারণ admin logged-in user।
+     * User must be logged in.
      */
-    if (!session?.user?.email && userRole !== "admin") {
+    if (!session?.user?.email) {
         return (
             <main className="mx-auto flex min-h-[70vh] max-w-350 items-center justify-center px-4 py-12 sm:px-6 lg:px-8">
                 <div className="text-center">
@@ -280,7 +289,7 @@ export default function OrdersPage() {
                     </h1>
 
                     <p className="mt-2 text-sm text-gray-500">
-                        {userRole === "admin"
+                        {isAdmin
                             ? "There are no orders yet."
                             : "You haven't placed any orders yet."}
                     </p>
@@ -313,12 +322,12 @@ export default function OrdersPage() {
                     <div>
                         <div className="flex items-center gap-3">
                             <h1 className="text-2xl font-bold">
-                                {userRole === "admin"
+                                {isAdmin
                                     ? "All Orders"
                                     : "My Orders"}
                             </h1>
 
-                            {userRole === "admin" && (
+                            {isAdmin && (
                                 <span className="rounded-full bg-red-50 px-3 py-1 text-xs font-medium capitalize text-red-600">
                                     Admin
                                 </span>
@@ -326,7 +335,7 @@ export default function OrdersPage() {
                         </div>
 
                         <p className="mt-1 text-sm text-gray-500">
-                            {userRole === "admin"
+                            {isAdmin
                                 ? "View all customer orders."
                                 : "View your order history and details."}
                         </p>
@@ -345,8 +354,8 @@ export default function OrdersPage() {
             <div className="space-y-5">
                 {orders.map((order) => (
                     <div
-                        className="overflow-hidden rounded-xl border border-gray-200 bg-white"
                         key={order.id}
+                        className="overflow-hidden rounded-xl border border-gray-200 bg-white"
                     >
                         <Link
                             href={`/dashboard/orders/${order.id}`}
@@ -389,7 +398,7 @@ export default function OrdersPage() {
 
                                     <p className="mt-1 text-sm font-medium capitalize">
                                         {order.paymentMethod ===
-                                            "cod"
+                                        "cod"
                                             ? "Cash on Delivery"
                                             : order.paymentMethod}
                                     </p>
@@ -407,7 +416,7 @@ export default function OrdersPage() {
                             </div>
 
                             {/* Customer Info - Admin only */}
-                            {userRole === "admin" && (
+                            {isAdmin && (
                                 <div className="border-b border-gray-200 bg-gray-50 px-5 py-4">
                                     <p className="text-xs text-gray-500">
                                         Customer
@@ -460,18 +469,18 @@ export default function OrdersPage() {
 
                                                 {(item.size ||
                                                     item.color) && (
-                                                        <p className="mt-1 text-xs text-gray-500">
-                                                            {item.size &&
-                                                                `Size: ${item.size}`}
+                                                    <p className="mt-1 text-xs text-gray-500">
+                                                        {item.size &&
+                                                            `Size: ${item.size}`}
 
-                                                            {item.size &&
-                                                                item.color &&
-                                                                " • "}
+                                                        {item.size &&
+                                                            item.color &&
+                                                            " • "}
 
-                                                            {item.color &&
-                                                                `Color: ${item.color}`}
-                                                        </p>
-                                                    )}
+                                                        {item.color &&
+                                                            `Color: ${item.color}`}
+                                                    </p>
+                                                )}
 
                                                 <p className="mt-2 text-xs text-gray-500">
                                                     ৳
@@ -505,37 +514,31 @@ export default function OrdersPage() {
 
                                     <p className="mt-1 text-sm font-medium">
                                         {
-                                            order
-                                                .deliveryInfo
+                                            order.deliveryInfo
                                                 .fullName
                                         }
                                     </p>
 
                                     <p className="text-xs text-gray-500">
                                         {
-                                            order
-                                                .deliveryInfo
+                                            order.deliveryInfo
                                                 .address
                                         }
                                         ,{" "}
                                         {
-                                            order
-                                                .deliveryInfo
+                                            order.deliveryInfo
                                                 .city
                                         }
                                     </p>
 
-                                    {/* Admin can see customer email */}
-                                    {userRole ===
-                                        "admin" && (
-                                            <p className="mt-1 text-xs text-gray-500">
-                                                {
-                                                    order
-                                                        .deliveryInfo
-                                                        .email
-                                                }
-                                            </p>
-                                        )}
+                                    {isAdmin && (
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            {
+                                                order.deliveryInfo
+                                                    .email
+                                            }
+                                        </p>
+                                    )}
                                 </div>
 
                                 <div className="text-left sm:text-right">
