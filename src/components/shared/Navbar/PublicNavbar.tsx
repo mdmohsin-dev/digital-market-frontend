@@ -33,6 +33,10 @@ const navItems = [
     {
         label: "Flash Sale",
         href: "/flash-sale",
+    },
+    {
+        label: "Track Order",
+        href: "/track-order",
     }
 ];
 

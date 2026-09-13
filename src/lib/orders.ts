@@ -141,3 +141,57 @@ export const clearOrders = (): void => {
 
     localStorage.removeItem(ORDER_STORAGE_KEY);
 };
+
+
+
+export const updateOrderStatus = (
+    orderId: string,
+    status: string,
+): boolean => {
+    if (typeof window === "undefined") {
+        return false;
+    }
+
+    const storedOrders =
+        localStorage.getItem(ORDER_STORAGE_KEY);
+
+    if (!storedOrders) {
+        return false;
+    }
+
+    try {
+        const orders = JSON.parse(storedOrders) as Array<
+            Record<string, unknown>
+        >;
+
+        const orderIndex = orders.findIndex(
+            (order) =>
+                typeof order.id === "string" &&
+                order.id.trim().toUpperCase() ===
+                    orderId.trim().toUpperCase(),
+        );
+
+        if (orderIndex === -1) {
+            return false;
+        }
+
+        orders[orderIndex] = {
+            ...orders[orderIndex],
+            status,
+            updatedAt: new Date().toISOString(),
+        };
+
+        localStorage.setItem(
+            ORDER_STORAGE_KEY,
+            JSON.stringify(orders),
+        );
+
+        window.dispatchEvent(
+            new CustomEvent("ORDER_STATUS_UPDATED"),
+        );
+
+        return true;
+    } catch {
+        return false;
+    }
+};
