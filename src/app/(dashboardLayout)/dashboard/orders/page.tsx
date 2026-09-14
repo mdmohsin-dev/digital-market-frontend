@@ -13,7 +13,9 @@ import { Copy, Check } from "lucide-react";
 import { useUserSession } from "@/hooks/useUserSession";
 import {
     Order,
+    OrderStatus,
     ORDER_STORAGE_KEY,
+    updateOrderStatus,
 } from "@/lib/orders";
 import { DEFAULT_USER_ROLE } from "@/lib/user-role";
 import { FaEye } from "react-icons/fa6";
@@ -27,14 +29,39 @@ export default function OrdersPage() {
     const [orders, setOrders] = useState<Order[]>([]);
     const [loading, setLoading] = useState(true);
 
-    const [copiedId, setCopiedId] = useState(null);
+    const [copiedId, setCopiedId] = useState<string | null>(
+        null,
+    );
 
-    const handleCopy = (e: any, id: any) => {
+    /**
+     * Admin status update state.
+     *
+     * Keeps the currently selected status for each order.
+     */
+    const [selectedStatuses, setSelectedStatuses] =
+        useState<Record<string, OrderStatus>>({});
+
+    /**
+     * Order currently being updated.
+     */
+    const [updatingOrderId, setUpdatingOrderId] =
+        useState<string | null>(null);
+
+    const handleCopy = (
+        e: React.MouseEvent<HTMLButtonElement>,
+        id: string,
+    ) => {
+        e.preventDefault();
+
         navigator.clipboard.writeText(id).then(() => {
             setCopiedId(id);
-            setTimeout(() => setCopiedId(null), 1500);
+
+            setTimeout(() => {
+                setCopiedId(null);
+            }, 1500);
         });
     };
+
     /**
      * Current user's role
      *
@@ -125,6 +152,22 @@ export default function OrdersPage() {
              */
             if (isAdmin) {
                 setOrders(sortedOrders);
+
+                /**
+                 * Keep selected status synchronized
+                 * with the actual localStorage status.
+                 */
+                const statusMap: Record<
+                    string,
+                    OrderStatus
+                > = {};
+
+                sortedOrders.forEach((order) => {
+                    statusMap[order.id] = order.status;
+                });
+
+                setSelectedStatuses(statusMap);
+
                 setLoading(false);
                 return;
             }
@@ -188,8 +231,12 @@ export default function OrdersPage() {
      * storage:
      * Handles changes from another browser tab.
      *
+     * ORDER_STATUS_UPDATED:
+     * Handles status changes inside the same tab.
+     *
      * orders-updated:
-     * Handles changes inside the same tab.
+     * Keeps compatibility with any existing order update
+     * implementation in the project.
      */
     useEffect(() => {
         if (typeof window === "undefined") {
@@ -211,6 +258,10 @@ export default function OrdersPage() {
             loadOrders();
         };
 
+        const handleOrderStatusUpdated = () => {
+            loadOrders();
+        };
+
         window.addEventListener(
             "storage",
             handleStorageChange,
@@ -219,6 +270,11 @@ export default function OrdersPage() {
         window.addEventListener(
             "orders-updated",
             handleOrdersUpdated,
+        );
+
+        window.addEventListener(
+            "ORDER_STATUS_UPDATED",
+            handleOrderStatusUpdated,
         );
 
         return () => {
@@ -231,8 +287,126 @@ export default function OrdersPage() {
                 "orders-updated",
                 handleOrdersUpdated,
             );
+
+            window.removeEventListener(
+                "ORDER_STATUS_UPDATED",
+                handleOrderStatusUpdated,
+            );
         };
     }, [loadOrders]);
+
+    /**
+     * Admin order status options.
+     *
+     * These values must match OrderStatus exactly.
+     */
+    const orderStatusOptions: OrderStatus[] = [
+        "pending",
+        "confirmed",
+        "processing",
+        "shipped",
+    ];
+
+    /**
+     * Convert internal status value into
+     * user-friendly display text.
+     */
+    const getStatusLabel = (
+        status: OrderStatus,
+    ): string => {
+        switch (status) {
+            case "pending":
+                return "Pending";
+
+            case "confirmed":
+                return "Confirmed";
+
+            case "processing":
+                return "Processing";
+
+            case "shipped":
+                return "Shipped";
+
+            case "in-delivery-man":
+                return "In Delivery Man";
+
+            case "delivered":
+                return "Delivered";
+
+            case "cancelled":
+                return "Cancelled";
+
+            default:
+                return status;
+        }
+    };
+
+    /**
+     * Update selected status locally in the UI.
+     *
+     * This does NOT update localStorage yet.
+     * Actual update happens when Admin clicks
+     * "Update Status".
+     */
+    const handleStatusSelect = (
+        orderId: string,
+        status: OrderStatus,
+    ) => {
+        setSelectedStatuses((previous) => ({
+            ...previous,
+            [orderId]: status,
+        }));
+    };
+
+    /**
+     * Admin status update.
+     *
+     * Source of truth:
+     * localStorage order.status
+     */
+    const handleStatusUpdate = (
+        orderId: string,
+    ) => {
+        if (!isAdmin) {
+            return;
+        }
+
+        const selectedStatus =
+            selectedStatuses[orderId];
+
+        if (!selectedStatus) {
+            return;
+        }
+
+        setUpdatingOrderId(orderId);
+
+        const updated =
+            updateOrderStatus(
+                orderId,
+                selectedStatus,
+            );
+
+        if (!updated) {
+            console.error(
+                "Failed to update order status.",
+            );
+
+            setUpdatingOrderId(null);
+            return;
+        }
+
+        /**
+         * Reload orders immediately.
+         *
+         * updateOrderStatus() already dispatches
+         * ORDER_STATUS_UPDATED, but we also refresh
+         * directly here so the Admin UI updates
+         * immediately.
+         */
+        loadOrders();
+
+        setUpdatingOrderId(null);
+    };
 
     /**
      * Loading
@@ -362,144 +536,233 @@ export default function OrdersPage() {
 
             {/* Orders */}
             <div className="space-y-5">
-                {orders.map((order) => (
-                    <div
-                        key={order.id}
-                        className="overflow-hidden rounded-xl border border-gray-200 bg-white">
+                {orders.map((order) => {
+                    const selectedStatus =
+                        selectedStatuses[order.id] ??
+                        order.status;
 
-                        {/* Order Header */}
-                        <div className="flex flex-col gap-4 border-b border-gray-200 p-5 sm:flex-row sm:items-center sm:justify-between">
-                            <div>
-                                <p className="text-xs text-gray-500">
-                                    Order ID
-                                </p>
+                    const isUpdating =
+                        updatingOrderId === order.id;
 
-                                <div className="mt-1 flex items-center gap-2">
-                                    <p className="text-sm font-semibold">
-                                        {order.id}
+                    return (
+                        <div
+                            key={order.id}
+                            className="overflow-hidden rounded-xl border border-gray-200 bg-white"
+                        >
+                            {/* Order Header */}
+                            <div className="flex flex-col gap-4 border-b border-gray-200 p-5 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <p className="text-xs text-gray-500">
+                                        Order ID
                                     </p>
 
-                                    <button
-                                        type="button"
-                                        onClick={(e) => handleCopy(e, order.id)}
-                                        className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
-                                        title="Copy Order ID"
-                                    >
-                                        {copiedId === order.id ? (
-                                            <Check size={21} color="green" />
-                                        ) : (
-                                            <Copy size={21} />
+                                    <div className="mt-1 flex items-center gap-2">
+                                        <p className="text-sm font-semibold">
+                                            {order.id}
+                                        </p>
+
+                                        <button
+                                            type="button"
+                                            onClick={(e) =>
+                                                handleCopy(
+                                                    e,
+                                                    order.id,
+                                                )
+                                            }
+                                            className="rounded-md p-1 text-gray-400 hover:bg-gray-100 hover:text-gray-700"
+                                            title="Copy Order ID"
+                                        >
+                                            {copiedId ===
+                                            order.id ? (
+                                                <Check
+                                                    size={21}
+                                                    color="green"
+                                                />
+                                            ) : (
+                                                <Copy size={21} />
+                                            )}
+                                        </button>
+                                    </div>
+                                </div>
+
+                                <div>
+                                    <p className="text-xs text-gray-500">
+                                        Date
+                                    </p>
+
+                                    <p className="mt-1 text-sm font-medium">
+                                        {new Date(
+                                            order.createdAt,
+                                        ).toLocaleDateString(
+                                            "en-BD",
+                                            {
+                                                year: "numeric",
+                                                month: "short",
+                                                day: "numeric",
+                                            },
                                         )}
-                                    </button>
+                                    </p>
+                                </div>
+
+                                <div>
+                                    <p className="text-xs text-gray-500">
+                                        Payment
+                                    </p>
+
+                                    <p className="mt-1 text-sm font-medium capitalize">
+                                        {order.paymentMethod ===
+                                        "cod"
+                                            ? "Cash on Delivery"
+                                            : order.paymentMethod}
+                                    </p>
+                                </div>
+
+                                {/* Status */}
+                                <div>
+                                    <p className="text-xs text-gray-500">
+                                        Status
+                                    </p>
+
+                                    {!isAdmin ? (
+                                        <span className="mt-1 inline-flex rounded-full bg-yellow-50 px-3 py-1 text-xs font-medium capitalize text-yellow-700">
+                                            {getStatusLabel(
+                                                order.status,
+                                            )}
+                                        </span>
+                                    ) : (
+                                        <div className="mt-1 flex items-center gap-2">
+                                            <select
+                                                value={
+                                                    selectedStatus
+                                                }
+                                                onChange={(e) =>
+                                                    handleStatusSelect(
+                                                        order.id,
+                                                        e.target
+                                                            .value as OrderStatus,
+                                                    )
+                                                }
+                                                disabled={
+                                                    isUpdating
+                                                }
+                                                className="h-9 rounded-md border border-gray-200 bg-white px-3 text-xs font-medium text-gray-700 outline-none transition focus:border-primary focus:ring-1 focus:ring-primary disabled:cursor-not-allowed disabled:opacity-60"
+                                            >
+                                                {orderStatusOptions.map(
+                                                    (
+                                                        status,
+                                                    ) => (
+                                                        <option
+                                                            key={
+                                                                status
+                                                            }
+                                                            value={
+                                                                status
+                                                            }
+                                                        >
+                                                            {getStatusLabel(
+                                                                status,
+                                                            )}
+                                                        </option>
+                                                    ),
+                                                )}
+                                            </select>
+
+                                            <button
+                                                type="button"
+                                                onClick={() =>
+                                                    handleStatusUpdate(
+                                                        order.id,
+                                                    )
+                                                }
+                                                disabled={
+                                                    isUpdating ||
+                                                    selectedStatus ===
+                                                        order.status
+                                                }
+                                                className="h-9 rounded-md bg-primary px-3 text-xs font-medium text-white transition hover:opacity-90 disabled:cursor-not-allowed disabled:opacity-50"
+                                            >
+                                                {isUpdating
+                                                    ? "Updating..."
+                                                    : "Update"}
+                                            </button>
+                                        </div>
+                                    )}
+                                </div>
+
+                                <div>
+                                    <p className="text-xs text-gray-500">
+                                        Action
+                                    </p>
+
+                                    <span className="mt-1 inline-flex rounded-sm bg-primary p-1 px-2 text-sm text-white">
+                                        <Link
+                                            href={`/dashboard/orders/${order.id}`}
+                                        >
+                                            View Details
+                                        </Link>
+                                    </span>
                                 </div>
                             </div>
 
-                            <div>
-                                <p className="text-xs text-gray-500">
-                                    Date
-                                </p>
+                            {/* Customer Info - Admin only */}
+                            {isAdmin && (
+                                <div className="border-b border-gray-200 bg-gray-50 px-5 py-4">
+                                    <p className="text-xs text-gray-500">
+                                        Customer
+                                    </p>
 
-                                <p className="mt-1 text-sm font-medium">
-                                    {new Date(
-                                        order.createdAt,
-                                    ).toLocaleDateString(
-                                        "en-BD",
+                                    <p className="mt-1 text-sm font-medium">
                                         {
-                                            year: "numeric",
-                                            month: "short",
-                                            day: "numeric",
-                                        },
-                                    )}
-                                </p>
-                            </div>
+                                            order.deliveryInfo
+                                                .fullName
+                                        }
+                                    </p>
 
-                            <div>
-                                <p className="text-xs text-gray-500">
-                                    Payment
-                                </p>
+                                    <p className="mt-1 text-xs text-gray-500">
+                                        {
+                                            order.deliveryInfo
+                                                .email
+                                        }
+                                    </p>
+                                </div>
+                            )}
 
-                                <p className="mt-1 text-sm font-medium capitalize">
-                                    {order.paymentMethod ===
-                                        "cod"
-                                        ? "Cash on Delivery"
-                                        : order.paymentMethod}
-                                </p>
-                            </div>
+                            {/* Order Items */}
+                            <div className="divide-y divide-gray-100">
+                                {order.items.map(
+                                    (
+                                        item,
+                                        index,
+                                    ) => (
+                                        <div
+                                            key={`${order.id}-${item.productId}-${index}`}
+                                            className="flex gap-4 p-5"
+                                        >
+                                            {/* Product Image */}
+                                            <div className="relative h-20 w-18 shrink-0 overflow-hidden rounded-md border border-gray-200 bg-gray-50">
+                                                <Image
+                                                    src={
+                                                        item.image
+                                                    }
+                                                    alt={
+                                                        item.name
+                                                    }
+                                                    fill
+                                                    sizes="72px"
+                                                    className="object-contain p-1"
+                                                />
+                                            </div>
 
-                            <div>
-                                <p className="text-xs text-gray-500">
-                                    Status
-                                </p>
+                                            {/* Product Info */}
+                                            <div className="min-w-0 flex-1">
+                                                <h2 className="text-sm font-medium">
+                                                    {
+                                                        item.name
+                                                    }
+                                                </h2>
 
-                                <span className="mt-1 inline-flex rounded-full bg-yellow-50 px-3 py-1 text-xs font-medium capitalize text-yellow-700">
-                                    {order.status}
-                                </span>
-                            </div>
-                            <div>
-                                <p className="text-xs text-gray-500">
-                                    Action
-                                </p>
-
-                                <span className="mt-1 text-sm bg-primary text-white p-1 px-2 rounded-sm">
-                                    <Link className="" href={`/dashboard/orders/${order.id}`}>View Details</Link>
-                                </span>
-                            </div>
-                        </div>
-
-                        {/* Customer Info - Admin only */}
-                        {isAdmin && (
-                            <div className="border-b border-gray-200 bg-gray-50 px-5 py-4">
-                                <p className="text-xs text-gray-500">
-                                    Customer
-                                </p>
-
-                                <p className="mt-1 text-sm font-medium">
-                                    {
-                                        order.deliveryInfo
-                                            .fullName
-                                    }
-                                </p>
-
-                                <p className="mt-1 text-xs text-gray-500">
-                                    {
-                                        order.deliveryInfo
-                                            .email
-                                    }
-                                </p>
-                            </div>
-                        )}
-
-                        {/* Order Items */}
-                        <div className="divide-y divide-gray-100">
-                            {order.items.map(
-                                (item, index) => (
-                                    <div
-                                        key={`${order.id}-${item.productId}-${index}`}
-                                        className="flex gap-4 p-5"
-                                    >
-                                        {/* Product Image */}
-                                        <div className="relative h-20 w-18 shrink-0 overflow-hidden rounded-md border border-gray-200 bg-gray-50">
-                                            <Image
-                                                src={
-                                                    item.image
-                                                }
-                                                alt={
-                                                    item.name
-                                                }
-                                                fill
-                                                sizes="72px"
-                                                className="object-contain p-1"
-                                            />
-                                        </div>
-
-                                        {/* Product Info */}
-                                        <div className="min-w-0 flex-1">
-                                            <h2 className="text-sm font-medium">
-                                                {item.name}
-                                            </h2>
-
-                                            {(item.size ||
-                                                item.color) && (
+                                                {(item.size ||
+                                                    item.color) && (
                                                     <p className="mt-1 text-xs text-gray-500">
                                                         {item.size &&
                                                             `Size: ${item.size}`}
@@ -513,78 +776,79 @@ export default function OrdersPage() {
                                                     </p>
                                                 )}
 
-                                            <p className="mt-2 text-xs text-gray-500">
-                                                ৳
-                                                {item.price.toLocaleString()}{" "}
-                                                ×{" "}
-                                                {item.quantity}
-                                            </p>
+                                                <p className="mt-2 text-xs text-gray-500">
+                                                    ৳
+                                                    {item.price.toLocaleString()}{" "}
+                                                    ×{" "}
+                                                    {item.quantity}
+                                                </p>
+                                            </div>
+
+                                            {/* Item Total */}
+                                            <div className="shrink-0 text-right">
+                                                <p className="text-sm font-semibold">
+                                                    ৳
+                                                    {(
+                                                        item.price *
+                                                        item.quantity
+                                                    ).toLocaleString()}
+                                                </p>
+                                            </div>
                                         </div>
-
-                                        {/* Item Total */}
-                                        <div className="shrink-0 text-right">
-                                            <p className="text-sm font-semibold">
-                                                ৳
-                                                {(
-                                                    item.price *
-                                                    item.quantity
-                                                ).toLocaleString()}
-                                            </p>
-                                        </div>
-                                    </div>
-                                ),
-                            )}
-                        </div>
-
-                        {/* Order Footer */}
-                        <div className="flex flex-col gap-4 border-t border-gray-200 bg-gray-50 p-5 sm:flex-row sm:items-center sm:justify-between">
-                            <div>
-                                <p className="text-xs text-gray-500">
-                                    Deliver to
-                                </p>
-
-                                <p className="mt-1 text-sm font-medium">
-                                    {
-                                        order.deliveryInfo
-                                            .fullName
-                                    }
-                                </p>
-
-                                <p className="text-xs text-gray-500">
-                                    {
-                                        order.deliveryInfo
-                                            .address
-                                    }
-                                    ,{" "}
-                                    {
-                                        order.deliveryInfo
-                                            .city
-                                    }
-                                </p>
-
-                                {isAdmin && (
-                                    <p className="mt-1 text-xs text-gray-500">
-                                        {
-                                            order.deliveryInfo
-                                                .email
-                                        }
-                                    </p>
+                                    ),
                                 )}
                             </div>
 
-                            <div className="text-left sm:text-right">
-                                <p className="text-xs text-gray-500">
-                                    Total
-                                </p>
+                            {/* Order Footer */}
+                            <div className="flex flex-col gap-4 border-t border-gray-200 bg-gray-50 p-5 sm:flex-row sm:items-center sm:justify-between">
+                                <div>
+                                    <p className="text-xs text-gray-500">
+                                        Deliver to
+                                    </p>
 
-                                <p className="mt-1 text-xl font-bold text-primary">
-                                    ৳
-                                    {order.total.toLocaleString()}
-                                </p>
+                                    <p className="mt-1 text-sm font-medium">
+                                        {
+                                            order.deliveryInfo
+                                                .fullName
+                                        }
+                                    </p>
+
+                                    <p className="text-xs text-gray-500">
+                                        {
+                                            order.deliveryInfo
+                                                .address
+                                        }
+                                        ,{" "}
+                                        {
+                                            order.deliveryInfo
+                                                .city
+                                        }
+                                    </p>
+
+                                    {isAdmin && (
+                                        <p className="mt-1 text-xs text-gray-500">
+                                            {
+                                                order.deliveryInfo
+                                                    .email
+                                            }
+                                        </p>
+                                    )}
+                                </div>
+
+                                <div className="text-left sm:text-right">
+                                    <p className="text-xs text-gray-500">
+                                        Total
+                                    </p>
+
+                                    <p className="mt-1 text-xl font-bold text-primary">
+                                        ৳
+                                        {order.total.toLocaleString()}
+                                    </p>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                ))}
+                    );
+                })}
             </div>
         </main>
     );

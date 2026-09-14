@@ -453,13 +453,6 @@ export default function CartPage() {
                                                                     </p>
                                                                 )}
                                                             </div>
-
-                                                            {/* STOCK */}
-
-                                                            <span className="mt-2 inline-flex items-center gap-1 rounded-full bg-green-50 px-2 py-1 text-[10px] font-medium text-green-700">
-                                                                <span className="h-1.5 w-1.5 rounded-full bg-green-500" />
-                                                                In Stock
-                                                            </span>
                                                         </div>
                                                     </div>
 
@@ -764,7 +757,7 @@ export default function CartPage() {
 
                         <Link
                             href="/checkout"
-                            className="mt-6 flex h-12 w-full items-center justify-center rounded-xl bg-primary px-5 text-sm font-semibold text-white transition hover:opacity-90"
+                            className="mt-6 flex h-12 w-full items-center justify-center rounded-lg bg-primary px-5 text-sm font-semibold text-white transition hover:opacity-90"
                         >
                             Proceed to Checkout
 

@@ -1,9 +1,10 @@
 export type TrackingStatus =
-    | "accepted"
+    | "confirmed"
     | "processing"
-    | "on-the-way"
-    | "with-deliveryman"
-    | "delivered";
+    | "shipped"
+    | "in-delivery-man"
+    | "delivered"
+    | "accepted";
 
 export interface TrackingStep {
     id: TrackingStatus;

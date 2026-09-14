@@ -1,4 +1,4 @@
-import { TrackingStatus } from "@/types/tracking";
+import type { TrackingStatus } from "@/types/tracking";
 
 export interface TrackingEvent {
     status: TrackingStatus;
@@ -17,46 +17,43 @@ export const TRACKING_STEPS: Array<{
     title: string;
     description: string;
 }> = [
-    {
-        status: "accepted",
-        title: "Order Accepted",
-        description: "Your order has been accepted successfully.",
-    },
-    {
-        status: "processing",
-        title: "Processing",
-        description: "Your order is being prepared for shipment.",
-    },
-    {
-        status: "on-the-way",
-        title: "On the Way",
-        description: "Your parcel is on the way to your location.",
-    },
-    {
-        status: "with-deliveryman",
-        title: "With Deliveryman",
-        description:
-            "Your parcel is with the deliveryman and will arrive soon.",
-    },
-    {
-        status: "delivered",
-        title: "Delivered",
-        description: "Your order has been delivered successfully.",
-    },
-];
+        {
+            status: "confirmed",
+            title: "Order Confirmed",
+            description: "Your order has been Confirmed successfully.",
+        },
+        {
+            status: "processing",
+            title: "Processing",
+            description: "Your order is being prepared for shipment.",
+        },
+        {
+            status: "shipped",
+            title: "On the Way",
+            description: "Your parcel is on the way to your location.",
+        },
+        {
+            status: "in-delivery-man",
+            title: "In Delivery man",
+            description:
+                "Your parcel is with the deliveryman and will arrive soon.",
+        },
+        {
+            status: "delivered",
+            title: "Delivered",
+            description: "Your order has been delivered successfully.",
+        },
+    ];
 
 /**
- * Maps the actual order status to the tracking UI status.
+ * Converts the actual order status into
+ * the tracking status used by the UI.
  *
- * Frontend/localStorage stage now:
- * pending / confirmed -> accepted
- * processing          -> processing
- * shipped             -> on-the-way
- * out-for-delivery    -> with-deliveryman
- * delivered           -> delivered
+ * Current frontend stage:
+ * order.status comes from localStorage.
  *
- * Later the backend can return the same statuses
- * without changing the tracking UI.
+ * Future:
+ * order.status will come from PostgreSQL/API.
  */
 export const mapOrderStatusToTrackingStatus = (
     orderStatus: string,
@@ -64,16 +61,16 @@ export const mapOrderStatusToTrackingStatus = (
     switch (orderStatus) {
         case "pending":
         case "confirmed":
-            return "accepted";
+            return "confirmed";
 
         case "processing":
             return "processing";
 
         case "shipped":
-            return "on-the-way";
+            return "shipped";
 
         case "out-for-delivery":
-            return "with-deliveryman";
+            return "in-delivery-man";
 
         case "delivered":
             return "delivered";
@@ -86,9 +83,11 @@ export const mapOrderStatusToTrackingStatus = (
 export const getTrackingStepIndex = (
     status: TrackingStatus,
 ): number => {
-    return TRACKING_STEPS.findIndex(
+    const index = TRACKING_STEPS.findIndex(
         (step) => step.status === status,
     );
+
+    return index >= 0 ? index : 0;
 };
 
 export const getTrackingStep = (
@@ -102,11 +101,12 @@ export const getTrackingStep = (
 };
 
 /**
- * Creates tracking data from the actual order status.
+ * Creates tracking history from the current order status.
  *
- * No timer.
- * No fake automatic progression.
- * The current order status is the source of truth.
+ * This is temporary frontend/mock behavior.
+ *
+ * Later, the backend can return real tracking history
+ * with different timestamps for each status.
  */
 export const getTrackingDataFromOrderStatus = (
     orderStatus: string,
@@ -118,24 +118,23 @@ export const getTrackingDataFromOrderStatus = (
     const currentIndex =
         getTrackingStepIndex(trackingStatus);
 
-    const createdTime = new Date(createdAt);
+    const createdDate = new Date(createdAt);
 
-    const safeCreatedAt = Number.isNaN(createdTime.getTime())
+    const safeCreatedAt = Number.isNaN(
+        createdDate.getTime(),
+    )
         ? new Date().toISOString()
-        : createdTime.toISOString();
+        : createdDate.toISOString();
 
     const trackingHistory: TrackingEvent[] =
-        TRACKING_STEPS.slice(0, currentIndex + 1).map(
-            (step, index) => ({
+        TRACKING_STEPS
+            .slice(0, currentIndex + 1)
+            .map((step) => ({
                 status: step.status,
                 title: step.title,
                 description: step.description,
-                timestamp:
-                    index === 0
-                        ? safeCreatedAt
-                        : safeCreatedAt,
-            }),
-        );
+                timestamp: safeCreatedAt,
+            }));
 
     return {
         trackingStatus,

@@ -3,6 +3,7 @@ export type OrderStatus =
     | "confirmed"
     | "processing"
     | "shipped"
+    | "in-delivery-man"
     | "delivered"
     | "cancelled";
 
@@ -160,15 +161,18 @@ export const updateOrderStatus = (
     }
 
     try {
-        const orders = JSON.parse(storedOrders) as Array<
-            Record<string, unknown>
-        >;
+        const orders = JSON.parse(
+            storedOrders,
+        ) as Array<Record<string, unknown>>;
+
+        const normalizedOrderId =
+            orderId.trim().toUpperCase();
 
         const orderIndex = orders.findIndex(
             (order) =>
                 typeof order.id === "string" &&
                 order.id.trim().toUpperCase() ===
-                    orderId.trim().toUpperCase(),
+                normalizedOrderId,
         );
 
         if (orderIndex === -1) {
@@ -186,8 +190,18 @@ export const updateOrderStatus = (
             JSON.stringify(orders),
         );
 
+        /**
+         * Same-tab update event.
+         *
+         * The browser "storage" event does not fire
+         * in the same tab that changed localStorage.
+         *
+         * So Track Order listens to this custom event.
+         */
         window.dispatchEvent(
-            new CustomEvent("ORDER_STATUS_UPDATED"),
+            new CustomEvent(
+                "ORDER_STATUS_UPDATED",
+            ),
         );
 
         return true;

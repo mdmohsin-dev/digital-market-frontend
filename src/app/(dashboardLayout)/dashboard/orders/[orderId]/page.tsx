@@ -1,7 +1,7 @@
 "use client";
 
 import Link from "next/link";
-import { ArrowLeft, Package, Truck } from "lucide-react";
+import { ArrowLeft, Package, Truck, Copy, Check } from "lucide-react";
 import { useParams } from "next/navigation";
 import { useEffect, useState } from "react";
 import {getOrderById,type Order,} from "@/lib/orders";
@@ -12,12 +12,25 @@ export default function OrderDetailsPage() {
     const orderId = params.orderId as string;
 
     const [order, setOrder] = useState<Order | null>(null);
+    const [copied, setCopied] = useState(false);
 
     useEffect(() => {
         const storedOrder = getOrderById(orderId);
 
         setOrder(storedOrder);
     }, [orderId]);
+
+    const handleCopyOrderId = async () => {
+        if (!order) return;
+
+        try {
+            await navigator.clipboard.writeText(order.id);
+            setCopied(true);
+            setTimeout(() => setCopied(false), 2000);
+        } catch (err) {
+            console.error("Failed to copy order id:", err);
+        }
+    };
 
     if (!order) {
         return (
@@ -57,9 +70,30 @@ export default function OrderDetailsPage() {
                             Order ID
                         </p>
 
-                        <h1 className="mt-1 text-xl font-bold">
-                            {order.id}
-                        </h1>
+                        <div className="mt-1 flex items-center gap-2">
+                            <h1 className="text-xl font-bold">
+                                {order.id}
+                            </h1>
+
+                            <button
+                                type="button"
+                                onClick={handleCopyOrderId}
+                                aria-label="Copy order ID"
+                                className="inline-flex h-7 w-7 items-center justify-center rounded-md border border-gray-200 text-gray-500 transition-colors hover:bg-gray-50 hover:text-gray-700"
+                            >
+                                {copied ? (
+                                    <Check size={14} className="text-green-600" />
+                                ) : (
+                                    <Copy size={14} />
+                                )}
+                            </button>
+
+                            {copied && (
+                                <span className="text-xs text-green-600">
+                                    Copied!
+                                </span>
+                            )}
+                        </div>
                     </div>
 
                     <div className="inline-flex w-fit items-center gap-2 rounded-full bg-yellow-50 px-4 py-2 text-sm font-medium text-yellow-700">
